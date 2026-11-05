@@ -88,6 +88,19 @@ export function createSQLMemory(
         );
         return success(structuredClone(character));
       }),
+    listCharacters: (limit) =>
+      guarded(() => {
+        if (!Number.isInteger(limit) || limit < 1 || limit > 100)
+          return failure("budget-exceeded", "Invalid character list limit.");
+        return success(
+          db
+            .prepare("SELECT document FROM characters ORDER BY id LIMIT ?")
+            .all(limit)
+            .map(
+              (row) => JSON.parse(row.document as string) as CharacterInstance,
+            ),
+        );
+      }),
     getCharacter: (id) =>
       guarded(() => success(read<CharacterInstance>("characters", id))),
     getExchange: (id) =>

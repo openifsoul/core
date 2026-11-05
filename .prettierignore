@@ -9,3 +9,4 @@ dist/
 worker-configuration.d.ts
 .playwright-cli/
 output/
+vendor/**/*.tgz

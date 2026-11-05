@@ -1,3 +1,8 @@
+import { appConfig, trustedLocalRequest } from "./app-auth.js";
+import {
+  CHARACTER_LIBRARY,
+  EXTERNAL_AUTHORING_PROMPT,
+} from "../../runtime-host/src/authoring.js";
 import {
   authenticated,
   boundedJSON,
@@ -9,7 +14,10 @@ import {
 } from "./security.js";
 import type {
   LabService,
+  CharacterWorkspace,
+  CharacterDraft,
   LabRunRequest,
+  GenerationRequest,
 } from "../../runtime-host/src/service-types.js";
 export interface ProviderOption {
   id: string;
@@ -26,11 +34,14 @@ export interface PrivateStore {
 export interface APIOptions {
   mode: "local" | "cloud";
   password: string;
+  access?:
+    { kind: "local"; origin: string } | { kind: "principal"; id: string };
   encryptionKey: string;
   store: PrivateStore;
-  service: LabService;
+  service: LabService | CharacterWorkspace;
   providers(): Promise<ProviderOption[]>;
   now?: () => number;
+  demo?: (request: Request) => Promise<Response>;
 }
 const error = (code: string, message: string, status = 400) =>
   Response.json({ ok: false, error: { code, message } }, { status });
@@ -52,8 +63,29 @@ export function createAPI(options: APIOptions) {
   };
   async function handle(request: Request): Promise<Response> {
     const url = new URL(request.url),
-      path = url.pathname;
-    if (!options.password || !options.encryptionKey)
+      originalPath = url.pathname,
+      path =
+        originalPath === "/api/chat" || originalPath === "/api/lab/run"
+          ? "/api/run"
+          : originalPath;
+    if (
+      options.access?.kind === "local" &&
+      !trustedLocalRequest(request, options.access.origin)
+    )
+      return error("forbidden", "Open the app on its loopback address.", 403);
+    if (originalPath === "/api/config" && request.method === "GET")
+      return Response.json(appConfig(options.mode));
+    if (
+      options.access &&
+      options.mode === "cloud" &&
+      (originalPath.startsWith("/api/lab/") || originalPath === "/api/run")
+    )
+      return error(
+        "forbidden",
+        "The laboratory is available only locally.",
+        403,
+      );
+    if ((!options.password && !options.access) || !options.encryptionKey)
       return error(
         "not-configured",
         "The server needs owner configuration.",
@@ -66,8 +98,12 @@ export function createAPI(options: APIOptions) {
         "Open this panel directly before continuing.",
         403,
       );
-    const auth = await authenticated(request, options.password, now());
-    if (path === "/api/login" && request.method === "POST") {
+    if (path.startsWith("/api/demo/") && options.demo)
+      return options.demo(request);
+    const auth = options.access
+      ? true
+      : await authenticated(request, options.password, now());
+    if (!options.access && path === "/api/login" && request.method === "POST") {
       const attempt = JSON.parse(
         options.store.get("login-window") ?? '{"at":0,"count":0}',
       ) as { at: number; count: number };
@@ -146,18 +182,81 @@ export function createAPI(options: APIOptions) {
         return Response.json({ ok: true });
       }
     }
-    if (path === "/api/snapshot" && request.method === "GET")
-      return Response.json(options.service.snapshot());
-    if (path === "/api/run" && request.method === "POST") {
+    if ("listCharacters" in options.service) {
+      if (path === "/api/characters/authoring" && request.method === "GET")
+        return Response.json({
+          library: CHARACTER_LIBRARY,
+          prompt: EXTERNAL_AUTHORING_PROMPT,
+        });
+      if (path === "/api/characters/export" && request.method === "GET") {
+        const result = options.service.exportCharacter(
+          url.searchParams.get("characterId") ?? "",
+        );
+        return Response.json(result, { status: result.ok ? 200 : 400 });
+      }
+      if (path === "/api/characters/import" && request.method === "POST") {
+        if (busy)
+          return error(
+            "busy",
+            "Wait for the current operation to finish.",
+            409,
+          );
+        const body = (await boundedJSON(request, 70000)) as {
+          requestId: string;
+          template: unknown;
+        };
+        const result = options.service.importCharacter(body);
+        return Response.json(result, { status: result.ok ? 200 : 400 });
+      }
+    }
+    if (path === "/api/characters" && "listCharacters" in options.service) {
+      if (request.method === "GET")
+        return Response.json(options.service.listCharacters());
+      if (request.method === "POST") {
+        if (busy)
+          return error(
+            "busy",
+            "Wait for the current operation to finish.",
+            409,
+          );
+        const draft = (await boundedJSON(request)) as CharacterDraft;
+        const result = options.service.createCharacter(draft);
+        return Response.json(result, { status: result.ok ? 200 : 400 });
+      }
+    }
+    if (path === "/api/snapshot" && request.method === "GET") {
+      const id = url.searchParams.get("characterId") ?? undefined;
+      return Response.json(
+        "listCharacters" in options.service
+          ? options.service.snapshot(
+              id,
+              url.searchParams.get("memoryCharacterId") ?? undefined,
+            )
+          : options.service.snapshot(),
+      );
+    }
+    if (
+      (path === "/api/run" ||
+        (path === "/api/characters/generate" &&
+          "listCharacters" in options.service)) &&
+      request.method === "POST"
+    ) {
       if (busy)
         return error(
           "busy",
           "An operation is already running. Wait for its result.",
           409,
         );
-      const body = (await boundedJSON(request)) as LabRunRequest;
+      const body = (await boundedJSON(request)) as LabRunRequest &
+        GenerationRequest;
       if (!body || typeof body !== "object")
         return error("invalid-request", "Choose an operation and model.");
+      if (originalPath === "/api/chat" && body.operation !== "chat")
+        return error(
+          "forbidden",
+          "Use the local laboratory for planning.",
+          403,
+        );
       busy = true;
       try {
         const providers = await options.providers();
@@ -185,7 +284,11 @@ export function createAPI(options: APIOptions) {
           );
         counter.count++;
         options.store.set("run-window", JSON.stringify(counter));
-        const result = await options.service.run(body);
+        const result =
+          path === "/api/characters/generate" &&
+          "listCharacters" in options.service
+            ? await options.service.generateCharacter(body)
+            : await options.service.run(body);
         return Response.json(result, { status: result.ok ? 200 : 400 });
       } finally {
         busy = false;

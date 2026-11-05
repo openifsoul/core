@@ -27,6 +27,7 @@ export interface Scope {
   export: "allowed" | "consent-required" | "forbidden";
 }
 export interface CharacterInstance extends Envelope {
+  template?: { templateId: string; revision: number };
   kind: "character-instance";
   characterId: string;
   participantId: string;

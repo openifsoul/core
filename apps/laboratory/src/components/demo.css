@@ -1,0 +1,208 @@
+.demo-shell {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+}
+.demo-main {
+  max-width: 1440px;
+  margin: auto;
+  padding: 36px 28px;
+}
+.demo-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.demo-intro h1 {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  margin: 12px 0;
+}
+.demo-intro p,
+.demo-controls > p {
+  color: var(--muted-foreground);
+  max-width: 800px;
+  line-height: 1.6;
+}
+.demo-controls {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: grid;
+  gap: 14px;
+}
+.demo-personas,
+.demo-mode,
+.demo-invite {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.demo-invite input {
+  max-width: 320px;
+}
+.demo-reset {
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.demo-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
+.demo-playfield,
+.demo-sidebar {
+  min-width: 0;
+}
+.demo-sidebar {
+  display: grid;
+  gap: 18px;
+}
+.demo-tabs {
+  display: flex;
+  width: 100%;
+  height: auto;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.demo-tabs button {
+  min-height: 44px;
+  flex: 1;
+}
+.demo-game-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 8px;
+}
+.demo-game-heading h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.demo-playfield > div > p {
+  color: var(--muted-foreground);
+  margin-bottom: 14px;
+}
+.demo-game-root {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 300px;
+}
+.demo-game-root canvas {
+  display: block;
+  max-width: 100%;
+}
+.demo-chat {
+  max-height: 360px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-wrap: anywhere;
+}
+.demo-message-meta {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.demo-chat-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+.demo-memory {
+  max-height: 320px;
+  overflow: auto;
+  margin-top: 14px;
+  overflow-wrap: anywhere;
+}
+.demo-memory article {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.demo-memory p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 7px;
+}
+.demo-footer {
+  margin-top: 36px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.demo-footer a {
+  color: var(--primary);
+}
+@media (max-width: 1050px) {
+  .demo-workspace {
+    grid-template-columns: 1fr;
+  }
+  .demo-sidebar {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .demo-main {
+    padding: 24px 14px;
+  }
+  .demo-intro {
+    display: block;
+  }
+  .demo-intro > span {
+    margin-top: 12px;
+  }
+  .demo-controls {
+    padding: 14px;
+  }
+  .demo-personas button {
+    flex: 1;
+    white-space: normal;
+  }
+  .demo-sidebar {
+    grid-template-columns: 1fr;
+  }
+  .demo-invite input {
+    max-width: none;
+  }
+  .demo-footer {
+    flex-direction: column;
+  }
+  .demo-shell .header-actions > a {
+    font-size: 12px;
+  }
+}
+
+.demo-stage {
+  position: relative;
+}
+.demo-game-speech {
+  border: 1px solid var(--border);
+  border-top: 0;
+  background: var(--card);
+  padding: 12px 16px;
+  border-radius: 0 0 12px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}

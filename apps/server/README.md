@@ -1,32 +1,28 @@
-# Owner laboratory server
+# IfSoul application server
 
-Implemented authenticated single-owner server, available locally on loopback or
-on Cloudflare Workers. Both compose the same service and runtime. This public,
-self-hostable implementation is not the future private multi-tenant cloud product.
+The local Node server and Cloudflare Worker compose the runtime-host character
+workspace, memory and bounded provider clients. Local loopback mode has no Clerk
+or owner-password login prompt; Host/Origin/fetch-metadata guards restrict browser
+access. Cloud mode verifies Clerk session tokens and routes each authenticated
+subject to its own Durable Object SQLite store. Browser-supplied identity fields
+cannot choose that store. `/lab` debug behavior is local-only; `/app` conversation
+uses a neutral chat context rather than the synthetic garden briefing.
 
-```mermaid
-flowchart TB
-  Browser["Web laboratory"] --> Guard["Owner session + origin + body/rate limits"]
-  Guard --> API["Laboratory API"]
-  API --> Service["Shared runtime-host service"]
-  Service --> Runtime["Runtime + synthetic host"]
-  Service --> Providers["Selected provider client"]
-  Runtime --> Memory["Shared memory implementation"]
-  Memory --> Local[("Local Node SQLite")]
-  Memory --> Cloud[("Workers Durable Object SQLite")]
-  API --> Vault["Separate encrypted BYOK store"]
-  Vault -->|"server-side use only"| Providers
-```
+Local providers include installed Ollama, OpenAI BYOK and labeled scenario mode.
+Workers supports Workers AI, per-user OpenAI BYOK and scenario mode. BYOK keys are
+write-only through the API and encrypted separately from character history.
+Encryption does not protect against a compromised running server.
 
-The diagram shows deployment alternatives, not writes to both databases.
-Local mode supports installed Ollama models and OpenAI BYOK; Workers supports
-Workers AI and OpenAI BYOK. Both offer an explicitly synthetic scenario.
-Credentials are never returned by the API or inserted into character memory.
-The server sees decrypted keys while making requests; at-rest encryption does
-not protect against a compromised running server.
+Owner-paid Workers AI in App and demo shares the fixed legacy `owner-laboratory` Durable
+Object reservation gate. It persists per-user and global UTC-day counters before
+inference, retains failed reservations, and fails closed on unavailable/corrupt
+storage. Provider calls are bounded to 22,000 request bytes and 384 output tokens.
+Demo request IDs are idempotent within one UTC day; rollover permits a new paid
+call with an old ID. Game/reset operations cannot erase quotas. Demo invitations,
+admin issuing and login cookies are removed. Public scenario play makes no calls.
 
-Use `pnpm lab:web` after `pnpm build:web` for local mode, `pnpm dev:cloud` for
-local Workers simulation, and manual `pnpm deploy:cloud` only after local checks.
-See [execution and deployment policy](../../docs/deployment.md),
-[web guide](../../docs/web-laboratory.md), and
-[public/private boundary](../../docs/public-private-boundary.md).
+Use `pnpm build:web` and `pnpm lab:web` locally. Cloud builds/deployments remain
+manual under [deployment policy](../../docs/deployment.md). This README describes
+source implementation, not production release or completed real Clerk browser QA.
+See [web guide](../../docs/web-laboratory.md) and
+[security boundary](../../docs/public-private-boundary.md).

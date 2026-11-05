@@ -19,3 +19,9 @@ an architecture direction does not mean its runtime implementation exists.
 
 Change decisions explicitly through a new or amended ADR. Preserve the reason,
 consequences and distinction between an accepted direction and measured behavior.
+
+- [0011 — Browser demo SDK](0011-browser-demo-sdk.md): original hosts, experimental transport, invitation budgets and bounded browser history.
+
+- [0012 — IfSoul App identity and local laboratory](0012-app-auth-and-local-laboratory.md)
+
+- [0013 — Independent game examples and an installable experimental SDK](0013-independent-game-examples.md)

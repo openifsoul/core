@@ -17,8 +17,8 @@ behavior or psychological identity after changing models, environments or bodies
 Source baseline: **0.1.0-alpha.1** (unreleased). See [versioning](docs/versioning.md)
 and [changelog](CHANGELOG.md); protocol versions and future SDK releases are separate.
 
-**Experimental runtime and owner laboratory.** This repository contains draft JSON Schemas,
-specifications, a TypeScript runtime, SQLite event memory, a CLI and React/TypeScript/shadcn web laboratory.
+**Experimental runtime and IfSoul App.** This repository contains draft JSON Schemas,
+specifications, a TypeScript runtime, SQLite event memory, a CLI and React/TypeScript/shadcn application.
 The active design is [v0.2](specs/v0.2/README.md). The v0.1 schemas and examples
 remain unchanged as historical regression evidence. The
 [ModelProvider contract](specs/model-provider/README.md) remains independently
@@ -26,13 +26,15 @@ versioned at `draft-0.1.0`; the current clients implement a narrower laboratory 
 
 The original [CLI laboratory](docs/laboratory.md) remains deterministic. The
 [web laboratory](docs/web-laboratory.md) adds real Workers AI, OpenAI BYOK and
-local Ollama, provider/model selection and a shared server cycle. The [runtime API](docs/runtime-api.md)
+local Ollama, provider/model selection and a shared server cycle. You can author
+or generate fictional profiles, import/export profile files, browse original
+starter characters, and independently select a profile and local memory. The [runtime API](docs/runtime-api.md)
 is an experimental source-level interface, not a published SDK.
 
-Game bridges, a general Character Manager, archive import/export and a managed
-multi-tenant cloud product remain unimplemented. The Workers deployment is a
-private owner laboratory, not a public hosted service. There is no packaged
-end-user application; broader product claims below remain design goals.
+External game bridges, full memory archive transfer, packaged desktop releases and
+commercial billing remain deferred. The current App architecture separates local
+loopback storage from Clerk-authenticated per-user Workers storage. This source
+change does not establish production deployment or completed live Clerk verification.
 
 ## How it is intended to work
 
@@ -122,11 +124,11 @@ Local and cloud databases are separate; changing location does not migrate data.
 ```mermaid
 flowchart LR
   UI["React / TypeScript / shadcn laboratory"] --> Local["Local server
-Loopback + owner login"]
+Trusted loopback · no password prompt"]
   UI --> Worker["Workers server
-HTTPS + owner login"]
+HTTPS + Clerk identity"]
   Local --> LM[("Local SQLite history")]
-  Worker --> CM[("Durable Object SQLite history")]
+  Worker --> CM[("Per-user Durable Object SQLite history")]
   Local --> Ollama["Ollama
 Installed local model"]
   Local --> OpenAI["OpenAI BYOK
@@ -135,7 +137,7 @@ Owner key"]
   Worker --> AI["Cloudflare Workers AI
 Server binding"]
   Paid["Managed cloud · planned
-Accounts and billing"] -.-> Worker
+Billing and commercial operations"] -.-> Worker
 ```
 
 ### Open code and private operations
@@ -153,7 +155,7 @@ flowchart TB
   end
   Server -->|"deployed as"| Instance
   Managed["Private managed-service code · planned
-Billing, accounts, administration"] -.->|"composes public core"| Server
+Billing and commercial administration"] -.->|"composes public core"| Server
 ```
 
 The UI submits a key to the selected authenticated server but cannot read it back.
@@ -182,14 +184,14 @@ See the [product design](docs/product.md) and
 | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | [Protocol](packages/protocol/README.md) and [v0.2 specifications](specs/v0.2/README.md)                                   | Draft contracts; no SDK or transport implementation          |
 | [Memory](packages/memory/README.md), [runtime](packages/runtime/README.md), [permissions](packages/permissions/README.md) | SQLite event memory and runtime; permissions package planned |
-| [Adapter SDK](packages/adapter-sdk/README.md) and [model providers](packages/model-providers/README.md)                   | Planned host bridges; implemented bounded provider clients   |
+| [Adapter SDK](packages/adapter-sdk/README.md) and [model providers](packages/model-providers/README.md)                   | Experimental browser bridge SDK; bounded provider clients    |
 | [Runtime host](apps/runtime-host/README.md) and [Character Manager](apps/character-manager/README.md)                     | CLI/shared service composition; Character Manager planned    |
 | [Simulator](apps/simulator/README.md)                                                                                     | Executable synthetic host and scenario controller            |
 | [Testing](packages/testing/README.md) and [contract checks](tests/contracts/README.md)                                    | Local checks; reusable conformance package remains planned   |
 | [Character examples](examples/characters/README.md) and [minimal world](examples/minimal-world/README.md)                 | Original synthetic v0.1 regression data                      |
 
 The [web laboratory](apps/laboratory/README.md) and
-[owner server](apps/server/README.md) explain the current browser/server composition.
+[application server](apps/server/README.md) explain the current browser/server composition.
 
 ## Validate locally
 
@@ -221,3 +223,26 @@ CI or deployment. The root package is private tooling, not an SDK release.
 The public repository is [openifsoul/core](https://github.com/openifsoul/core).
 Public local functionality must not depend on future private website or
 managed-cloud code. Source availability does not imply a stable SDK release.
+
+## Browser games and bridge SDK
+
+The [public playground](docs/browser-demo.md) connects three original hosts through
+an [experimental bridge SDK](packages/adapter-sdk/README.md): a PixiJS garden,
+a plain-DOM card game, and a Phaser dungeon. Each game owns its rules and mechanics;
+IfSoul supplies bounded decisions and requested dialogue. The shared browser demo
+keeps a small per-character history across games and chat. Public scenario mode
+makes no model requests. Cloud model mode requires Clerk sign-in; trusted local
+mode requires no Clerk or owner password. Owner-paid Workers AI uses persisted
+per-user and shared global daily reservation limits.
+
+Run `pnpm build:web` and `pnpm lab:web`, then open `/app`. The common App
+shell contains chat, characters, settings and demo worlds; `/lab` is local debug
+only. The sidebar has passed local desktop/mobile browser checks. The separate
+[test host](apps/test-host/README.md) runs with `pnpm demo:host` without any renderer.
+The thin [game catalog](apps/demo-games/README.md) consumes independent Garden,
+Friendly 21 and Dungeon packages through their public exports. Game source,
+adapters and standalone developer shells belong to separate local repositories;
+[reviewed archives](vendor/README.md) make this prerelease reproducible without
+siblings or a registry. The SDK is installable as a local experimental package;
+the example sources are public on GitHub, while npm packages remain unpublished
+and stable external-game support is not claimed. Builds and deployments remain local/manual.

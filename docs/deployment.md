@@ -43,20 +43,206 @@ starts the loopback-only local server on 127.0.0.1:8788; `pnpm dev:cloud` runs
 local Workers simulation. Workers AI calls still require the actual AI service.
 
 The public `wrangler.jsonc` is a reproducible self-hosting template, containing no
-account ID, secrets or custom domain. The owner instance uses manual credentials
-outside source control: Wrangler secrets `LAB_PASSWORD` and `ENCRYPTION_KEY`.
-Do not log or place their values in shell arguments. The first protects owner
-access and signs cookies; the second encrypts BYOK credentials at rest. Configure
-secrets before live access; missing secrets fail closed. Use Wrangler dashboard
-or `wrangler secret put` through stdin. The local server generates private owner
-credentials in ignored `.local/server/owner.json` (0600); never publish that file.
+account ID, secrets or custom domain. IfSoul App cloud mode requires Clerk
+configuration and a separate encryption secret. Never put secrets in shell
+arguments, source, browser bundles or documentation; use ignored local secrets
+for development and Worker secret bindings for a separately authorized deployment.
 
-The Worker owns one private owner laboratory Durable Object with SQLite. It is
-not a multi-tenant service. Cloud and local stores are separate; switching the
-panel's location does not migrate or merge state. Server-side changes to auth,
-identity or tenant routing require security tests before expanding access.
+Cloud identity selects a distinct SQLite Durable Object for each verified Clerk
+user. The old owner object is preserved, not assigned to a new user. Demo budget
+coordination is shared across users rather than duplicated per user store. Cloud
+and local stores are separate: changing location does not migrate or merge state.
+
+Local mode binds only to `127.0.0.1`, validates Host and Origin, and requires no
+Clerk account or password entry. Its ignored `.local/server/owner.json` retains
+private encryption material (0600). Do not expose this no-login mode to a network
+interface or place it behind an unprotected public proxy.
+
+The owner approved creating a test Clerk instance through their browser after
+implementation. Enable only Google and email sign-in, disable other social and
+enterprise providers, and verify both flows against the configured app origin.
+A local signed-token test does not replace this live verification. No test Clerk
+instance, remote deployment or public registration is implied by a successful
+local build.
+
+### Cloud configuration (local verification first)
+
+| Binding                 | Purpose                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `CLERK_PUBLISHABLE_KEY` | Public Clerk instance key, returned by `/api/config`                            |
+| `CLERK_ISSUER`          | Exact HTTPS issuer for that instance                                            |
+| `CLERK_JWT_KEY`         | PEM public verification key for networkless session verification                |
+| `APP_ORIGIN`            | Exact authorized application origin; HTTPS except explicit loopback development |
+| `ENCRYPTION_KEY`        | Private deployment secret for server-side BYOK encryption                       |
+
+Configure Clerk's allowed origins/redirects for the same origin. Keep email
+verification enabled; enable only email and Google sign-in in Clerk. No Clerk
+secret key is sent to browsers. The JWT verification key is public cryptographic
+material, but belongs in server configuration rather than application bundles.
+Changing verification keys requires coordinated configuration rotation. Offline
+verification accepts a signed session until its short JWT expiry; it does not
+perform an online session-revocation lookup on every request.
+
+The existing `Laboratory` class/binding and v1 migration remain stable. New user
+stores have server-derived names. The old owner object is used only as the shared
+budget/demo coordinator; its private application API is not routed to users.
+Existing account data is not automatically migrated into a Clerk account.
 
 An initial Durable Object migration creates the server store. No destructive
 migration is part of this slice. Worker rollback can restore compatible code;
 it does not roll back persisted character state or inference costs. Keep data
 schema changes backward compatible until a tested migration/backup path exists.
+
+## Browser playground
+
+The same locally built assets serve `/demo`; `/` links to the three games.
+Scenario play needs no login and performs no LLM calls. Cloud inference requires
+a verified Clerk session; invitations are removed. Local inference uses Ollama
+(`IFSOUL_DEMO_MODEL`, default `llama3.2:latest`) without Clerk. Cloud demo inference
+uses an allowlisted Workers AI model with bounded input/output and persistent
+per-user/global reservations. See [quotas and privacy](browser-demo.md).
+
+Laboratory is available only in local mode. Cloud must reject debug operations
+server-side, not merely hide its navigation. Ordinary App chat, character profiles,
+selected memory and BYOK settings remain available to the authenticated user.
+
+The owner authorized final verified source publication and manual production
+release on 2026-11-06. This supersedes the initial local-only restriction.
+`build:cloud` remains a local build and Wrangler dry-run; no command implies an
+automatic deployment. Keep npm publication, remote CI and schedules disabled.
+
+## Planned owner domain
+
+The owner selected `https://ifsoul.h3lpkey.com` as the initial production origin
+on 2026-11-05. This is a future owner deployment setting, not a public template
+route or a claim that DNS/hosting has been configured. Keep local Clerk testing
+on loopback. Production Clerk instance, Google OAuth settings, DNS and manual
+Wrangler publication remain a separate explicitly authorized deployment step.
+
+## Owner production release gate
+
+The owner origin is `https://ifsoul.h3lpkey.com`; the existing Worker identity is
+`ifsoul-laboratory`. The owner authorized this manual release after final local
+checks and the public-source secret audit. Deployment evidence is recorded only
+after the release is observed; a pre-Clerk predecessor is not automatically a
+safe rollback target.
+
+A local proposal is saved at
+`.local/deploy/wrangler.production.proposal.jsonc`, with its local README and
+`check-production.mjs` preflight. These files are ignored owner artifacts, not
+part of the public self-hosting template. The proposal preserves the Worker
+name, `LAB` binding, `Laboratory` class, existing v1 migration and AI binding.
+It records the Custom Domain, exact production `APP_ORIGIN`, disabled previews
+and `workers.dev`, and `keep_vars=true`. Its production publishable key and expected issuer are now recorded locally;
+production readiness must still be checked against the actual Clerk/Google and
+HTTPS state before publication. The preflight rejects the proposal filename regardless of key
+shape. A Wrangler dry-run compiled this proposal with
+local built assets; that is compilation evidence, not production readiness.
+
+The preflight rejects the proposal and any missing reviewed configuration. After
+the coordinator obtains the external inputs, create the reviewed
+`.local/deploy/wrangler.production.jsonc` and run:
+
+```sh
+node .local/deploy/check-production.mjs .local/deploy/wrangler.production.jsonc
+pnpm install --frozen-lockfile
+pnpm check
+pnpm build:web
+CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV=false pnpm exec wrangler deploy \
+  --config .local/deploy/wrangler.production.jsonc \
+  --dry-run --outdir .local/deploy/dry-run
+```
+
+Stop on any failed command. The preflight checks non-secret configuration,
+Worker/storage identity and matching production publishable-key/issuer host. It
+does not inspect secret contents or verify live login. Clerk production keys do
+not establish a working localhost sign-in flow; verify production on the real
+production domain after its separately authorized publication.
+
+### External inputs still required
+
+- The production Clerk instance now exists. Its public publishable key, expected
+  issuer `https://clerk.ifsoul.h3lpkey.com` and RSA public verification key are
+  recorded in the ignored owner proposal/key-upload artifact. The PEM parses
+  locally; this is not live signature/login evidence. A development `pk_test_`
+  instance must not replace this production configuration.
+- Clerk production-domain/DNS setup, verified email delivery and only Google and
+  email sign-in enabled. Production Google OAuth credentials/consent and callback
+  configuration belong in Clerk/Google, not in Worker source or browser code.
+  The reviewed Google callback is
+  `https://clerk.ifsoul.h3lpkey.com/v1/oauth_callback`. Clerk DNS and certificates and the saved Google connection were verified before
+  release. Google Audience publication follows the reachable public policy pages;
+  successful real login still requires post-deployment verification.
+- Authorized Cloudflare domain/DNS/certificate work as required. On 2026-11-05,
+  normal `curl --head https://ifsoul.h3lpkey.com` verification failed with exit 60
+  because the certificate had expired. Do not substitute `--insecure` for a
+  successful HTTPS check or infer that a Worker dry-run fixes a certificate.
+- The owner has now explicitly authorized the manual publication and resulting
+  production smoke. That scope adds no npm publication, remote build or schedule.
+
+Keep the existing `ENCRYPTION_KEY` untouched: do not read, copy, rotate or replace
+it as part of this release. Existing encrypted BYOK data depends on it. The
+coordinator can prepare an ignored owner-only (0600)
+`.local/deploy/clerk.production.secrets.json` containing **only** `CLERK_JWT_KEY`.
+Do not dump a process environment into that file. Never print or commit its
+contents. The application does not need a Clerk secret API key for its current
+networkless token verification.
+
+### Manual publication after the release gate
+
+Only after the reviewed configuration preflight, full local validation, external
+setup and explicit publication authorization succeed may the coordinator run a
+manual Wrangler deployment using that exact configuration. The command must be
+guarded by the preflight and include the additive Clerk JWT-key upload file:
+
+```sh
+# Run only after the authorized release gate and configuration review pass.
+node .local/deploy/check-production.mjs .local/deploy/wrangler.production.jsonc --require-secrets && \
+  pnpm exec wrangler deploy \
+    --config .local/deploy/wrangler.production.jsonc \
+    --keep-vars --secrets-file .local/deploy/clerk.production.secrets.json
+```
+
+Wrangler preserves existing secrets when omitted from this additive upload;
+never put `ENCRYPTION_KEY` in the upload file. `keep_vars` preserves unrelated
+remote variables while the explicit reviewed values remain authoritative. It
+does not preserve an omitted Custom Domain. Keep both routes and variables in
+the reviewed configuration for every subsequent owner deployment. Avoid relying
+on dashboard-only edits or one-off `--var`/`--domain` flags.
+
+Before using generic `pnpm deploy:cloud` for this owner installation, the
+coordinator must activate and verify Wrangler's existing ignored
+`.wrangler/deploy/config.json` redirect to the reviewed owner configuration, or
+retain the explicit `--config` argument on every manual deployment. The relative
+redirect value is `../../.local/deploy/wrangler.production.jsonc`. Do not activate
+it against the incomplete proposal. A fresh dry-run must confirm the effective
+configuration and domain. The public template remains generic; a future checkout
+without the owner redirect must not be used blindly against this production
+Worker. See [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/)
+and [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
+
+### Production smoke and recovery
+
+After a separately authorized publication, verify ordinary TLS without bypasses,
+then `/api/config` reports cloud/Clerk, the exact production publishable key and
+`laboratory:false`, without secrets. Check unauthenticated protected requests
+return 401, debug routes remain forbidden, and landing/scenario play stay public.
+Perform real Google and verified-email sign-in on the production domain. Use two
+controlled accounts to check isolated character/chat history, guessed foreign
+character export rejection and BYOK separation. Check logout clears frontend
+access; offline JWT verification still permits a previously issued token until
+its short expiry. Confirm the existing shared budget coordinator and quotas
+remain effective across game resets and App requests. Any live paid inference
+smoke remains bounded and must fall within the separately authorized test scope.
+
+Record the resulting deployed version and smoke evidence only after observing
+success. Do not mark the release complete from a build, a DNS record or a login
+screen alone. A rollback must preserve per-user authentication/storage and budget
+boundaries; do not blindly restore a pre-Clerk predecessor. Code rollback does
+not undo persisted data or inference charges. If a verified safe recovery version
+is unavailable, stop rollout and coordinate a fail-closed recovery rather than
+exposing a legacy owner API.
+
+Clerk setup and production-domain verification follow its
+[production deployment guide](https://clerk.com/docs/guides/development/deployment/production)
+and [production-instance testing guidance](https://clerk.com/docs/guides/development/testing/test-against-production).

@@ -8,6 +8,8 @@ for (const name of await readdir(directory)) {
   for (const forbidden of [
     "ENCRYPTION_KEY",
     "LAB_PASSWORD",
+    "CLERK_JWT_KEY",
+    "CLERK_SECRET_KEY",
     "node:sqlite",
     "api.openai.com/v1/responses",
   ])
@@ -15,6 +17,10 @@ for (const name of await readdir(directory)) {
       !source.includes(forbidden),
       `Server implementation leaked into browser bundle: ${forbidden}`,
     );
+  assert(
+    !/\bsk_(?:test|live)_[A-Za-z0-9]{16,}\b/.test(source),
+    "Clerk secret-like value in browser bundle",
+  );
   assert(
     !/\bsk-(?:proj-)?[A-Za-z0-9_-]{32,}\b/.test(source),
     "Credential-like value in browser bundle",

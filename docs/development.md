@@ -1,8 +1,8 @@
 # Local development
 
 The repository contains draft contracts and an experimental TypeScript runtime,
-SQLite event memory, synthetic host, providers and CLI/web laboratory. It is source-run tooling,
-not a published SDK or packaged end-user application. See the
+SQLite event memory, synthetic host, providers and CLI/web laboratory. Most Core components remain source-run tooling. The experimental adapter SDK
+also has an installable local prerelease archive; no npm publication is claimed. See the
 [runtime API](runtime-api.md) and [laboratory](laboratory.md).
 
 The active design is [v0.2](../specs/v0.2/README.md). v0.1 schemas/examples remain
@@ -47,6 +47,9 @@ game compatibility, provider behavior, archive round-trip safety or production r
 
 ## Required validation by change
 
+Web interface changes also follow the [UI/UX approach](ui-ux.md) for component
+selection, theme consistency and interaction review.
+
 | Change                                      | Local checks                                           |
 | ------------------------------------------- | ------------------------------------------------------ |
 | Documentation only                          | Format changed files; `pnpm check:docs`                |
@@ -84,15 +87,32 @@ live database over a network filesystem. See laboratory documentation for recove
 
 ## Package boundaries
 
-Only the private root has a package manifest. Components use source imports inside
-`core` while interfaces evolve; there are no package exports, workspace releases
-or cross-repository imports. Runtime imports MemoryPort, never the SQLite engine.
-The local CLI explicitly composes simulator code as development tooling.
+The private root remains unpublished. The one authorized SDK child package
+builds compiled ESM/declarations with `pnpm build:sdk`; `pnpm pack:sdk` creates a
+local archive using the existing pnpm tool. Other Core components retain source
+imports and have no implied package releases. Runtime imports MemoryPort rather
+than the SQLite engine; the CLI explicitly composes development simulator code.
 
-When publishing real packages, design their entrypoints and use workspaces inside
-core. Sibling repositories remain independent. Test distributed packages with a
-packed tarball or uncommitted override, then use explicit published versions.
-Public code must not depend on private siblings.
+Garden, Friendly 21 and Dungeon are independent example repositories. Core's
+curated Playground consumes their public package exports, never source paths
+outside its checkout. Until separately authorized registry publication, exact
+reviewed archives under `vendor/` provide a reproducible local distribution; each
+example bundles the matching small SDK. This is temporary prerelease distribution,
+not a central home for future third-party game implementations.
+
+`pnpm check:boundaries` verifies the archive allowlist, checksums/provenance,
+package members and known secret patterns in unpacked files and staged bytes.
+It permits only the SDK child manifest and those exact artifacts, not arbitrary
+archives or sibling imports. Package tests install the SDK in a temporary clean
+consumer and check runtime exports and TypeScript declarations without registry
+access. Before removing inline hosts, also verify frozen installation, tests and
+web build in a Core copy without sibling repositories. See
+[ADR 0013](decisions/0013-independent-game-examples.md) for the accepted scope.
+
+A standalone example defaults to scenario mode. Its optional Vite development
+proxy targets only explicitly configured loopback; it does not bypass production
+CORS, Clerk `azp` or server authentication. The Core Playground retains its
+same-origin authenticated bridge, session history and per-user/global budgets.
 
 ## Agent collaboration
 

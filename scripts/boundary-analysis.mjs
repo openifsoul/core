@@ -6,6 +6,11 @@ import { existsSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
 import { isBuiltin } from "node:module";
 import { execFileSync } from "node:child_process";
+import { hasPotentialSecret } from "./secret-scan.mjs";
+import {
+  allowedDistributions,
+  checkDistributions,
+} from "./distribution-analysis.mjs";
 import { parsers } from "prettier/plugins/typescript";
 
 export const rules = JSON.parse(
@@ -155,7 +160,10 @@ export function checkEdge(from, to, typeOnly) {
     target && rules[source]?.includes(target),
     `Forbidden dependency ${source} -> ${target ?? to}`,
   );
-  if (source === "apps/laboratory")
+  if (
+    source === "apps/laboratory" &&
+    !["packages/adapter-sdk", "apps/demo-games"].includes(target)
+  )
     assert(typeOnly, "Web UI may only import server types");
   if (source === "packages/runtime" && ports[target])
     assert(
@@ -210,6 +218,11 @@ export async function checkSourceGraph(root, files) {
             (component === "apps/server" && specifier === "cloudflare:workers"),
           `Undeclared external dependency: ${specifier}`,
         );
+        if (packageName.startsWith("@ifsoul/example-"))
+          assert(
+            component === "apps/demo-games",
+            "Only the curated browser catalog may import game packages",
+          );
         if (component === "packages/protocol")
           assert(
             !builtin &&
@@ -266,7 +279,8 @@ export function assertIndexPath(file) {
     `Private/generated file in Git index: ${file}`,
   );
   assert(
-    !/\.(?:sqlite3?|db|zip|tgz|log)(?:[.-]|$)/.test(file),
+    !/\.(?:sqlite3?|db|zip|tgz|log)(?:[.-]|$)/.test(file) ||
+      allowedDistributions.has(file),
     `Data/archive file in Git index: ${file}`,
   );
 }
@@ -278,6 +292,7 @@ export async function checkGitIndex(root) {
   })
     .split("\0")
     .filter(Boolean);
+  const indexed = new Map();
   for (const entry of entries) {
     const [meta, file] = entry.split("\t");
     assertIndexPath(file);
@@ -288,14 +303,21 @@ export async function checkGitIndex(root) {
     const oid = meta.split(" ")[1];
     const content = execFileSync("git", ["cat-file", "blob", oid], {
       cwd: root,
-      encoding: "utf8",
       maxBuffer: 16 * 1024 * 1024,
     });
-    assert(
-      !/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{30,}\b|\bgithub_pat_[A-Za-z0-9_]{40,}\b|\bsk-(?:proj-)?[A-Za-z0-9_-]{32,}\b/.test(
-        content,
-      ),
-      `Potential secret in indexed file ${file}; inspect without printing`,
-    );
+    indexed.set(file, content);
+    if (!allowedDistributions.has(file))
+      assert(
+        !hasPotentialSecret(content.toString("utf8")),
+        `Potential secret in indexed file ${file}; inspect without printing`,
+      );
   }
+  if ([...indexed.keys()].some((file) => allowedDistributions.has(file)))
+    await checkDistributions(root, async (relative) => {
+      assert(
+        indexed.has(relative),
+        `Missing staged distribution/inventory: ${relative}`,
+      );
+      return indexed.get(relative);
+    });
 }

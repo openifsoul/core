@@ -42,6 +42,12 @@ speech and live chat need distinct boundaries; keeping a model online grants no
 low-level control. Read [bridge authoring](docs/bridge-authoring.md) and
 [execution modes](docs/execution-modes.md) before proposing an integration.
 
+## Web interface contributions
+
+Read the [UI/UX approach](docs/ui-ux.md) before changing web panels. It owns
+component selection, Cuelark/shadcn integration, the shared Notion theme, branding,
+interaction states, accessibility and browser review requirements.
+
 ## Validate locally
 
 Use the tool versions in [development](docs/development.md). From `core`:

@@ -4,12 +4,15 @@
     "packages/protocol",
     "packages/memory",
     "packages/model-providers",
-    "apps/runtime-host"
+    "apps/runtime-host",
+    "packages/adapter-sdk"
   ],
   "apps/laboratory": [
     "apps/runtime-host",
     "packages/model-providers",
-    "packages/protocol"
+    "packages/protocol",
+    "packages/adapter-sdk",
+    "apps/demo-games"
   ],
   "packages/protocol": [],
   "packages/memory": ["packages/protocol"],
@@ -42,5 +45,8 @@
     "packages/model-providers",
     "packages/adapter-sdk",
     "apps/simulator"
-  ]
+  ],
+  "packages/adapter-sdk": ["packages/protocol"],
+  "apps/demo-games": ["packages/adapter-sdk"],
+  "apps/test-host": ["packages/adapter-sdk"]
 }

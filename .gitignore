@@ -26,3 +26,9 @@ pnpm-workspace.local.yaml
 .env*
 .playwright-cli/
 output/
+
+# Explicit reviewed local prerelease distributions (ADR 0013).
+!vendor/sdk/ifsoul-adapter-sdk-0.1.0-alpha.1.tgz
+!vendor/examples/ifsoul-example-garden-0.1.0-alpha.1.tgz
+!vendor/examples/ifsoul-example-friendly-21-0.1.0-alpha.1.tgz
+!vendor/examples/ifsoul-example-dungeon-0.1.0-alpha.1.tgz

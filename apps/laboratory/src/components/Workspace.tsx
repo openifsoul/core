@@ -1,3 +1,5 @@
+import { Message, MessageContent } from "@/components/ui/message";
+import { Suggestions, Suggestion } from "@/components/ui/suggestions";
 import { useMemo, useState } from "react";
 import {
   ArrowDown,
@@ -75,7 +77,7 @@ export function ChatPanel({
           <Badge variant="outline">Text channel</Badge>
         </div>
         <p className="card-subtitle">
-          Ask about intentions, outcomes, and remembered events.
+          Talk about experiences, ideas, and remembered events.
         </p>
       </CardHeader>
       <CardContent className="chat-content">
@@ -96,57 +98,72 @@ export function ChatPanel({
                   Your character's answers draw on the memory selected for this
                   conversation.
                 </p>
-                <button
-                  className="prompt-suggestion"
-                  onClick={() =>
-                    setDraft("What do you remember about this morning?")
-                  }
-                >
-                  What do you remember about this morning?
-                  <ChevronRight size={14} />
-                </button>
+                <Suggestions className="chat-suggestions">
+                  <Suggestion
+                    className="prompt-suggestion"
+                    onClick={() =>
+                      setDraft("What would you like to talk about?")
+                    }
+                  >
+                    What would you like to talk about?
+                    <ChevronRight size={14} />
+                  </Suggestion>
+                </Suggestions>
               </div>
             )}
             {chats.map((run) => (
               <div className="conversation-turn" key={run.requestId}>
                 {run.message && (
-                  <div className="message user-message">
-                    <div className="message-label">
-                      You <time>{time(run.startedAt)}</time>
-                    </div>
-                    <p>{run.message}</p>
-                  </div>
+                  <Message from="user" className="message user-message">
+                    <MessageContent>
+                      <div className="message-label">
+                        You <time>{time(run.startedAt)}</time>
+                      </div>
+                      <p>{run.message}</p>
+                    </MessageContent>
+                  </Message>
                 )}
                 {run.result.type === "chat" ? (
-                  <div className="message character-message">
-                    <div className="message-label">
-                      <span className="mini-avatar">
-                        {snapshot?.character.profile.name[0] ?? "I"}
-                      </span>
-                      {snapshot?.character.profile.name ?? "Character"}
-                      <time>{time(run.completedAt)}</time>
-                    </div>
-                    <p>
-                      {run.result.response.output.type === "utterance"
-                        ? run.result.response.output.content
-                        : "The character did not propose a reply for this request."}
-                    </p>
-                    <div className="message-meta">
-                      <Badge variant="secondary">
-                        {providerName[run.provider] ?? "Model"}
-                      </Badge>
-                      <span>
-                        <Database size={11} /> {run.selectedMemoryIds.length}{" "}
-                        memories selected
-                      </span>
-                      <span>
-                        <CheckCheck size={12} />
-                        {run.result.delivery.status === "delivered"
-                          ? "Delivered"
-                          : "Delivery unconfirmed"}
-                      </span>
-                    </div>
-                  </div>
+                  <Message
+                    from="assistant"
+                    className="message character-message"
+                  >
+                    <MessageContent>
+                      <div className="message-label">
+                        <span className="mini-avatar">
+                          {
+                            (run.persona?.name ??
+                              snapshot?.character.profile.name ??
+                              "I")[0]
+                          }
+                        </span>
+                        {run.persona?.name ??
+                          snapshot?.character.profile.name ??
+                          "Character"}
+                        <time>{time(run.completedAt)}</time>
+                      </div>
+                      <p>
+                        {run.result.response.output.type === "utterance"
+                          ? run.result.response.output.content
+                          : "The character did not propose a reply for this request."}
+                      </p>
+                      <div className="message-meta">
+                        <Badge variant="secondary">
+                          {providerName[run.provider] ?? "Model"}
+                        </Badge>
+                        <span>
+                          <Database size={11} /> {run.selectedMemoryIds.length}{" "}
+                          memories selected
+                        </span>
+                        <span>
+                          <CheckCheck size={12} />
+                          {run.result.delivery.status === "delivered"
+                            ? "Delivered"
+                            : "Delivery unconfirmed"}
+                        </span>
+                      </div>
+                    </MessageContent>
+                  </Message>
                 ) : (
                   <div className="message failed-message">
                     <p>
@@ -445,7 +462,13 @@ const stageLabels: Record<string, string> = {
   rejected: "Request safely rejected",
 };
 
-export function EvidencePanel({ snapshot }: { snapshot: LabSnapshot | null }) {
+export function EvidencePanel({
+  snapshot,
+  debug = false,
+}: {
+  snapshot: LabSnapshot | null;
+  debug?: boolean;
+}) {
   const [query, setQuery] = useState("");
   const lastRun = snapshot?.runs.at(-1);
   const selected = new Set(lastRun?.selectedMemoryIds ?? []);
@@ -472,14 +495,18 @@ export function EvidencePanel({ snapshot }: { snapshot: LabSnapshot | null }) {
                 {snapshot?.memories.length ?? 0}
               </span>
             </TabsTrigger>
-            <TabsTrigger value="trace">
-              <GitBranch size={14} />
-              Trace
-            </TabsTrigger>
-            <TabsTrigger value="debug">
-              <FileText size={14} />
-              Debug
-            </TabsTrigger>
+            {debug && (
+              <>
+                <TabsTrigger value="trace">
+                  <GitBranch size={14} />
+                  Trace
+                </TabsTrigger>
+                <TabsTrigger value="debug">
+                  <FileText size={14} />
+                  Debug
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
           <span className="evidence-caption">
             See the source behind the story.
@@ -545,66 +572,72 @@ export function EvidencePanel({ snapshot }: { snapshot: LabSnapshot | null }) {
                   text={
                     query
                       ? "Try another word or clear the search."
-                      : "Send a message or request a plan. Authorized received events will appear here."
+                      : "Send a message. Authorized received events will appear here."
                   }
                 />
               )}
             </div>
           </ScrollArea>
         </TabsContent>
-        <TabsContent value="trace">
-          <div className="trace-intro">
-            <h3>Last request, step by step</h3>
-            <p>
-              Observable stages show what was selected, proposed, validated, and
-              saved.
-            </p>
-          </div>
-          {lastRun ? (
-            <div className="trace-list">
-              {lastRun.stages.map((stage, index) => (
-                <div className="trace-step" key={`${stage.stage}-${index}`}>
-                  <span className="trace-index">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h4>{stageLabels[stage.stage] ?? "Request processing"}</h4>
-                    <p>
-                      {stage.memoryIds
-                        ? `${stage.memoryIds.length} authorized memory records`
-                        : stage.stage === "rejected"
-                          ? "No rejected output was adopted as completed work."
-                          : "Recorded by the current runtime."}
-                    </p>
-                  </div>
-                  <Check size={14} />
+        {debug && (
+          <>
+            <TabsContent value="trace">
+              <div className="trace-intro">
+                <h3>Last request, step by step</h3>
+                <p>
+                  Observable stages show what was selected, proposed, validated,
+                  and saved.
+                </p>
+              </div>
+              {lastRun ? (
+                <div className="trace-list">
+                  {lastRun.stages.map((stage, index) => (
+                    <div className="trace-step" key={`${stage.stage}-${index}`}>
+                      <span className="trace-index">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <h4>
+                          {stageLabels[stage.stage] ?? "Request processing"}
+                        </h4>
+                        <p>
+                          {stage.memoryIds
+                            ? `${stage.memoryIds.length} authorized memory records`
+                            : stage.stage === "rejected"
+                              ? "No rejected output was adopted as completed work."
+                              : "Recorded by the current runtime."}
+                        </p>
+                      </div>
+                      <Check size={14} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyEvidence
-              title="Nothing to trace yet"
-              text="The next request will leave an observable sequence here."
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="debug">
-          <div className="debug-intro">
-            <h3>Technical inspection</h3>
-            <p>
-              Full technical identifiers and authorized synthetic payloads.
-              Provider keys are never included.
-            </p>
-          </div>
-          <details className="debug-details">
-            <summary>
-              Inspect current snapshot <ChevronRight size={14} />
-            </summary>
-            <ScrollArea className="debug-scroll">
-              <pre>{JSON.stringify(snapshot, null, 2)}</pre>
-            </ScrollArea>
-          </details>
-        </TabsContent>
+              ) : (
+                <EmptyEvidence
+                  title="Nothing to trace yet"
+                  text="The next request will leave an observable sequence here."
+                />
+              )}
+            </TabsContent>
+            <TabsContent value="debug">
+              <div className="debug-intro">
+                <h3>Technical inspection</h3>
+                <p>
+                  Full technical identifiers and authorized synthetic payloads.
+                  Provider keys are never included.
+                </p>
+              </div>
+              <details className="debug-details">
+                <summary>
+                  Inspect current snapshot <ChevronRight size={14} />
+                </summary>
+                <ScrollArea className="debug-scroll">
+                  <pre>{JSON.stringify(snapshot, null, 2)}</pre>
+                </ScrollArea>
+              </details>
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </Card>
   );

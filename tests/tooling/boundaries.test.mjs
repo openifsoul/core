@@ -158,6 +158,13 @@ test("actual Git index rejects force-added private files and scans staged bytes"
     git("add", "fixture.txt");
     await writeFile(path.join(root, "fixture.txt"), "clean working tree");
     await assert.rejects(checkGitIndex(root), /Potential secret/);
+    await writeFile(
+      path.join(root, "fixture.txt"),
+      "sk_live_" + "z".repeat(32),
+    );
+    git("add", "fixture.txt");
+    await writeFile(path.join(root, "fixture.txt"), "clean working tree");
+    await assert.rejects(checkGitIndex(root), /Potential secret/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

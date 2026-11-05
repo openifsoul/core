@@ -1,72 +1,111 @@
-# Adapter SDK
+# @ifsoul/adapter-sdk
 
-Status: **planned; no implementation**. There is no SDK, EnvironmentBridge entrypoint,
-transport, connector, game mod, chat integration, or executable handshake. The
-revised [v0.2 specification](../../specs/v0.2/README.md) owns wire contracts;
-[bridge authoring](../../docs/bridge-authoring.md) explains intended use.
+Experimental installable prerelease **0.1.0-alpha.1**. This package builds ESM
+JavaScript and TypeScript declarations and supports browser hosts and Node 22+
+test hosts without a game engine, account, provider or adjacent Core checkout.
+It has **not been published to npm**. Install a supplied local archive:
 
-## Input and output contracts
-
-Inputs will be authenticated profile/identity negotiation, bounded plan proposals,
-requested dialogue, and cancellation/reconciliation requests. Outputs will be
-environment profiles, permitted host context, explicit full/partial adoption or
-rejection, task progress/outcomes, and dialogue delivery reports. The planned
-EnvironmentBridge port connects these exchanges; exact methods and transport are
-not implemented. Games and chat can be environments; a chat channel can also
-coexist with a game embodiment.
-
-Profiles bind character to its environment/session/embodiment and declare
-available high-level intents and expression channels. A nonhuman body may have
-no ordinary speech or movement. Missing observations mean unknown, and an
-advertised intent never grants permission. The host checks current restrictions,
-typed arguments, context/revision/deadline, and available channels before adoption.
-
-## Ownership and imports
-
-Permitted IfSoul import: **`protocol` only**. This package owns a planned public
-EnvironmentBridge port and shared bridge concerns. Runtime imports only the port;
-independent game/chat bridges import only protocol and adapter-sdk among IfSoul
-packages. They translate existing host facilities, not portable game mechanics.
-
-**All NPC mechanics/state machines, movement, shooting, and pathfinding stay in
-the host game/mod. IfSoul and its first-party bridges implement none of them.**
-High-level plan intent is not an executable movement skill. No per-tick model
-control loop is provided or planned.
-
-Bridges receive only relevant authorized context, not unrestricted MemoryPort,
-provider keys, or the full archive. The host can use safe autonomous behavior
-while a provider is unavailable. Planning cadence and speech permission remain
-separate: daily briefing never authorizes unsolicited dialogue under requested-only
-policy. Future live conversation does not change host mechanics ownership.
-
-## Outcomes and recovery
-
-Plan delivery, full/partial acceptance, execution progress, terminal outcome,
-and dialogue delivery are different facts. Report actual host evidence, preserve
-unknown, and reconcile possible adoption/execution before retry. Cancellation is
-not complete until the host confirms it; cancelling a wait does not roll back
-the world. New sessions do not silently inherit deduplication guarantees. A fresh
-ID is not an exactly-once guarantee. Respect one active character-state writer
-while multiple scoped channels coexist.
-
-## Criteria to begin implementation
-
-Agree port methods, profiles, authenticated bindings, intent vocabulary, limits,
-context freshness, lifecycle/recovery, and host fallback. Prove an in-process
-synthetic host and chat trace, including unsupported/stale proposals, partial
-adoption, requested-only speech, and unknown/cancelled outcomes. Before a game
-bridge, separately research version/mod APIs, multiplayer constraints, and rights.
-No existing project is implicitly authorized as an implementation/asset source.
-
-## Planned bridge responsibilities
-
-```mermaid
-flowchart LR
-  Host["Host game or chat"] -.->|"Capabilities, context, outcomes"| Bridge["EnvironmentBridge · planned"]
-  Bridge -.->|"Versioned protocol envelopes"| Runtime["IfSoul runtime"]
-  Runtime -.->|"Validated plans / requested dialogue"| Bridge
-  Bridge -.->|"Translate to existing host facilities"| Host
+```sh
+pnpm add ./ifsoul-adapter-sdk-0.1.0-alpha.1.tgz
 ```
 
-Dashed paths describe the intended SDK integration. The bridge translates and
-correlates messages; the host retains execution and delivery authority.
+```ts
+import { createGameBridge, scenarioResponse } from "@ifsoul/adapter-sdk";
+import type { GameMountOptions, MountedGame } from "@ifsoul/adapter-sdk";
+```
+
+The package root exposes `createGameBridge`, `createHTTPTransport`,
+`scenarioResponse`, request/response validators and the bridge/game host types.
+`@ifsoul/adapter-sdk/package.json` exposes version metadata. Internal source files
+are not supported package subpaths. The archive contains compiled distribution
+files, this README, the manifest and Apache-2.0 license; no provider implementation,
+server, application configuration or credential is included.
+
+## The bounded bridge
+
+An application supplies a transport, bounded history callbacks, a character and
+an AbortSignal. The SDK binds decide/speak/chat requests to that character,
+validates replies and reports their `scenario`, `llm` or `fallback` source.
+The current character shape supports only the experimental `careful`, `bold` and
+`curious` temperaments. It is not a universal character model.
+
+The application envelope is `ifsoul-bridge/0.1`, distinct from the frozen
+normative v0.2 protocol and not an archive format or full EnvironmentBridge
+handshake. Public declarations describe its exact current shape.
+
+- A decision advertises at most eight unique host-owned choices and one allowed
+  fallback. A response cannot introduce another choice. Speak/chat have no action
+  choices. The caller must check current legality and freshness before adoption.
+- Requests have at most 8,000 serialized UTF-8 bytes. The validator accepts at
+  most twelve history entries; `createGameBridge` sends the last eight with
+  summaries capped at 240 characters. Responses allow at most 600 speech
+  characters; HTTP reads stop above 8,192 bytes.
+- Each connection namespaces request identities. A game's local request label is
+  not an HTTP idempotency key or a guarantee of exactly-once execution.
+- The bridge has an eighteen-second local deadline. Invalid replies, transport
+  failures and timeouts produce explicitly labeled fallback. Abort/dispose
+  rejects pending work and suppresses late delivery instead. Local cancellation
+  does not prove remote inference or host execution stopped.
+- `report` deduplicates IDs within a connection and forwards at most 128 bounded
+  observations. Reports/history are untrusted browser text, not authoritative
+  v0.2 execution receipts. `onSpeech` means callback receipt, not confirmed
+  display, adoption or human reading.
+
+```ts
+const bridge = createGameBridge({
+  hostId: "original-example",
+  character: { id: "companion", name: "Companion", temperament: "curious" },
+  transport: async (request) => scenarioResponse(request),
+  history: () => [],
+  onObservation: (event) => console.log(event.kind),
+  onSpeech: (reply) => console.log(reply.source),
+  signal: lifetime.signal,
+});
+```
+
+Here `lifetime` is an application-owned AbortController. A connected host replaces
+the scenario transport with its authenticated composition. `createHTTPTransport`
+uses same-origin requests; it does not implement cross-origin authentication,
+CORS exceptions, provider selection or secret storage.
+
+## Game modules and host authority
+
+A game package exports `mount(container, options): Promise<MountedGame>`.
+Options contain the injected `bridge`, `character` and mount AbortSignal.
+`pause()` retains state and stops active input/simulation; `resume()` continues
+that state. `destroy()` releases owned DOM, renderers, listeners and local work.
+Hosts fence pending proposals against paused, replaced or destroyed state. A
+late-loading module must clean up after abort. The application owns connection
+and mount lifetimes, not this package.
+
+All host life state machines, movement, combat, pathfinding, decks, rules and
+scoring remain in the game. The SDK supplies bounded proposals/dialogue and
+relays reports; it never executes game skills or grants control authority. Live
+conversation and planning frequency are independent. The SDK receives neither
+provider credentials nor an unrestricted memory archive.
+
+The separate original Garden, Friendly 21 and Dungeon example repositories each
+own their mechanics, narrow adapter and standalone shell. Standalone scenario
+play needs no account. The Core Playground imports their package interfaces and
+injects its existing same-origin authenticated connection. An optional trusted
+loopback development proxy is not a standalone cloud login solution.
+
+## Build, distribution and limits
+
+From the Core checkout, `pnpm build:sdk` compiles declarations/ESM and
+`pnpm pack:sdk` writes a local archive. From an independent SDK source checkout,
+install its declared development tool and run `pnpm build`, then `pnpm pack`.
+These commands do not publish. Package consumers install compiled files and need
+no TypeScript compiler at runtime.
+
+Before a registry release, the three local example distributions explicitly
+bundle this SDK and Core consumes reviewed versioned archives. Those artifacts
+are a small local bootstrap mechanism, not central hosting for third-party game
+implementations. Publication, registry availability and stable API compatibility
+are not implied by a local archive or successful build.
+
+Full profile/identity negotiation, general intents, authoritative host adoption
+and reconciliation, confirmed remote cancellation, permanent-memory transport
+and commercial-game connectors remain outside this package. Server authentication,
+provider selection, per-user/global quotas and storage belong to the composition
+root. The generic SDK cannot bypass those boundaries.

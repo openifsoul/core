@@ -1,28 +1,23 @@
-# Web laboratory
+# IfSoul App and local laboratory
 
-Implemented experimental React + TypeScript + shadcn panel for one owner and a
-synthetic character. Choose runtime location separately from provider/model;
-request plans, chat, and inspect memory and trace. This is not the planned
-[Character Manager](../character-manager/README.md).
+React + TypeScript + shadcn application surfaces share the Notion theme, brand and
+component foundation. `/app` is the common chat, characters, settings and demo
+workspace; its accepted shell uses shadcn sidebar-07. Local frontend integration is verified; a real owner Clerk sign-in is also verified against local Workers. `/lab` is local-only synthetic
+planning/evidence debugging, separate from neutral main-App conversation.
 
-```mermaid
-flowchart TB
-  Owner["Owner login"] --> Settings["Runtime location + provider + model"]
-  Settings --> Plan["Request high-level plan"]
-  Settings --> Chat["Send conversation message"]
-  Plan --> API["Authenticated same-origin server API"]
-  Chat --> API
-  API --> Views["Reply / host decision / actual outcome"]
-  Views --> Evidence["Memory search + trace + debug"]
-  API -->|"failed request"| Recovery["Visible error; preserve unsent draft"]
-```
+Cloud mode verifies Clerk sign-in server-side and isolates each user's SQLite
+workspace and encrypted BYOK store in a separate Durable Object. Local loopback
+mode requires neither Clerk nor an owner-password prompt. Changing runtime
+location does not migrate profiles, history or credentials.
 
-The browser imports backend types only. Keys are submitted through a write-only
-form and are not stored in browser storage. Only theme and the unsent draft are
-stored there. There is no automatic provider fallback. Switching runtime location
-opens another server with its own login and database; it does not transfer memory.
+Character features remain: manual authoring, model-assisted generation with
+review, original starter templates, external-agent prompts, profile-only JSON
+import/export, and independent profile/connected-memory selection. Authored
+biographies are fictional data, never proof of lived experience or authority.
+Full memory archive transfer, editing/deletion and packaged desktop releases
+remain deferred. See [character authoring](../../docs/web-laboratory.md#own-characters).
 
-From the repository root, run `pnpm build:web` then `pnpm lab:web` and open
-`http://127.0.0.1:8788`. See the [web guide](../../docs/web-laboratory.md) for login,
-model availability, recovery and current limits, and [server](../server/README.md)
-for deployment boundaries.
+Run `pnpm build:web` then `pnpm lab:web` and open
+`http://127.0.0.1:8788/app`. Follow the [web guide](../../docs/web-laboratory.md),
+[server boundary](../server/README.md) and [UI/UX rules](../../docs/ui-ux.md).
+No production deployment or completed live identity-provider QA is claimed here.

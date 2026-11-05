@@ -1,3 +1,5 @@
+import { createDemoAPI } from "./demo.js";
+import { createCharacterWorkspace } from "../../runtime-host/src/characters.js";
 import { createServer } from "node:http";
 import { DatabaseSync } from "node:sqlite";
 import {
@@ -11,7 +13,6 @@ import { resolve, extname } from "node:path";
 import { randomBytes } from "node:crypto";
 import { openSQLiteMemory } from "../../../packages/memory/src/sqlite.js";
 import {
-  createLabService,
   createModelController,
   createScenarioController,
   SCENARIO_MODEL,
@@ -106,29 +107,50 @@ const providers = async (): Promise<ProviderOption[]> => {
     },
   ];
 };
-const service = createLabService({
+const clientFor = async (
+  selection: import("../../../packages/model-providers/src/types.js").ProviderSelection,
+) => {
+  if (selection.provider === "ollama") return ollama;
+  if (selection.provider === "openai") {
+    const apiKey = await readOpenAIKey(store, secrets.encryptionKey);
+    if (apiKey) return createOpenAIProvider({ apiKey });
+  }
+  throw Error("Provider unavailable");
+};
+const service = createCharacterWorkspace({
   memory,
-  controllerFor: (selection) => async (input, signal) => {
-    if (selection.provider === "scenario")
-      return createScenarioController()(input, signal);
-    if (selection.provider === "ollama")
-      return createModelController({ client: ollama, model: selection.model })(
-        input,
-        signal,
-      );
-    if (selection.provider === "openai") {
-      const apiKey = await readOpenAIKey(store, secrets.encryptionKey);
-      if (!apiKey) throw Error("Provider unavailable");
-      return createModelController({
-        client: createOpenAIProvider({ apiKey }),
-        model: selection.model,
-      })(input, signal);
-    }
-    throw Error("Provider unavailable");
-  },
+  chatEnvironment: "app",
+  clientFor,
+  controllerFor: (selection) => async (input, signal) =>
+    selection.provider === "scenario"
+      ? createScenarioController()(input, signal)
+      : createModelController({
+          client: await clientFor(selection),
+          model: selection.model,
+        })(input, signal),
 });
 const api = createAPI({
+  demo: createDemoAPI({
+    store,
+    authenticate: async () => ({ id: "local-owner" }),
+    client: async () => ({
+      client: createOllamaProvider({
+        baseUrl: process.env.OLLAMA_URL ?? "http://127.0.0.1:11434",
+        limits: {
+          timeoutMs: 15000,
+          maxRequestBytes: 22000,
+          maxOutputTokens: 384,
+          maxResponseBytes: 8192,
+        },
+      }),
+      model: process.env.IFSOUL_DEMO_MODEL ?? "llama3.2:latest",
+    }),
+  }),
   mode: "local",
+  access: {
+    kind: "local",
+    origin: `http://127.0.0.1:${Number(process.env.PORT ?? 8788)}`,
+  },
   password: secrets.password,
   encryptionKey: secrets.encryptionKey,
   store,
@@ -152,7 +174,7 @@ const server = createServer(async (req, res) => {
   try {
     if (req.headers.host !== `127.0.0.1:${port}`) {
       res.writeHead(403);
-      res.end("Open the local laboratory using its loopback address.");
+      res.end("Open IfSoul App using its loopback address.");
       return;
     }
     let size = 0;
@@ -160,7 +182,7 @@ const server = createServer(async (req, res) => {
     for await (const chunk of req) {
       const b = Buffer.from(chunk);
       size += b.length;
-      if (size > 16384) {
+      if (size > (req.url === "/api/characters/import" ? 70000 : 16384)) {
         res.writeHead(413);
         res.end();
         return;
@@ -193,10 +215,9 @@ const server = createServer(async (req, res) => {
           }),
         );
       } catch {
-        response = new Response(
-          "Build the web laboratory with pnpm build:web first.",
-          { status: 404 },
-        );
+        response = new Response("Build IfSoul App with pnpm build:web first.", {
+          status: 404,
+        });
       }
     }
     res.writeHead(response.status, Object.fromEntries(response.headers));
@@ -217,10 +238,8 @@ const server = createServer(async (req, res) => {
 server.requestTimeout = 65000;
 server.headersTimeout = 10000;
 server.listen(port, "127.0.0.1", () => {
-  console.log(`IfSoul local laboratory: ${origin}`);
-  console.log(
-    `Owner password is stored locally in ${credentialPath}; it is never logged.`,
-  );
+  console.log(`IfSoul App (local): ${origin}`);
+  console.log("Local-only access: no Clerk sign-in or password prompt.");
 });
 let stopping = false;
 function stop() {

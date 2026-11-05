@@ -1,0 +1,60 @@
+{
+  "format": "ifsoul-local-distributions/0.1",
+  "sourceHashAlgorithm": "SHA256(sorted relative source path + NUL + file bytes + NUL); generated output, lockfiles, vendor and Git metadata excluded",
+  "packages": [
+    {
+      "path": "vendor/sdk/ifsoul-adapter-sdk-0.1.0-alpha.1.tgz",
+      "name": "@ifsoul/adapter-sdk",
+      "version": "0.1.0-alpha.1",
+      "sha256": "ec5f01a859ca6290cd06a0d8db11e1a6e874d46bed55e0dc32602ccbf1ed1cc0",
+      "source": {
+        "repository": "openifsoul/core",
+        "path": "packages/adapter-sdk",
+        "state": "SDK source fingerprint recorded in Core; package not published to npm",
+        "sha256": "2c66401ec997303f5dbc37f2e5cb953582862d45978f566ac681d2979031343f"
+      }
+    },
+    {
+      "path": "vendor/examples/ifsoul-example-garden-0.1.0-alpha.1.tgz",
+      "name": "@ifsoul/example-garden",
+      "version": "0.1.0-alpha.1",
+      "sha256": "150f9f5d10c244113ac956b96fe371afe452c32a6a6e766f80ec30fa6c9dcfc0",
+      "source": {
+        "repository": "openifsoul/example-garden",
+        "workspacePath": "examples/garden",
+        "state": "public GitHub source; local prerelease archive, not published to npm",
+        "sha256": "508b44f040ca47eb60731640f84069ba09f9d0c24cb5e63c653b0b057dd86d30",
+        "url": "https://github.com/openifsoul/example-garden",
+        "commit": "761efd52eac1bd7729a1e6a5667044210d2d1df2"
+      }
+    },
+    {
+      "path": "vendor/examples/ifsoul-example-dungeon-0.1.0-alpha.1.tgz",
+      "name": "@ifsoul/example-dungeon",
+      "version": "0.1.0-alpha.1",
+      "sha256": "1d595f1d9dff37affa5d5374bdb3aaf36f8b87ad1ad24e85e76929696f861a69",
+      "source": {
+        "repository": "openifsoul/example-dungeon",
+        "workspacePath": "examples/dungeon",
+        "state": "public GitHub source; local prerelease archive, not published to npm",
+        "sha256": "3d92832d9226ff8fa270a93c5e41c9138281e0eaba16075e0554547dd6b584c5",
+        "url": "https://github.com/openifsoul/example-dungeon",
+        "commit": "2ac69ceabf95d0a95209b90dee83566e1f316482"
+      }
+    },
+    {
+      "path": "vendor/examples/ifsoul-example-friendly-21-0.1.0-alpha.1.tgz",
+      "name": "@ifsoul/example-friendly-21",
+      "version": "0.1.0-alpha.1",
+      "sha256": "56a7dd5b9fd3fedacebfb415a3089385ef2b40e177f54c78b2ad5bba1852a0f6",
+      "source": {
+        "repository": "openifsoul/example-friendly-21",
+        "workspacePath": "examples/friendly-21",
+        "state": "public GitHub source; local prerelease archive, not published to npm",
+        "sha256": "0b1fcc6f59331eb492b11fb82b9e8e7101b42addf2d34c1aa072457770452001",
+        "url": "https://github.com/openifsoul/example-friendly-21",
+        "commit": "1e6659abe209b90a8cf16798f151b5022637acc0"
+      }
+    }
+  ]
+}

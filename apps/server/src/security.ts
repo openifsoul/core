@@ -142,7 +142,14 @@ export async function boundedJSON(
   }
   return JSON.parse(new TextDecoder().decode(all));
 }
-export function secured(response: Response): Response {
+export function secured(response: Response, clerkIssuer?: string): Response {
+  let clerkOrigin = "";
+  try {
+    if (clerkIssuer && new URL(clerkIssuer).protocol === "https:")
+      clerkOrigin = new URL(clerkIssuer).origin;
+  } catch {
+    /* Unconfigured origins never widen CSP. */
+  }
   const r = new Response(response.body, response);
   r.headers.set("Cache-Control", "no-store");
   r.headers.set("X-Content-Type-Options", "nosniff");
@@ -150,7 +157,9 @@ export function secured(response: Response): Response {
   r.headers.set("X-Frame-Options", "DENY");
   r.headers.set(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+    clerkOrigin
+      ? `default-src 'self'; script-src 'self' ${clerkOrigin} https://challenges.cloudflare.com https://*.protect.clerk.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: ${clerkOrigin} https://img.clerk.com; connect-src 'self' ${clerkOrigin} https://*.protect.clerk.com:*; frame-src ${clerkOrigin} https://challenges.cloudflare.com https://*.protect.clerk.com; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'`
+      : "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
   );
   return r;
 }

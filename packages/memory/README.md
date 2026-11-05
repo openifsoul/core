@@ -57,3 +57,8 @@ flowchart LR
 Node and Workers inject different SQL drivers into shared storage logic. These
 are separate databases, not synchronized replicas. Durable raw events are implemented;
 derived episodes, facts, archive transfer and deletion propagation remain planned.
+
+The trusted owner composition can enumerate at most 100 immutable character
+documents using `listCharacters(limit)`. This experimental MemoryPort addition is
+for the owner catalog, not scoped model recall; do not expose it to a controller
+or bridge. The laboratory applies its own creation cap of 50.

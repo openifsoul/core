@@ -147,3 +147,22 @@ importer/exporter, general migration system, cancellation exchange, full
 crash-recovery engine, checkpoint resume/fork, deletion propagation,
 RAG/embeddings or derived facts/episodes engine. The SQLite schema is an internal
 development format. See [deployment policy](deployment.md) for local commands.
+
+## Owner character catalog
+
+The experimental MemoryPort now includes `listCharacters(limit)` for trusted
+owner composition (integer 1–100). Custom port implementations must implement
+this method. No normative schema changed. `createLabService` accepts an optional
+immutable character; `createCharacterWorkspace` composes creation, selection and
+per-character services. See [web laboratory](web-laboratory.md#own-characters) for
+the authenticated HTTP interface and limits. Controllers still receive only
+selected scoped memory, never this catalog API.
+
+The owner workspace also exposes profile-only template import/export and bounded
+model-assisted authoring. These laboratory methods are experimental; normative
+v0.1/v0.2 schemas are unchanged. `CharacterInstance.template` in the convenience
+TypeScript view now represents the optional field already defined in v0.2.
+`ControllerInput.portrayal` optionally identifies a selected profile separate from
+the immutable memory owner. The composition root substitutes only expression
+profile data; runtime bindings, authorization and history ownership stay unchanged.
+See [the laboratory API](web-laboratory.md#own-characters) for endpoint semantics.

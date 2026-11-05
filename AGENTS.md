@@ -13,7 +13,17 @@ and `docs/runtime-api.md`; the parent workspace also keeps coordination notes.
 - Runtime, memory, protocol validation, synthetic host, scenario controllers and
   CLI code are authorized. The owner extended scope to React + TypeScript +
   shadcn web panels, server mode on Cloudflare Workers, Workers AI, OpenAI BYOK
-  and local Ollama. No fake package entrypoints or actual game integration.
+  and local Ollama. No fake package entrypoints. The owner additionally authorized an experimental
+  bridge SDK, standalone test host and three original browser demo games (PixiJS
+  garden, DOM cards, Phaser dungeon). External commercial-game integrations remain
+  outside this slice. Public scenario mode is free; cloud LLM demo uses Clerk authentication
+  with persistent per-user and global quotas independent of browser resets.
+- The owner authorized IfSoul App with Clerk (Google/email only) and separate
+  cloud user stores. Local mode requires no Clerk/account; Laboratory debug UI
+  and operations are local-only. Use the shadcn sidebar-07 shared application
+  layout. The owner subsequently authorized final verification, manual GitHub
+  publication and production deployment on 2026-11-06; see the release scope below.
+  See `docs/decisions/0012-app-auth-and-local-laboratory.md`.
 - Public files are English. Use synthetic, original fixtures only.
 - `protocol` must not depend on runtime, games, providers, Node APIs, or cloud.
 - No public component may require a private repository or IfSoul account.
@@ -36,18 +46,42 @@ Do not add GitHub Actions, schedules, provider builds, or remote execution
 without a separate owner decision. Hosting is Cloudflare Workers; trigger is manual Wrangler after local checks.
 See `docs/deployment.md` for the full policy.
 
+## Independent example distribution — accepted 2026-11-06
+
+The owner authorized separate local Garden, Friendly 21 and Dungeon repositories,
+an installable experimental `@ifsoul/adapter-sdk@0.1.0-alpha.1` package and Core
+Playground imports through the game packages' public exports. Sol owns this
+implementation and integration; the coordinating agent reviews. SDK packaging
+may add the one SDK child manifest/build configuration and the four explicitly
+reviewed archives under `vendor/`; see ADR 0013. No other child package or generic
+archive exception is implied. External games own mechanics, adapters, standalone
+shells and tests. Core curates selected consumers, not a central collection of
+third-party implementations. The owner subsequently authorized verified commits,
+pushes and public GitHub repositories for Core and these three examples, plus a
+manual production deployment after auth/DNS readiness. npm publication, remote CI,
+schedules and automatic deployment remain unauthorized. Independent package and
+isolated Core consumer proof passed before inline hosts were removed.
+
 ## Agent work
 
 The coordinator owns package.json, pnpm-lock.yaml, shared scripts and ADRs.
 Agents must respect assigned paths and report required shared-file changes.
 The owner authorized public `openifsoul/core` creation and initial Git setup on
-2026-11-05. This does not authorize other repositories, visibility changes, remote
-CI/deployment or importing another project's code.
+2026-11-05. The later release authorization also covers public `openifsoul/example-garden`,
+`example-friendly-21` and `example-dungeon`. It adds no remote CI or unrelated
+repositories and does not authorize importing another project's code.
 
 If `.codegraph/` exists, use CodeGraph first to understand/locate code; otherwise
 do not initialize it. Browser checks must be headless by default, use uniquely
 named owned sessions with a 300000 ms idle timeout where supported, and close
 those sessions explicitly. Never terminate user browsers or other tasks' sessions.
+
+## Web UI and UX
+
+Follow [the UI/UX approach](docs/ui-ux.md) for every web UI change. Reuse the
+local React/TypeScript/shadcn primitives and Cuelark components, preserve the
+shared Notion theme, and verify relevant states, accessibility and mobile layout.
+The braces-and-eyes logo and the IfSoul text name remain separate.
 
 ## Project skills
 
@@ -63,3 +97,15 @@ contract changes outside the requested task.
 See [validation by change](docs/development.md#required-validation-by-change)
 and [versioning](docs/versioning.md). Do not update the accepted contract checksum
 inventory to silence a failure; use the existing compatibility decision process.
+
+## Manual release authorization — 2026-11-06
+
+The owner requested all final checks, staged/archive/history secret review, public
+GitHub publication of the reviewed Core/example scope and manual production
+publication. Sol implements and releases; the coordinator reviews. Preserve the
+existing Worker identity, Durable Object migration/data, encryption key and shared
+quota coordinator. Deploy only the reviewed ignored production configuration after
+Clerk/DNS prerequisites are verified; then verify trusted HTTPS and real sign-in.
+Production Google Audience publication follows reachable privacy/terms pages.
+Do not add CI, remote builds, scheduled monitors or npm publication. Never stage
+ignored deployment proposals, secrets, databases, screenshots or private logs.

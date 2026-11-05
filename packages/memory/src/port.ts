@@ -50,6 +50,8 @@ export interface RecallQuery {
 /** Trusted local storage port; do not expose unrestricted methods to controllers or hosts. */
 export interface MemoryPort {
   putCharacter(character: CharacterInstance): Result<CharacterInstance>;
+  /** Trusted owner catalog only; never expose to model/bridge. */
+  listCharacters(limit: number): Result<CharacterInstance[]>;
   getCharacter(characterId: string): Result<CharacterInstance | undefined>;
   getExchange(id: string): Result<ExchangeRecord | undefined>;
   /** All exchanges/events succeed together, or none are inserted. Existing identical IDs are idempotent. */

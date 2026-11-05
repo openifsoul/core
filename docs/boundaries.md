@@ -81,7 +81,10 @@ the earlier memory-only cloud restriction is superseded. Private billing,
 accounts, provisioning, and managed operations may wrap it. The open runtime
 cannot import or require those private services, and public self-hosting must
 remain possible. Website consumes public docs/metadata only, with no runtime or
-private character-state dependency. An authenticated single-owner server exists; a multi-tenant managed product remains deferred.
+private character-state dependency. IfSoul App cloud composition verifies Clerk identity before selecting a user
+store; local mode has no Clerk dependency. Shared owner-funded inference budgets
+remain outside individual user stores. Laboratory operations are local-only;
+managed billing and a production service launch remain deferred.
 
 Runtime location and model payment are separate: BYOK can be local or hosted if
 explicitly supported. Hosting does not authorize full archive/key disclosure.

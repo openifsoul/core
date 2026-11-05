@@ -28,6 +28,7 @@ export interface TrustedSession {
   access: TrustedAccess;
 }
 export interface ControllerInput {
+  portrayal?: { characterId: string; name: string; memoryOwnerName: string };
   operation: "plan" | "conversation";
   character: CharacterInstance;
   profile: EnvironmentProfile;

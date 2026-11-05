@@ -1,51 +1,47 @@
 # Roadmap
 
-IfSoul has an experimental local runtime slice. These are intended phases without
-release dates or a promise of game support. The current implementation scope is
-runtime, SQLite event memory and a synthetic CLI laboratory; broader phases need
-their own scope and owner. See [product](product.md), [architecture](architecture.md) and the
-[execution policy](deployment.md).
+IfSoul has an experimental runtime and IfSoul App. These phases have no
+release dates and do not promise game support. See [product](product.md),
+[architecture](architecture.md) and [execution policy](deployment.md).
 
-## Current: versioned design and regression evidence
+## Implemented: contracts and laboratory
 
-The active [v0.2 design](../specs/v0.2/README.md) separates portable characters
-from environment-specific embodiments, bounded context, high-level plans,
-conversation, memory and archives. The v0.1 schemas/examples are retained without
-byte changes as historical regressions, including the old garden action trace.
-The v0.1 ModelProvider contract remains independently versioned. Local checks are
-not a runtime, migration implementation or stable interoperability commitment.
+The frozen v0.1 and v0.2 schemas/examples remain regression evidence, not a stable
+SDK or migration implementation. Runtime and SQLite preserve scoped event history;
+the CLI uses a deterministic synthetic host. The React laboratory supports a local
+owner server and Workers, with Workers AI, OpenAI BYOK and local Ollama clients.
+Model changes within one runtime retain character history; local/cloud databases
+are separate. Provider latency and output quality remain variable.
 
-No installable application, real model client, game bridge, chat UI or archive
-importer/exporter exists. The local runtime and SQLite event engine are experimental. The host owns all NPC life state
-machines, movement, combat and pathfinding. First-party bridges exchange context,
-plans, dialogue and host outcomes; gameplay controllers stay in the host.
+## Current slice: profile authoring and selectable memory
 
-## Current implementation: chat and a synthetic planning host
+The laboratory creates manual, generated or imported fictional profiles and selects
+between them. Each receives a fresh identity and participant, empty initial history,
+and its own plans, conversation records and scoped recall. Profiles and histories
+survive restart. The original Lumen demo remains available. Creation retries use
+an explicit request ID; conflicting profiles are rejected. The owner catalog is
+bounded to 50 characters including the demo.
 
-The [local laboratory](laboratory.md) binds one persistent character to chat
-and a synthetic host using a deterministic scenario controller. Exercise scoped context, bounded high-level plans,
-host validation and host-reported outcomes. The synthetic host owns its own
-state machine and execution; IfSoul does not add movement or combat skills.
-Use deterministic fixtures or bounded rules where useful, then evaluate a local
-model or BYOK implementation without requiring an IfSoul account.
+The laboratory also supports model-assisted generation with review, an original
+starter library, external-agent prompts and profile-only template import/export.
+Profile and connected local memory are independently selectable. See the
+[implemented authoring flow](web-laboratory.md#own-characters).
+Profile editing/deletion and full history archive transfer remain deferred.
 
-Test planning cadence independently of host-requested speech and live chat.
-A daily briefing is one configurable host policy, not a universal real-time
-agent loop. Verify denial, stale context, cancellation, usage limits and safe
-fallback. See [execution modes](execution-modes.md) and the planned
-[runtime host](../apps/runtime-host/README.md).
+## Implemented locally: browser hosts and experimental SDK
 
-## Next: continue with another model
+Three original browser hosts now exercise an engine-independent adapter: PixiJS
+Garden, DOM Friendly 21 and Phaser Dungeon. A standalone Node test host also uses
+the SDK. The public scenario playground shares bounded browser history across
+worlds/chat; authenticated model requests pass through the core runtime and server quotas.
+See [scope, limits and validation](browser-demo.md). This is a demonstration transport,
+not a general authenticated game negotiation/recovery system or a production release.
 
-Create or author a character using one model and continue using a second model
-without silently replacing its identity, permitted history or provenance.
-Test model selection across the [runtime profiles](runtime-profiles.md): local
-models, BYOK services and optional managed cloud have distinct operational and
-disclosure requirements. Compare observable differences; do not promise identical
-behavior or a numerical percentage of preserved personality.
+## Next: continuity evaluation
 
-Extend the implemented SQLite event store behind MemoryPort with measured
-retrieval and derived-memory needs. SQLite is not the sole exchange format. Local rules/model functionality must work without private cloud code.
+Evaluate character expression and accurate memory use across providers, including
+explicit cross-profile memory selection. Model quality and fidelity to fictional
+references require evaluation; successful schema validation does not prove them.
 
 ## Then: one researched host integration and shared experience
 
@@ -89,7 +85,7 @@ body does not imply equivalent skills or game state.
 ## Later, subject to evidence
 
 - Branching/merging histories, synchronization and conflict resolution.
-- Managed cloud, accounts, billing and a possible open self-hosted server.
+- Commercial cloud operations and billing; Clerk identity and per-user Workers storage are implemented in source.
 - An independently maintained original/authorized character catalog and marketplace.
 - Additional researched bridges, richer retrieval and performance work.
 - Package publication and remote CI/deployment after an explicit execution decision.
@@ -98,3 +94,13 @@ The [character examples](../examples/characters/README.md) are the beginning of 
 planned catalog inside `core`, not a catalog service. Split out a `characters`
 repository when independent publication and maintenance justify it. Public local
 functionality must remain usable without private website or managed-cloud code.
+
+## Current App integration
+
+The accepted application direction is a shared shadcn sidebar-07 shell at `/app`,
+with neutral chat, character management, settings and demo worlds. `/lab` remains
+local debugging only. Local access requires no Clerk/password prompt; cloud
+access verifies Clerk sessions and routes users to isolated Durable Object stores.
+Owner-paid Workers AI shares persisted per-user/global reservations across App
+and demo. Browser integration and a real Clerk instance verification remain
+acceptance work; implementation does not establish production release.

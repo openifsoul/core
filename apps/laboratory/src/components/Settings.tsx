@@ -125,12 +125,12 @@ export function Settings({
       )
         throw new Error();
       if (location === "cloud" && url.protocol !== "https:") throw new Error();
-      window.location.assign(url.origin);
+      window.location.assign(`${url.origin}/app`);
     } catch {
       setLocationError(
         location === "local"
           ? "Use a local address such as http://127.0.0.1:8788 with no path or credentials."
-          : "Enter the HTTPS address of your cloud laboratory, with no path or credentials.",
+          : "Enter the HTTPS address of your cloud App, with no path or credentials.",
       );
     }
   }
@@ -185,8 +185,8 @@ export function Settings({
             <div className="runtime-switch">
               <Label htmlFor="runtime-address">
                 {location === "local"
-                  ? "Local laboratory address"
-                  : "Cloud laboratory address"}
+                  ? "Local App address"
+                  : "Cloud App address"}
               </Label>
               <Input
                 id="runtime-address"

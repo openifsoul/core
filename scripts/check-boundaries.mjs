@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { checkSourceGraph, checkGitIndex } from "./boundary-analysis.mjs";
+import { hasPotentialSecret } from "./secret-scan.mjs";
+import {
+  allowedDistributions,
+  checkDistributions,
+} from "./distribution-analysis.mjs";
 import { root, sourceFiles } from "./files.mjs";
 
 const files = await sourceFiles();
@@ -25,7 +30,7 @@ assert(
 for (const name of Object.keys(manifest.scripts)) {
   assert(
     !/^(?:deploy|release|publish|build)(?::|$)/.test(name) ||
-      ["build:web", "build:cloud", "deploy:cloud"].includes(name),
+      ["build:web", "build:cloud", "build:sdk", "deploy:cloud"].includes(name),
     `Unexpected bootstrap command: ${name}`,
   );
 }
@@ -38,6 +43,9 @@ const allowedSourceRoots = [
   "packages/memory/src/",
   "packages/testing/src/",
   "apps/simulator/src/",
+  "apps/demo-games/src/",
+  "apps/test-host/src/",
+  "packages/adapter-sdk/src/",
   "apps/runtime-host/src/",
   "apps/server/src/",
   "apps/laboratory/",
@@ -56,7 +64,7 @@ for (const file of files) {
   );
   assert(
     !/(?:^|\/)(?:package\.json|pnpm-workspace\.yaml)$/.test(relative) ||
-      relative === "package.json",
+      ["package.json", "packages/adapter-sdk/package.json"].includes(relative),
     `Unexpected child package/workspace manifest: ${relative}`,
   );
   assert(
@@ -64,9 +72,17 @@ for (const file of files) {
     `Environment file in source tree: ${relative}`,
   );
   assert(
-    !/\.(?:sqlite3?|db|zip|tgz)(?:-|$)/.test(relative),
+    !/\.(?:sqlite3?|db|zip|tgz)(?:-|$)/.test(relative) ||
+      allowedDistributions.has(relative),
     `Data/archive file in source tree: ${relative}`,
   );
+  if (allowedDistributions.has(relative)) continue;
+  if (relative.startsWith("apps/demo-games/src/"))
+    assert.equal(
+      relative,
+      "apps/demo-games/src/catalog.ts",
+      "Core owns only the curated game package catalog",
+    );
   const isCode = /\.(?:[cm]?[jt]sx?|py|rs|lua)$/.test(relative);
   if (isCode) {
     assert(
@@ -77,18 +93,13 @@ for (const file of files) {
   if (relative === "LICENSE" || relative.startsWith("LICENSES/")) continue;
   const text = await readFile(file, "utf8");
 
-  const secretPatterns = [
-    /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
-    /\bgh[pousr]_[A-Za-z0-9]{30,}\b/,
-    /\bgithub_pat_[A-Za-z0-9_]{40,}\b/,
-    /\bsk-(?:proj-)?[A-Za-z0-9_-]{32,}\b/,
-  ];
   assert(
-    !secretPatterns.some((pattern) => pattern.test(text)),
+    !hasPotentialSecret(text),
     `Potential secret in ${relative}; inspect locally without printing it`,
   );
   inspected += 1;
 }
+const distributionFiles = await checkDistributions(root);
 console.log(
-  `Local slice boundaries: ${inspected} text files checked; authorized source roots/imports, no child packages or workflows. Secret scan covers known patterns only.`,
+  `Local slice boundaries: ${inspected} text files checked; authorized source roots/imports, one authorized SDK child package, ${distributionFiles} reviewed distribution members, no workflows. Secret scan covers known patterns only.`,
 );

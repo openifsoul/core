@@ -25,6 +25,36 @@ export class ApiError extends Error {
   }
 }
 
+let tokenProvider: (() => Promise<string | null>) | null = null;
+/** The cloud auth owner supplies a fresh Clerk token. Never persist session tokens. */
+export function setAPITokenProvider(
+  provider: (() => Promise<string | null>) | null,
+) {
+  tokenProvider = provider;
+  return () => {
+    if (tokenProvider === provider) tokenProvider = null;
+  };
+}
+
+export async function authenticatedFetch(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<Response> {
+  const url = new URL(
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.href
+        : input.url,
+    window.location.origin,
+  );
+  if (url.origin !== window.location.origin) throw new ApiError("forbidden");
+  const headers = new Headers(init?.headers);
+  const token = await tokenProvider?.();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  return fetch(input, { ...init, headers, credentials: "same-origin" });
+}
+
 /** Same-origin only. Credentials never enter URLs, logs or browser storage. */
 export async function api<T>(
   path: string,
@@ -32,7 +62,7 @@ export async function api<T>(
 ): Promise<T> {
   const timeout = AbortSignal.timeout(60_000);
   try {
-    const response = await fetch(`/api/${path}`, {
+    const response = await authenticatedFetch(`/api/${path}`, {
       method: options.method ?? "GET",
       credentials: "same-origin",
       headers:
@@ -69,8 +99,16 @@ export async function api<T>(
 export function friendlyError(error: unknown): string {
   const code = error instanceof ApiError ? error.code : "unavailable";
   const messages: Record<string, string> = {
+    busy: "Wait for the current operation to finish, then try again.",
+    "no-session":
+      "This character is unavailable. Refresh the workspace and choose again.",
+    "invalid-document":
+      "Check the required fields and their length limits, then try again.",
     unauthorized: "Your session has ended. Sign in again to continue.",
     "invalid-password": "That password did not match. Check it and try again.",
+    "auth-unconfigured":
+      "Cloud sign-in is not configured yet. Contact the person hosting this runtime.",
+    forbidden: "This feature is not available on this runtime.",
     "rate-limited": "Too many attempts. Wait a moment, then try again.",
     network:
       "Could not reach this runtime. Check the connection and try again.",

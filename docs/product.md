@@ -1,10 +1,12 @@
 # Product model
 
-Status: **product design with an experimental runtime and web laboratory**.
+Status: **product design with an experimental runtime and IfSoul App**.
 The TypeScript runtime, SQLite event memory, CLI and React laboratory exercise
 planning and memory-backed conversation. Workers AI, OpenAI BYOK and Ollama
-clients are implemented, with a private owner server on Workers. Real game
-bridges, packaged applications and a multi-tenant managed service remain deferred. The revised contract direction is [v0.2](../specs/v0.2/README.md);
+clients are implemented. Cloud source verifies Clerk identity and isolates each
+user workspace in a Durable Object; local loopback mode needs no Clerk or owner
+password prompt. Real game bridges, packaged applications and commercial billing
+remain deferred. A development Clerk instance and one real owner sign-in were verified locally. The revised contract direction is [v0.2](../specs/v0.2/README.md);
 the original v0.1 documents remain historical design material.
 
 IfSoul is intended to make a persistent character independent of the particular
@@ -103,4 +105,7 @@ The open runtime is intended to support a local model, a local runtime using a
 network BYOK provider, or a managed hosted runtime with a local game connector.
 Location and billing are separate axes. Self-hosting remains a public path;
 private account/billing orchestration does not become a core dependency. See
-[execution modes](execution-modes.md). None of these modes is deployed now.
+[execution modes](execution-modes.md). The App implements local and per-user Workers placement; commercial billing
+and real game connectors remain planned. Main chat uses neutral context; local
+`/lab` keeps synthetic planning and trace debugging separate. The shared `/app`
+sidebar shell is implemented and locally browser-checked.

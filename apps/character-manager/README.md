@@ -2,7 +2,9 @@
 
 Status: **planned; no implementation**. This component has no general editor, desktop app, importer or exporter.
 The separate web laboratory already supplies an authenticated local/cloud panel
-for a fixed synthetic character. A broader local web manager remains planned. A separate public headless
+for manual/model-assisted profiles, a starter library, profile-only file exchange
+and independent selection of local memory. A broader local web
+manager with editing, archive transfer and lifecycle operations remains planned. A separate public headless
 [runtime host](../runtime-host/README.md) must work without this UI.
 
 ## Input and output contracts
@@ -74,4 +76,4 @@ flowchart LR
 ```
 
 All paths here are planned. The existing [laboratory](../laboratory/README.md)
-exercises a fixed character; it is not a general character editor or archive manager.
+supports profile authoring, file exchange and memory selection; it is not a general character editor or archive manager.

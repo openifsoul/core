@@ -1,21 +1,39 @@
+import {
+  AppSidebar,
+  SECTION_LABELS,
+  type AppSection,
+} from "@/components/AppSidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import { useRuntimeAuth } from "@/lib/runtime-auth";
+import { BrandMark } from "@/components/BrandMark";
+import { useTheme } from "@/lib/theme";
+import { Characters } from "@/components/Characters";
+import type {
+  CharacterDraft,
+  CharacterTemplate,
+  CharacterSummary,
+} from "../../runtime-host/src/service-types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
-  ArrowUpRight,
-  Check,
-  CircleHelp,
-  Fingerprint,
+  FlaskConical,
   LoaderCircle,
-  LogOut,
   Moon,
   RefreshCw,
-  Sparkles,
   Sun,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Settings } from "@/components/Settings";
 import { ChatPanel, EvidencePanel, PlanPanel } from "@/components/Workspace";
@@ -30,15 +48,40 @@ import {
 } from "@/lib/api";
 
 type PendingOperation = "plan" | "chat" | null;
-const readDraft = () => {
+const readDraft = (id = "character-lumen", userId = "local") => {
   try {
-    return sessionStorage.getItem("ifsoul-lab-draft") ?? "";
+    return sessionStorage.getItem(`ifsoul-app-draft:${userId}:${id}`) ?? "";
   } catch {
     return "";
   }
 };
 
-export function App() {
+function WorkspaceApp() {
+  const auth = useRuntimeAuth();
+  const laboratoryAvailable =
+    auth.config.mode === "local" && auth.config.laboratory;
+  const sectionForPath = (): AppSection => {
+    const value =
+      window.location.pathname === "/lab"
+        ? "laboratory"
+        : window.location.pathname.split("/")[2];
+    return value &&
+      Object.hasOwn(SECTION_LABELS, value) &&
+      (value !== "laboratory" || laboratoryAvailable)
+      ? (value as AppSection)
+      : "chat";
+  };
+  const [section, setSection] = useState<AppSection>(sectionForPath);
+  function navigate(next: AppSection) {
+    if (next === "laboratory" && !laboratoryAvailable) return;
+    setSection(next);
+    window.history.pushState(null, "", `/app/${next}`);
+  }
+  useEffect(() => {
+    const update = () => setSection(sectionForPath());
+    window.addEventListener("popstate", update);
+    return () => window.removeEventListener("popstate", update);
+  }, [laboratoryAvailable]);
   const [status, setStatus] = useState<LabStatus | null>(null);
   const [snapshot, setSnapshot] = useState<LabSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,22 +91,43 @@ export function App() {
   const [model, setModel] = useState("");
   const [pending, setPending] = useState<PendingOperation>(null);
   const [slow, setSlow] = useState(false);
-  const [draft, setDraft] = useState(readDraft);
-  const [theme, setTheme] = useState(() => {
-    try {
-      return localStorage.getItem("ifsoul-lab-theme") ?? "dark";
-    } catch {
-      return "dark";
-    }
-  });
+  const [draft, setDraft] = useState(() =>
+    readDraft("character-lumen", auth.userId),
+  );
+  const [characters, setCharacters] = useState<CharacterSummary[]>([]);
+  const [characterBusy, setCharacterBusy] = useState(false);
+  const selectedCharacter = useRef("character-lumen");
+  const selectedMemory = useRef("character-lumen");
+  const draftKey = (profile: string, memory: string) =>
+    profile === memory ? profile : `${profile}:${memory}`;
+  const { theme, toggleTheme } = useTheme();
+  useEffect(() => {
+    document.title = `IfSoul · ${SECTION_LABELS[section]}`;
+  }, [section]);
   const active = useRef(false);
   const retry = useRef<{ fingerprint: string; requestId: string } | null>(null);
 
   const refresh = useCallback(async (signal?: AbortSignal) => {
+    const characterId = selectedCharacter.current;
+    const memoryCharacterId = selectedMemory.current;
     const next = await api<LabStatus>("status", { signal });
     const nextSnapshot = next.authenticated
-      ? (next.snapshot ?? (await api<LabSnapshot>("snapshot", { signal })))
+      ? (next.snapshot ??
+        (await api<LabSnapshot>(
+          `snapshot?characterId=${encodeURIComponent(characterId)}&memoryCharacterId=${encodeURIComponent(memoryCharacterId)}`,
+          { signal },
+        )))
       : null;
+    const catalog = next.authenticated
+      ? await api<CharacterSummary[]>("characters", { signal })
+      : [];
+    if (
+      signal?.aborted ||
+      selectedCharacter.current !== characterId ||
+      selectedMemory.current !== memoryCharacterId
+    )
+      return;
+    setCharacters(catalog);
     setStatus(next);
     setSnapshot(nextSnapshot);
     setError(null);
@@ -82,20 +146,16 @@ export function App() {
   }, [refresh]);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    if (!snapshot) return;
     try {
-      localStorage.setItem("ifsoul-lab-theme", theme);
-    } catch {
-      /* Storage is optional. */
-    }
-  }, [theme]);
-  useEffect(() => {
-    try {
-      sessionStorage.setItem("ifsoul-lab-draft", draft);
+      sessionStorage.setItem(
+        `ifsoul-app-draft:${auth.userId}:${draftKey(snapshot.persona?.characterId ?? snapshot.character.characterId, snapshot.character.characterId)}`,
+        draft,
+      );
     } catch {
       /* The in-memory draft remains available. */
     }
-  }, [draft]);
+  }, [draft, snapshot?.character.characterId, snapshot?.persona?.characterId]);
   useEffect(() => {
     if (!pending) {
       setSlow(false);
@@ -114,7 +174,7 @@ export function App() {
     ? model
     : (selectedProvider?.models[0]?.id ?? "");
   const ready = Boolean(
-    selectedProvider?.available && selectedModel && !pending,
+    selectedProvider?.available && selectedModel && !pending && !characterBusy,
   );
 
   async function run(operation: "plan" | "chat") {
@@ -124,7 +184,11 @@ export function App() {
     setPending(operation);
     setOperationError(null);
     const message = operation === "chat" ? draft.trim() : undefined;
+    const characterId = selectedCharacter.current;
+    const memoryCharacterId = selectedMemory.current;
     const fingerprint = JSON.stringify({
+      characterId,
+      memoryCharacterId,
       operation,
       provider,
       model: selectedModel,
@@ -133,18 +197,24 @@ export function App() {
     if (retry.current?.fingerprint !== fingerprint)
       retry.current = { fingerprint, requestId: `web-${crypto.randomUUID()}` };
     try {
-      const result = await api<LabRunResponse>("run", {
-        method: "POST",
-        body: {
-          operation,
-          requestId: retry.current.requestId,
-          provider,
-          model: selectedModel,
-          ...(message ? { message } : {}),
+      const result = await api<LabRunResponse>(
+        operation === "chat" ? "chat" : "lab/run",
+        {
+          method: "POST",
+          body: {
+            characterId,
+            memoryCharacterId,
+            operation,
+            requestId: retry.current.requestId,
+            provider,
+            model: selectedModel,
+            ...(message ? { message } : {}),
+          },
         },
-      });
+      );
       setSnapshot({
         character: result.character,
+        persona: result.persona,
         memories: result.memories,
         runs: result.runs,
       });
@@ -164,6 +234,63 @@ export function App() {
     }
   }
 
+  async function chooseCharacter(
+    id: string,
+    memoryId = selectedMemory.current,
+  ) {
+    if (active.current) throw new ApiError("busy");
+    active.current = true;
+    setCharacterBusy(true);
+    try {
+      const next = await api<LabSnapshot>(
+        `snapshot?characterId=${encodeURIComponent(id)}&memoryCharacterId=${encodeURIComponent(memoryId)}`,
+      );
+      selectedCharacter.current = id;
+      selectedMemory.current = memoryId;
+      setSnapshot(next);
+      setDraft(readDraft(draftKey(id, memoryId), auth.userId));
+      retry.current = null;
+      setOperationError(null);
+    } finally {
+      active.current = false;
+      setCharacterBusy(false);
+    }
+  }
+  async function createCharacter(
+    draft: CharacterDraft | { requestId: string; template: CharacterTemplate },
+  ) {
+    if (active.current) throw new ApiError("busy");
+    active.current = true;
+    setCharacterBusy(true);
+    try {
+      const next = await api<LabSnapshot>(
+        "template" in draft ? "characters/import" : "characters",
+        {
+          method: "POST",
+          body: draft,
+        },
+      );
+      // The successful creation response is sufficient; do not turn a catalog refresh failure into a failed creation.
+      setCharacters((old) => [
+        ...old.filter((c) => c.characterId !== next.character.characterId),
+        {
+          characterId: next.character.characterId,
+          name: next.character.profile.name,
+          description: next.character.profile.description,
+        },
+      ]);
+      selectedCharacter.current = next.character.characterId;
+      selectedMemory.current = next.character.characterId;
+      setSnapshot(next);
+      setDraft(readDraft(next.character.characterId, auth.userId));
+      retry.current = null;
+      setOperationError(null);
+    } finally {
+      active.current = false;
+      setCharacterBusy(false);
+    }
+  }
+
   async function reload() {
     setLoading(true);
     try {
@@ -175,137 +302,86 @@ export function App() {
     }
   }
 
-  async function logout() {
-    if (active.current) return;
-    active.current = true;
-    try {
-      await api("logout", { method: "POST" });
-      setStatus((old) => (old ? { ...old, authenticated: false } : old));
-      setSnapshot(null);
-    } catch (reason) {
-      setError(friendlyError(reason));
-    } finally {
-      active.current = false;
-    }
-  }
-
   return (
-    <div className="app-shell">
-      <header className="workspace-header">
-        <a className="wordmark" href="/" aria-label="IfSoul laboratory home">
-          <span className="brand-mark">
-            <Fingerprint size={22} />
-          </span>
-          <span>
-            IfSoul<span className="wordmark-divider">/</span>
-            <strong>laboratory</strong>
-          </span>
-        </a>
-        <div className="header-actions">
-          <span className="header-caption">
-            A character, beyond one session.
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="touch-target"
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? <Sun /> : <Moon />}
-          </Button>
-          {status?.authenticated && (
+    <SidebarProvider>
+      <AppSidebar section={section} onNavigate={navigate} />
+      <SidebarInset className="ifsoul-app-inset">
+        <header className="app-topbar">
+          <SidebarTrigger className="touch-target" />
+          <Separator orientation="vertical" className="h-5" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>{SECTION_LABELS[section]}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="app-topbar-actions">
+            <Badge variant="outline">
+              {auth.config.mode === "local" ? "Local runtime" : "Cloud runtime"}
+            </Badge>
             <Button
               variant="ghost"
               size="icon"
-              className="touch-target"
-              aria-label="Sign out"
-              disabled={Boolean(pending)}
-              onClick={() => void logout()}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+              onClick={toggleTheme}
             >
-              <LogOut />
+              {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
-          )}
-        </div>
-      </header>
-      {loading && !status ? (
-        <main className="connection-state" aria-live="polite">
-          <LoaderCircle className="animate-spin" />
-          <h1>Opening the laboratory</h1>
-          <p>Connecting to this runtime and its memory store.</p>
-        </main>
-      ) : !status || !status.authenticated ? (
-        <SignIn
-          mode={status?.mode}
-          error={error}
-          onRetry={reload}
-          onSuccess={refresh}
-        />
-      ) : (
-        <main className="workspace">
-          <section className="workspace-intro">
+          </div>
+        </header>
+        <div className="app-page">
+          <div className="app-page-heading">
             <div>
-              <div className="eyebrow">
-                <span className="status-dot" /> CHARACTER WORKSPACE
-              </div>
-              <h1>
-                One character. <span>A continuous story.</span>
-              </h1>
-              <p>Talk, propose a plan, and see what becomes memory.</p>
+              <div className="eyebrow">IFSOUL APP</div>
+              <h1>{SECTION_LABELS[section]}</h1>
+              <p>
+                {section === "chat"
+                  ? "One character. A conversation that continues."
+                  : section === "characters"
+                    ? "Create a character, then choose which history it carries."
+                    : section === "memory"
+                      ? "The events and conversations your character can recall."
+                      : section === "settings"
+                        ? "Choose where it runs and how it thinks."
+                        : "Local synthetic host, plans and diagnostic evidence."}
+              </p>
             </div>
-            <div className="workspace-badges">
-              <Badge variant="outline">
-                <span className="status-dot" />
-                {status.mode === "cloud" ? "Cloud runtime" : "Local runtime"}
-              </Badge>
-              <Badge variant="secondary">Experimental</Badge>
-            </div>
-          </section>
+            <Button
+              variant="outline"
+              onClick={() => void reload()}
+              disabled={loading || Boolean(pending)}
+              aria-label="Refresh workspace"
+            >
+              <RefreshCw className={loading ? "animate-spin" : ""} />
+              <span>Refresh</span>
+            </Button>
+          </div>
           {error && (
             <div className="feedback error" role="alert">
-              <span>{error}</span>
-              <Button
-                variant="outline"
-                onClick={() => void reload()}
-                disabled={loading}
-              >
-                <RefreshCw className={loading ? "animate-spin" : ""} /> Refresh
-              </Button>
+              {error}
             </div>
           )}
-          <div className="workspace-grid">
-            <aside className="settings-column">
-              <Settings
-                status={status}
-                provider={provider}
-                model={selectedModel}
-                busy={Boolean(pending)}
-                onProvider={(value) => {
-                  setProvider(value);
-                  setModel("");
-                  setOperationError(null);
-                }}
-                onModel={setModel}
-                onRefresh={refresh}
-              />
-              <Card className="boundary-card">
-                <CardContent>
-                  <CircleHelp size={17} />
-                  <h3>The host has the final say</h3>
-                  <p>
-                    A proposed plan is an intention. Only host-reported outcomes
-                    can become completed work.
-                  </p>
-                  <a href="#evidence">
-                    Follow the evidence <ArrowUpRight size={14} />
-                  </a>
-                </CardContent>
-              </Card>
-            </aside>
-            <section className="main-column" aria-label="Character laboratory">
-              <div className="character-bar">
+          {loading && !status ? (
+            <div className="connection-state" role="status">
+              <LoaderCircle className="animate-spin" />
+              <p>Opening your characters and memory…</p>
+            </div>
+          ) : !status || !status.authenticated ? (
+            <div className="feedback error" role="alert">
+              <p>
+                {error ??
+                  "This session is unavailable. Refresh the page to reconnect."}
+              </p>
+              <Button variant="outline" onClick={() => void reload()}>
+                Try again
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="character-bar app-character-bar">
                 <div className="character-avatar" aria-hidden="true">
-                  {snapshot?.character.profile.name
+                  {(snapshot?.persona ?? snapshot?.character)?.profile.name
                     .split(" ")
                     .map((word) => word[0])
                     .slice(0, 2)
@@ -314,19 +390,32 @@ export function App() {
                 </div>
                 <div>
                   <h2>
-                    {snapshot?.character.profile.name ?? "Your character"}
+                    {(snapshot?.persona ?? snapshot?.character)?.profile.name ??
+                      "Your character"}
                   </h2>
-                  <p>Same identity · separate game and chat bindings</p>
+                  <p>
+                    Memory:{" "}
+                    {snapshot?.character.profile.name ?? "Not connected"}
+                  </p>
                 </div>
-                <Badge variant="outline" className="character-state">
-                  <Check size={12} /> Memory connected
-                </Badge>
+                <Button variant="ghost" onClick={() => navigate("characters")}>
+                  Choose character
+                  <ArrowRight size={14} />
+                </Button>
               </div>
-              {!selectedProvider?.available && (
+              {!selectedProvider?.available && section !== "settings" && (
                 <div className="feedback notice" role="status">
-                  {provider === "openai"
-                    ? "Connect your OpenAI key in settings, or select the synthetic controller."
-                    : "This provider is unavailable on this runtime. Choose an available provider in settings."}
+                  <p>
+                    {provider === "openai"
+                      ? "Connect your OpenAI key in Settings to use this model."
+                      : "Choose an available model connection in Settings."}
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("settings")}
+                  >
+                    Open Settings
+                  </Button>
                 </div>
               )}
               {operationError && (
@@ -337,9 +426,10 @@ export function App() {
                     disabled={Boolean(pending)}
                     onClick={() =>
                       void run(
-                        retry.current?.fingerprint.includes(
-                          '"operation":"plan"',
-                        )
+                        section === "laboratory" &&
+                          retry.current?.fingerprint.includes(
+                            '"operation":"plan"',
+                          )
                           ? "plan"
                           : "chat",
                       )
@@ -351,12 +441,60 @@ export function App() {
               )}
               {slow && (
                 <div className="feedback notice" role="status">
-                  <LoaderCircle className="animate-spin" /> Still waiting for
-                  the provider. The request is bounded to one minute; your draft
-                  stays here.
+                  <LoaderCircle className="animate-spin" />
+                  Still waiting for the provider. The request is bounded to one
+                  minute; your draft stays here.
                 </div>
               )}
-              <div className="interaction-grid">
+              <section
+                hidden={section !== "characters"}
+                aria-label="Character profiles"
+                className="app-narrow-panel"
+              >
+                <Characters
+                  characters={characters}
+                  selected={
+                    snapshot?.persona?.characterId ??
+                    snapshot?.character.characterId ??
+                    "character-lumen"
+                  }
+                  memorySelected={
+                    snapshot?.character.characterId ?? "character-lumen"
+                  }
+                  onMemory={(id) =>
+                    chooseCharacter(selectedCharacter.current, id)
+                  }
+                  provider={provider}
+                  model={selectedModel}
+                  canGenerate={ready && provider !== "scenario"}
+                  busy={Boolean(pending) || characterBusy}
+                  onSelect={chooseCharacter}
+                  onCreate={createCharacter}
+                />
+              </section>
+              <section
+                hidden={section !== "settings"}
+                aria-label="App settings"
+                className="app-narrow-panel"
+              >
+                <Settings
+                  status={status}
+                  provider={provider}
+                  model={selectedModel}
+                  busy={Boolean(pending) || characterBusy}
+                  onProvider={(value) => {
+                    setProvider(value);
+                    setModel("");
+                    setOperationError(null);
+                  }}
+                  onModel={setModel}
+                  onRefresh={refresh}
+                />
+              </section>
+              <section
+                hidden={section !== "chat"}
+                aria-label="Character conversation"
+              >
                 <ChatPanel
                   snapshot={snapshot}
                   draft={draft}
@@ -367,153 +505,61 @@ export function App() {
                   model={selectedModel}
                   onSend={() => void run("chat")}
                 />
-                <PlanPanel
-                  snapshot={snapshot}
-                  pending={pending}
-                  ready={ready}
-                  onPlan={() => void run("plan")}
-                />
-              </div>
-              <EvidencePanel snapshot={snapshot} />
-            </section>
-          </div>
-          <footer className="workspace-footer">
-            <span>
-              <span className="status-dot muted" /> IfSoul experimental
-              workspace
-            </span>
-            <span>Plans are proposals. Memory follows evidence.</span>
-          </footer>
-        </main>
-      )}
-    </div>
+              </section>
+              <section
+                hidden={section !== "memory"}
+                aria-label="Character memory"
+              >
+                <EvidencePanel snapshot={snapshot} />
+              </section>
+              {laboratoryAvailable && section === "laboratory" && (
+                <section
+                  className="app-laboratory"
+                  aria-label="Local Laboratory"
+                >
+                  <div className="feedback notice">
+                    <FlaskConical size={18} />
+                    <p>
+                      This local synthetic host is a development tool. Plans
+                      remain proposals; it does not control a game or an NPC.
+                    </p>
+                  </div>
+                  <PlanPanel
+                    snapshot={snapshot}
+                    pending={pending}
+                    ready={ready}
+                    onPlan={() => void run("plan")}
+                  />
+                  <EvidencePanel snapshot={snapshot} debug />
+                </section>
+              )}
+            </>
+          )}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 
-function SignIn({
-  mode,
-  error,
-  onRetry,
-  onSuccess,
-}: {
-  mode?: "cloud" | "local";
-  error: string | null;
-  onRetry: () => Promise<void>;
-  onSuccess: () => Promise<void>;
-}) {
-  const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [failure, setFailure] = useState<string | null>(null);
-  async function submit(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!password || busy) return;
-    setBusy(true);
-    setFailure(null);
-    try {
-      await api("login", { method: "POST", body: { password } });
-      setPassword("");
-      await onSuccess();
-    } catch (reason) {
-      setFailure(
-        reason instanceof ApiError && reason.code === "unauthorized"
-          ? "That password did not match. Check it and try again."
-          : friendlyError(reason),
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <main className="sign-in-layout">
-      <section className="sign-in-story">
-        <div className="eyebrow">
-          <span className="status-dot" /> THE IFSOUL LABORATORY
-        </div>
-        <h1>
-          A character
-          <br />
-          with <em>continuity.</em>
-        </h1>
-        <p>
-          One identity, across conversations and worlds.
-          <br />
-          Explore what it proposes, what happens, and what it remembers.
-        </p>
-        <div className="story-cycle">
-          <span>
-            <span>01</span>Context
-          </span>
-          <ArrowRight />
-          <span>
-            <span>02</span>Intention
-          </span>
-          <ArrowRight />
-          <span>
-            <span>03</span>Memory
-          </span>
-        </div>
-        <div className="story-note">
-          <Sparkles size={17} />
-          <span>
-            Bring your own model.
-            <br />
-            Keep the character's story.
-          </span>
-        </div>
-      </section>
-      <Card className="sign-in-card">
-        <CardContent>
-          <div className="eyebrow">PRIVATE WORKSPACE</div>
-          <h2>Open your laboratory</h2>
+export function App() {
+  const auth = useRuntimeAuth();
+  if (!auth.signedIn)
+    return (
+      <main className="app-sign-in">
+        <a href="/" className="wordmark">
+          <BrandMark size={36} />
+          <span>IfSoul App</span>
+        </a>
+        <div className="app-sign-in-copy">
+          <h1>Continue your character’s story.</h1>
           <p>
-            Enter this{" "}
-            {mode === "cloud"
-              ? "cloud"
-              : mode === "local"
-                ? "local"
-                : "runtime's"}{" "}
-            workspace password to continue.
+            Sign in with Google or email to open your cloud characters and
+            memory.
           </p>
-          <form onSubmit={(event) => void submit(event)}>
-            <Label htmlFor="workspace-password">
-              Workspace password <span aria-hidden="true">*</span>
-            </Label>
-            <Input
-              id="workspace-password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              autoFocus
-              disabled={busy}
-              aria-describedby={failure ? "login-error" : "login-note"}
-            />
-            {(failure || error) && (
-              <p className="field-error" id="login-error" role="alert">
-                {failure ?? error}
-              </p>
-            )}
-            <Button type="submit" className="wide" disabled={!password || busy}>
-              {busy ? (
-                <LoaderCircle className="animate-spin" />
-              ) : (
-                <ArrowRight />
-              )}{" "}
-              {busy ? "Opening workspace…" : "Enter laboratory"}
-            </Button>
-          </form>
-          <p className="sign-in-note" id="login-note">
-            Your session stays on this runtime. Provider keys are configured
-            after sign-in.
-          </p>
-          {error && (
-            <Button variant="ghost" onClick={() => void onRetry()}>
-              <RefreshCw /> Reconnect
-            </Button>
-          )}
-        </CardContent>
-      </Card>
-    </main>
-  );
+        </div>
+        {auth.signInView}
+        <a href="/demo">Explore the free scenario playground</a>
+      </main>
+    );
+  return <WorkspaceApp key={auth.userId} />;
 }

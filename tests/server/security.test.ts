@@ -1,3 +1,4 @@
+import { createCharacterWorkspace } from "../../apps/runtime-host/src/characters.js";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createAPI, type PrivateStore } from "../../apps/server/src/api.js";
@@ -8,7 +9,6 @@ import {
   sessionCookie,
 } from "../../apps/server/src/security.js";
 import {
-  createLabService,
   createScenarioController,
   SCENARIO_MODEL,
 } from "../../apps/runtime-host/src/service.js";
@@ -30,7 +30,7 @@ function setup() {
     },
   };
   let calls = 0;
-  const service = createLabService({
+  const service = createCharacterWorkspace({
     memory,
     controllerFor: () => async (input, signal) => {
       calls++;
@@ -246,6 +246,177 @@ test("oversized JSON cannot save a key or call a model", async () => {
     assert.equal(r.status, 500);
     assert.equal(h.map.has("openai-key"), false);
     assert.equal(h.calls(), 0);
+  } finally {
+    h.memory.close();
+  }
+});
+
+test("character catalog requires owner auth and origin; profiles cannot inject history", async () => {
+  const h = setup();
+  try {
+    assert.equal((await h.api(h.request("/api/characters"))).status, 401);
+    const cookie = await h.login();
+    const draft = {
+      requestId: "api-created",
+      name: "Nova",
+      description: "An original fictional companion.",
+      speechStyle: "Warm.",
+      biography: "An invented past.",
+    };
+    assert.equal(
+      (
+        await h.api(
+          h.request(
+            "/api/characters",
+            "POST",
+            draft,
+            cookie,
+            "https://evil.test",
+          ),
+        )
+      ).status,
+      403,
+    );
+    const created = await h.api(
+      h.request("/api/characters", "POST", draft, cookie),
+    );
+    assert.equal(created.status, 200);
+    const body = (await created.json()) as {
+      ok: boolean;
+      value: { character: { characterId: string }; memories: unknown[] };
+    };
+    assert.equal(body.ok, true);
+    assert.equal(body.value.memories.length, 0);
+    const list = (await (
+      await h.api(h.request("/api/characters", "GET", undefined, cookie))
+    ).json()) as { value: unknown[] };
+    assert.equal(list.value.length, 2);
+    const snap = (await (
+      await h.api(
+        h.request(
+          "/api/snapshot?characterId=" + body.value.character.characterId,
+          "GET",
+          undefined,
+          cookie,
+        ),
+      )
+    ).json()) as { value: { character: { characterId: string } } };
+    assert.equal(
+      snap.value.character.characterId,
+      body.value.character.characterId,
+    );
+    assert.equal(
+      (
+        await h.api(
+          h.request(
+            "/api/characters",
+            "POST",
+            { ...draft, requestId: "forged", characterId: "character-lumen" },
+            cookie,
+          ),
+        )
+      ).status,
+      400,
+    );
+  } finally {
+    h.memory.close();
+  }
+});
+
+test("profile endpoints require owner session, same origin and provider allowlist", async () => {
+  const h = setup();
+  try {
+    for (const [path, method] of [
+      ["/api/characters/authoring", "GET"],
+      ["/api/characters/export?characterId=character-lumen", "GET"],
+      ["/api/characters/import", "POST"],
+      ["/api/characters/generate", "POST"],
+    ])
+      assert.equal(
+        (
+          await h.api(
+            h.request(path!, method, method === "POST" ? {} : undefined),
+          )
+        ).status,
+        401,
+      );
+    const cookie = await h.login();
+    const metadata = (await (
+      await h.api(
+        h.request("/api/characters/authoring", "GET", undefined, cookie),
+      )
+    ).json()) as { library: unknown[]; prompt: string };
+    assert.equal(metadata.library.length, 2);
+    assert.match(metadata.prompt, /character-template/);
+    const body = { requestId: "import-http", template: metadata.library[0] };
+    assert.equal(
+      (
+        await h.api(
+          h.request(
+            "/api/characters/import",
+            "POST",
+            body,
+            cookie,
+            "https://evil.example",
+          ),
+        )
+      ).status,
+      403,
+    );
+    const imported = await h.api(
+      h.request("/api/characters/import", "POST", body, cookie),
+    );
+    assert.equal(imported.status, 200);
+    const value = (await imported.json()) as {
+      value: { character: { characterId: string }; memories: unknown[] };
+    };
+    assert.equal(value.value.memories.length, 0);
+    const exported = (await (
+      await h.api(
+        h.request(
+          `/api/characters/export?characterId=${value.value.character.characterId}`,
+          "GET",
+          undefined,
+          cookie,
+        ),
+      )
+    ).json()) as { value: unknown };
+    assert.deepEqual(exported.value, metadata.library[0]);
+    const generated = await h.api(
+      h.request(
+        "/api/characters/generate",
+        "POST",
+        {
+          requestId: "gen-http",
+          brief: "Original clock",
+          provider: "openai",
+          model: "unknown",
+        },
+        cookie,
+      ),
+    );
+    assert.equal(generated.status, 400);
+    assert.equal(h.calls(), 0);
+    const paired = (await (
+      await h.api(
+        h.request(
+          `/api/snapshot?characterId=${value.value.character.characterId}&memoryCharacterId=character-lumen`,
+          "GET",
+          undefined,
+          cookie,
+        ),
+      )
+    ).json()) as {
+      value: {
+        character: { characterId: string };
+        persona: { characterId: string };
+      };
+    };
+    assert.equal(paired.value.character.characterId, "character-lumen");
+    assert.equal(
+      paired.value.persona.characterId,
+      value.value.character.characterId,
+    );
   } finally {
     h.memory.close();
   }
