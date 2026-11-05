@@ -52,7 +52,7 @@ flowchart LR
   Host -->|"Render current host state"| View["PixiJS / DOM / Phaser: disposable views"]
   Host -->|"Bounded choice or requested speech"| SDK["Experimental packaged SDK"]
   SDK --> Scenario["Browser scenario transport"]
-  SDK -->|"Invited same-origin HTTP"| Server["Server: authenticate and reserve quota"]
+  SDK -->|"Authenticated same-origin HTTP"| Server["Server: authenticate and reserve quota"]
   Server --> Runtime["Request-local core runtime and validation"]
   Runtime --> Provider["Configured model provider"]
   Provider --> Runtime

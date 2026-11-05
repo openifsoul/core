@@ -111,13 +111,13 @@ release on 2026-11-06. This supersedes the initial local-only restriction.
 `build:cloud` remains a local build and Wrangler dry-run; no command implies an
 automatic deployment. Keep npm publication, remote CI and schedules disabled.
 
-## Planned owner domain
+## Owner domain
 
 The owner selected `https://ifsoul.h3lpkey.com` as the initial production origin
-on 2026-11-05. This is a future owner deployment setting, not a public template
-route or a claim that DNS/hosting has been configured. Keep local Clerk testing
-on loopback. Production Clerk instance, Google OAuth settings, DNS and manual
-Wrangler publication remain a separate explicitly authorized deployment step.
+on 2026-11-05. The authorized manual production publication attached this Custom Domain on
+2026-11-06. Keep the public self-hosting template generic and local Clerk testing
+on loopback; the ignored reviewed owner configuration persists the production
+route and variables. Source publication does not imply npm publication.
 
 ## Owner production release gate
 
@@ -246,3 +246,28 @@ exposing a legacy owner API.
 Clerk setup and production-domain verification follow its
 [production deployment guide](https://clerk.com/docs/guides/development/deployment/production)
 and [production-instance testing guidance](https://clerk.com/docs/guides/development/testing/test-against-production).
+
+## Initial production publication — 2026-11-06
+
+The reviewed source release was committed and pushed as
+[`602aeb5`](https://github.com/openifsoul/core/commit/602aeb58717f05d8b712bfc2140cb13a1c1c63a1).
+The initial App deployment produced Worker version
+`733d9fb4-8181-4619-b160-be631ae88951` on the existing Worker and attached the
+Custom Domain. Trusted HTTPS then served `/`, `/app`, `/privacy` and `/terms`;
+`/api/config` reported cloud/Clerk with `laboratory:false`, unauthenticated
+character access returned 401 and cloud laboratory access returned 403.
+The former expired application certificate no longer blocked those checks.
+
+Clerk DNS/certificates and the Google connection were verified, and Google's
+Audience was set to production after the public policy URLs were reachable.
+A real Google sign-in completed through the live production App and returned an
+authenticated cloud workspace. Email OTP is configured but its delivery was not
+exercised in this release smoke; no live paid chat was performed. Existing encryption material and
+Durable Object data were preserved. The existing shared budget coordinator was
+not replaced. No npm release, GitHub Actions, remote build or schedule was added.
+
+The public privacy and terms pages describe the implemented data/retention limits
+and manual deletion/support process. A subsequent copy-only patch removes the
+obsolete invitation sentence; final release identifiers are reported after that
+patch is deployed. This section records the initial publication, not a claim that
+it is the latest compatible Worker version forever.

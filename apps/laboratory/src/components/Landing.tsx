@@ -253,8 +253,8 @@ export function Landing() {
             ))}
           </div>
           <p className="hero-footnote">
-            Free scenario mode needs no account. Real model calls require a
-            limited invitation.
+            Free scenario mode needs no account. Cloud model calls require
+            Google or email sign-in and use a limited daily allowance.
           </p>
         </section>
 
