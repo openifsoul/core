@@ -98,7 +98,7 @@ sequenceDiagram
   Runtime->>Runtime: Validate scope, intents, arguments and deadline
   Runtime-->>Service: Validated proposal or safe failure
   Service->>Host: Ask for adoption of a valid proposal
-  Host-->>Service: Accept/reject tasks; report actual outcomes
+  Host-->>Service: Accept/reject tasks and report actual outcomes
   Service->>Runtime: Record correlated decisions and reports
   Runtime->>Memory: Preserve intentions separately from outcomes
   Service-->>UI: Plan, host result, memory and trace
