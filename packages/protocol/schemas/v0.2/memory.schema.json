@@ -1,0 +1,495 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.2.0:memory",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/event"
+    },
+    {
+      "$ref": "#/$defs/working"
+    },
+    {
+      "$ref": "#/$defs/episode"
+    },
+    {
+      "$ref": "#/$defs/fact"
+    },
+    {
+      "$ref": "#/$defs/relationship"
+    },
+    {
+      "$ref": "#/$defs/checkpoint"
+    }
+  ],
+  "$defs": {
+    "event": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.2.0"
+        },
+        "kind": {
+          "const": "memory-event"
+        },
+        "memoryId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "characterId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "scope": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/scope"
+        },
+        "provenance": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/provenance"
+        },
+        "eventType": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+          },
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "environmentId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "sessionId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "worldTime": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/worldTime"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "recordedPayload": {
+          "type": "object",
+          "description": "Original authorized observed JSON content, preserved as received; unknown fields are retained as data.",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "memoryId",
+        "characterId",
+        "recordedAt",
+        "scope",
+        "provenance",
+        "eventType",
+        "participantIds",
+        "recordedPayload"
+      ],
+      "additionalProperties": false
+    },
+    "working": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.2.0"
+        },
+        "kind": {
+          "const": "working-context"
+        },
+        "memoryId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "characterId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "scope": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/scope"
+        },
+        "provenance": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/provenance"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "activeTopics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "relevantMemoryIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "expiresAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "memoryId",
+        "characterId",
+        "recordedAt",
+        "scope",
+        "provenance",
+        "summary",
+        "activeTopics",
+        "relevantMemoryIds",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "episode": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.2.0"
+        },
+        "kind": {
+          "const": "memory-episode"
+        },
+        "memoryId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "characterId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "scope": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/scope"
+        },
+        "provenance": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/provenance"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "sourceMemoryIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "period": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/period"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "memoryId",
+        "characterId",
+        "recordedAt",
+        "scope",
+        "provenance",
+        "summary",
+        "sourceMemoryIds",
+        "period"
+      ],
+      "additionalProperties": false
+    },
+    "fact": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.2.0"
+        },
+        "kind": {
+          "const": "memory-fact"
+        },
+        "memoryId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "characterId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "scope": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/scope"
+        },
+        "provenance": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/provenance"
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "sourceMemoryIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "memoryId",
+        "characterId",
+        "recordedAt",
+        "scope",
+        "provenance",
+        "claim",
+        "sourceMemoryIds"
+      ],
+      "additionalProperties": false
+    },
+    "relationship": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.2.0"
+        },
+        "kind": {
+          "const": "memory-relationship"
+        },
+        "memoryId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "characterId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "scope": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/scope"
+        },
+        "provenance": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/provenance"
+        },
+        "subjectParticipantId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "objectParticipantId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "relation": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "sourceMemoryIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "memoryId",
+        "characterId",
+        "recordedAt",
+        "scope",
+        "provenance",
+        "subjectParticipantId",
+        "objectParticipantId",
+        "relation",
+        "description",
+        "sourceMemoryIds"
+      ],
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.2.0"
+        },
+        "kind": {
+          "const": "intent-checkpoint"
+        },
+        "memoryId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "characterId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "scope": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/scope"
+        },
+        "provenance": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/provenance"
+        },
+        "intents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "portableIntentId": {
+                "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "desiredOutcome": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "status": {
+                "enum": ["pending", "active", "paused", "complete", "unknown"]
+              },
+              "sourceMemoryIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+                },
+                "minItems": 0,
+                "maxItems": 64,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "portableIntentId",
+              "description",
+              "desiredOutcome",
+              "status",
+              "sourceMemoryIds"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "nextReviewAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "memoryId",
+        "characterId",
+        "recordedAt",
+        "scope",
+        "provenance",
+        "intents"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

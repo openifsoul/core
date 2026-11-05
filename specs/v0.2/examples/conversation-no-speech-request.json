@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "conversation-request",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-2",
+    "characterId": "character-mira",
+    "embodimentId": "horse-1"
+  },
+  "requestId": "horse-request-1",
+  "correlationId": "horse-cycle-1",
+  "channelId": "garden-nearby",
+  "speakerParticipantId": "participant-mira",
+  "recipientParticipantIds": ["participant-visitor"],
+  "environmentRevision": "horse-profile-1",
+  "contextRevision": "horse-context-1",
+  "mode": "host-requested",
+  "trigger": "host-request",
+  "requestedModality": "speech",
+  "receivedAt": "2026-01-01T08:00:00Z",
+  "deadlineAt": "2026-01-01T08:00:05Z",
+  "messages": []
+}

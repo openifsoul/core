@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "conversation-request",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-1",
+    "characterId": "character-mira",
+    "embodimentId": "gardener-1"
+  },
+  "requestId": "utterance-request-1",
+  "correlationId": "utterance-cycle-1",
+  "channelId": "garden-nearby",
+  "speakerParticipantId": "participant-mira",
+  "recipientParticipantIds": ["participant-visitor"],
+  "environmentRevision": "garden-profile-1",
+  "contextRevision": "context-102",
+  "mode": "host-requested",
+  "trigger": "host-request",
+  "requestedModality": "speech",
+  "receivedAt": "2026-01-01T08:02:00Z",
+  "deadlineAt": "2026-01-01T08:02:05Z",
+  "messages": [
+    {
+      "messageId": "visitor-hello",
+      "participantId": "participant-visitor",
+      "recordedAt": "2026-01-01T08:02:00Z",
+      "modality": "speech",
+      "content": "How is the garden today?"
+    }
+  ]
+}

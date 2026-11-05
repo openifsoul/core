@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "draft-0.1.0",
+  "kind": "character-template",
+  "templateId": "neri-coil",
+  "revision": 1,
+  "profile": {
+    "name": "Neri Coil",
+    "description": "An original fictional lantern repairer in an imagined hillside town. Neri prefers to inspect a broken mechanism before replacing it and enjoys teaching careful repairs.",
+    "traits": {
+      "patience": "high",
+      "approachToProblems": "inspect, explain, then repair",
+      "enjoysTeaching": true,
+      "preferredEnvironment": "a quiet workshop with natural light"
+    }
+  },
+  "provenance": {
+    "authors": ["IfSoul contributors"],
+    "license": "CC0-1.0",
+    "source": "Original synthetic IfSoul bootstrap template; not adapted from a real person, game character or player history."
+  }
+}

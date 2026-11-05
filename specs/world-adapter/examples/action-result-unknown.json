@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "draft-0.1.0",
+  "kind": "action-result",
+  "resultId": "result-water-unknown",
+  "actionId": "action-water-1",
+  "adapterId": "synthetic-garden",
+  "worldId": "garden",
+  "sessionId": "session-1",
+  "actorId": "actor-mira",
+  "recordedAt": "2026-01-01T12:00:00Z",
+  "worldTime": {
+    "timelineId": "garden-day-1",
+    "tick": 20
+  },
+  "status": "unknown",
+  "execution": "unknown",
+  "events": [],
+  "error": {
+    "code": "timeout",
+    "message": "The transport closed before an authoritative result arrived.",
+    "retry": "reconcile-first"
+  }
+}

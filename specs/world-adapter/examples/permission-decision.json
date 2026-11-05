@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "draft-0.1.0",
+  "kind": "permission-decision",
+  "decisionId": "decision-water-1",
+  "policyId": "garden-policy",
+  "policyRevision": 1,
+  "worldId": "garden",
+  "sessionId": "session-1",
+  "subjectId": "actor-mira",
+  "resource": "plant-1",
+  "action": "water",
+  "decision": "allow",
+  "evaluatedAt": "2026-01-01T12:00:00Z"
+}

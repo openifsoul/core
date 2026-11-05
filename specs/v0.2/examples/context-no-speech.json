@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "context-report",
+  "reportId": "context-no-speech",
+  "contextRevision": "horse-context-1",
+  "environmentRevision": "horse-profile-1",
+  "correlationId": "context-no-speech-cycle",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-2",
+    "characterId": "character-mira",
+    "embodimentId": "horse-1"
+  },
+  "recordedAt": "2026-01-01T08:00:00Z",
+  "period": {
+    "basis": "utc",
+    "startAt": "2026-01-01T07:59:00Z",
+    "endAt": "2026-01-01T08:00:00Z"
+  },
+  "observedState": {
+    "summary": "Only the context explicitly supplied by the synthetic host is available.",
+    "properties": []
+  },
+  "priorNeeds": [],
+  "priorPlans": [],
+  "changes": []
+}

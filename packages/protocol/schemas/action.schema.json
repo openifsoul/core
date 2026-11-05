@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.1.0:action",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "draft-0.1.0"
+    },
+    "kind": {
+      "const": "action"
+    },
+    "actionId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "worldId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "sessionId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "actorId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "capabilityId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "capabilityRevision": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "arguments": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/jsonObject"
+    },
+    "requestedAt": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+    },
+    "deadlineAt": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+    },
+    "observedWorldRevision": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "extensions": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+    },
+    "requiredExtensions": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "kind",
+    "actionId",
+    "worldId",
+    "sessionId",
+    "actorId",
+    "capabilityId",
+    "capabilityRevision",
+    "arguments",
+    "requestedAt",
+    "deadlineAt"
+  ],
+  "additionalProperties": false
+}

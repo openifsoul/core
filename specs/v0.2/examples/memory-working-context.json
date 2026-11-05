@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "working-context",
+  "memoryId": "working-garden",
+  "characterId": "character-mira",
+  "recordedAt": "2026-01-01T08:03:00Z",
+  "scope": {
+    "audience": "private",
+    "participantIds": ["participant-mira"],
+    "export": "allowed"
+  },
+  "provenance": {
+    "sources": [
+      {
+        "sourceType": "memory",
+        "sourceId": "event-inspection"
+      }
+    ]
+  },
+  "summary": "Inspection was reported complete; actual watering was not reported.",
+  "activeTopics": ["Finding an authorized source of water."],
+  "relevantMemoryIds": ["event-inspection"],
+  "expiresAt": "2026-01-02T08:00:00Z"
+}

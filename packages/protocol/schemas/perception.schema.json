@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.1.0:perception",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "draft-0.1.0"
+    },
+    "kind": {
+      "const": "perception"
+    },
+    "observationId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "adapterId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "worldId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "sessionId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "observerId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "observedAt": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+    },
+    "worldTime": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/worldTime"
+    },
+    "worldRevision": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "subjectId": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+          },
+          "scope": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/scope"
+          },
+          "payload": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/jsonObject"
+          }
+        },
+        "required": ["subjectId", "scope", "payload"],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    },
+    "availableCapabilityIds": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "extensions": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+    },
+    "requiredExtensions": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "kind",
+    "observationId",
+    "adapterId",
+    "worldId",
+    "sessionId",
+    "observerId",
+    "observedAt",
+    "worldTime",
+    "observations"
+  ],
+  "additionalProperties": false
+}

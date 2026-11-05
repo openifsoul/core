@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "conversation-delivery",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-1",
+    "characterId": "character-mira",
+    "embodimentId": "gardener-1"
+  },
+  "requestId": "utterance-request-1",
+  "responseId": "utterance-response-1",
+  "correlationId": "utterance-cycle-1",
+  "channelId": "garden-nearby",
+  "deliveryId": "delivery-1",
+  "recordedAt": "2026-01-01T08:02:02Z",
+  "status": "delivered"
+}

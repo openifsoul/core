@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "conversation-response",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-2",
+    "characterId": "character-mira",
+    "embodimentId": "horse-1"
+  },
+  "requestId": "horse-request-1",
+  "correlationId": "horse-cycle-1",
+  "channelId": "garden-nearby",
+  "speakerParticipantId": "participant-mira",
+  "recipientParticipantIds": ["participant-visitor"],
+  "responseId": "horse-response-1",
+  "createdAt": "2026-01-01T08:00:01Z",
+  "expiresAt": "2026-01-01T08:00:05Z",
+  "output": {
+    "type": "no-output",
+    "reason": "unsupported-modality"
+  }
+}

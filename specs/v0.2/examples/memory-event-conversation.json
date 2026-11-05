@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "memory-event",
+  "memoryId": "event-visitor-question",
+  "characterId": "character-mira",
+  "recordedAt": "2026-01-01T08:03:00Z",
+  "scope": {
+    "audience": "private",
+    "participantIds": ["participant-mira"],
+    "export": "allowed"
+  },
+  "provenance": {
+    "sources": [
+      {
+        "sourceType": "conversation",
+        "sourceId": "visitor-hello"
+      }
+    ]
+  },
+  "eventType": "received-conversation",
+  "summary": "A synthetic visitor asked Mira how the garden was doing.",
+  "participantIds": ["participant-mira", "participant-visitor"],
+  "environmentId": "garden",
+  "sessionId": "garden-session-1",
+  "recordedPayload": {
+    "messageId": "visitor-hello",
+    "participantId": "participant-visitor",
+    "recordedAt": "2026-01-01T08:02:00Z",
+    "modality": "speech",
+    "content": "How is the garden today?"
+  }
+}

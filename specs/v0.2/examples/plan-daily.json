@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "plan-proposal",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-1",
+    "characterId": "character-mira",
+    "embodimentId": "gardener-1"
+  },
+  "correlationId": "daily-cycle-1",
+  "planId": "plan-day-1",
+  "requestId": "daily-request-1",
+  "contextReportId": "briefing-day-1",
+  "contextRevision": "context-100",
+  "environmentRevision": "garden-profile-1",
+  "createdAt": "2026-01-01T08:00:00Z",
+  "expiresAt": "2026-01-01T08:05:00Z",
+  "horizon": {
+    "basis": "world-ticks",
+    "timelineId": "garden-day-1",
+    "fromTick": 100,
+    "toTick": 600
+  },
+  "tasks": [
+    {
+      "taskId": "task-inspect",
+      "intentId": "inspect-area",
+      "arguments": {
+        "area": {
+          "type": "entity-ref",
+          "entityId": "herb-area"
+        }
+      },
+      "priority": "normal",
+      "dependsOnTaskIds": [],
+      "explanation": "Inspect before deciding whether further care is possible."
+    },
+    {
+      "taskId": "task-tend",
+      "intentId": "tend-plot",
+      "arguments": {
+        "plot": {
+          "type": "entity-ref",
+          "entityId": "plot-1"
+        },
+        "amount": {
+          "type": "quantity",
+          "value": 100,
+          "unit": "ml"
+        }
+      },
+      "priority": "low",
+      "dependsOnTaskIds": ["task-inspect"],
+      "explanation": "A conditional care proposal; the host can reject it when water is unavailable."
+    }
+  ]
+}

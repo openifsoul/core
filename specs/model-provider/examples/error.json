@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "draft-0.1.0",
+  "kind": "model-error",
+  "requestId": "request-1",
+  "providerId": "synthetic-provider",
+  "modelId": "fixture-model",
+  "recordedAt": "2026-01-01T12:00:00Z",
+  "error": {
+    "code": "deadline-exceeded",
+    "message": "No complete response was received before the deadline.",
+    "retry": "same-request"
+  },
+  "usage": {
+    "inputTokens": 13,
+    "outputTokens": 0,
+    "estimated": true
+  }
+}

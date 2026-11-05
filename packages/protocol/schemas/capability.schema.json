@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.1.0:capability",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "draft-0.1.0"
+    },
+    "kind": {
+      "const": "capability-set"
+    },
+    "adapterId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "worldId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "sessionId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "actorId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "capabilityRevision": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "supportedSchemaVersions": {
+      "type": "array",
+      "items": {
+        "const": "draft-0.1.0"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "capabilityId": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "argumentsSchema": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/jsonSchema"
+          },
+          "requiredPermissions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "resource": {
+                  "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+                },
+                "action": {
+                  "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+                }
+              },
+              "required": ["resource", "action"],
+              "additionalProperties": false
+            },
+            "minItems": 0,
+            "uniqueItems": true
+          },
+          "semantics": {
+            "type": "object",
+            "properties": {
+              "preconditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "possibleEffects": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              }
+            },
+            "required": ["preconditions", "possibleEffects"],
+            "additionalProperties": false
+          },
+          "idempotency": {
+            "enum": ["none", "action-id"]
+          }
+        },
+        "required": [
+          "capabilityId",
+          "description",
+          "argumentsSchema",
+          "requiredPermissions",
+          "semantics",
+          "idempotency"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    },
+    "extensions": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+    },
+    "requiredExtensions": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "kind",
+    "adapterId",
+    "worldId",
+    "sessionId",
+    "actorId",
+    "capabilityRevision",
+    "supportedSchemaVersions",
+    "capabilities"
+  ],
+  "additionalProperties": false
+}

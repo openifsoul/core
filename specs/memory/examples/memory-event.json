@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "draft-0.1.0",
+  "kind": "memory-event",
+  "eventId": "memory-event-1",
+  "characterId": "character-mira",
+  "worldId": "garden",
+  "sessionId": "session-1",
+  "source": {
+    "sourceId": "garden-recorder",
+    "kind": "runtime",
+    "sequence": 1
+  },
+  "observerId": "actor-mira",
+  "recordedAt": "2026-01-01T12:00:00Z",
+  "worldTime": {
+    "timelineId": "garden-day-1",
+    "tick": 20
+  },
+  "scope": {
+    "audience": "private",
+    "subjectIds": ["actor-mira"],
+    "export": "allowed"
+  },
+  "payload": {
+    "type": "observed-action-result",
+    "data": {
+      "actionId": "action-water-1",
+      "status": "success"
+    }
+  },
+  "provenance": {
+    "eventIds": [],
+    "worldEventIds": ["world-event-water-1"]
+  }
+}

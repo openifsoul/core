@@ -1,0 +1,46 @@
+{
+  "packages/model-providers": ["packages/protocol"],
+  "apps/server": [
+    "packages/protocol",
+    "packages/memory",
+    "packages/model-providers",
+    "apps/runtime-host"
+  ],
+  "apps/laboratory": [
+    "apps/runtime-host",
+    "packages/model-providers",
+    "packages/protocol"
+  ],
+  "packages/protocol": [],
+  "packages/memory": ["packages/protocol"],
+  "packages/runtime": [
+    "packages/protocol",
+    "packages/memory",
+    "packages/permissions",
+    "packages/model-providers",
+    "packages/adapter-sdk"
+  ],
+  "packages/testing": [
+    "packages/protocol",
+    "packages/adapter-sdk",
+    "packages/model-providers"
+  ],
+  "apps/simulator": [
+    "packages/protocol",
+    "packages/runtime",
+    "packages/memory",
+    "packages/permissions",
+    "packages/model-providers",
+    "packages/adapter-sdk",
+    "packages/testing"
+  ],
+  "apps/runtime-host": [
+    "packages/protocol",
+    "packages/runtime",
+    "packages/memory",
+    "packages/permissions",
+    "packages/model-providers",
+    "packages/adapter-sdk",
+    "apps/simulator"
+  ]
+}

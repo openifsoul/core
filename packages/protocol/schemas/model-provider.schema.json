@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.1.0:model-provider",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/capabilities"
+    },
+    {
+      "$ref": "#/$defs/request"
+    },
+    {
+      "$ref": "#/$defs/response"
+    },
+    {
+      "$ref": "#/$defs/error"
+    }
+  ],
+  "$defs": {
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.1.0"
+        },
+        "kind": {
+          "const": "provider-capabilities"
+        },
+        "providerId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "modelId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "toolCalling": {
+          "type": "boolean"
+        },
+        "structuredOutput": {
+          "type": "boolean"
+        },
+        "cancellation": {
+          "enum": ["best-effort", "unsupported"]
+        },
+        "usage": {
+          "type": "boolean"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "providerId",
+        "modelId",
+        "toolCalling",
+        "structuredOutput",
+        "cancellation",
+        "usage"
+      ],
+      "additionalProperties": false
+    },
+    "request": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.1.0"
+        },
+        "kind": {
+          "const": "model-request"
+        },
+        "requestId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "providerId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "modelId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "enum": ["system", "user", "assistant", "tool"]
+              },
+              "content": {
+                "type": "string"
+              },
+              "toolCallId": {
+                "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+              },
+              "toolCalls": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "toolCallId": {
+                      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+                    },
+                    "name": {
+                      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+                    },
+                    "arguments": {
+                      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/jsonObject"
+                    }
+                  },
+                  "required": ["toolCallId", "name", "arguments"],
+                  "additionalProperties": false
+                },
+                "minItems": 0
+              }
+            },
+            "required": ["role", "content"],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "argumentsSchema": {
+                "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/jsonSchema"
+              }
+            },
+            "required": ["name", "description", "argumentsSchema"],
+            "additionalProperties": false
+          },
+          "minItems": 0
+        },
+        "toolChoice": {
+          "enum": ["none", "auto", "required"]
+        },
+        "outputFormat": {
+          "enum": ["text", "json-object"]
+        },
+        "deadlineAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+        },
+        "cancellationId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "maxOutputTokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "requestId",
+        "providerId",
+        "modelId",
+        "messages",
+        "toolChoice",
+        "outputFormat",
+        "deadlineAt"
+      ],
+      "additionalProperties": false
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.1.0"
+        },
+        "kind": {
+          "const": "model-response"
+        },
+        "requestId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "providerId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "modelId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+        },
+        "status": {
+          "enum": ["completed", "incomplete", "cancelled"]
+        },
+        "output": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "toolCalls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "toolCallId": {
+                    "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+                  },
+                  "name": {
+                    "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+                  },
+                  "arguments": {
+                    "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/jsonObject"
+                  }
+                },
+                "required": ["toolCallId", "name", "arguments"],
+                "additionalProperties": false
+              },
+              "minItems": 0
+            }
+          },
+          "required": ["text", "toolCalls"],
+          "additionalProperties": false
+        },
+        "finishReason": {
+          "enum": ["stop", "tool-calls", "length", "cancelled"]
+        },
+        "usage": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/usage"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "requestId",
+        "providerId",
+        "modelId",
+        "recordedAt",
+        "status",
+        "output",
+        "finishReason"
+      ],
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.1.0"
+        },
+        "kind": {
+          "const": "model-error"
+        },
+        "requestId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "providerId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "modelId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "recordedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+        },
+        "error": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/error"
+        },
+        "usage": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/usage"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "requestId",
+        "providerId",
+        "modelId",
+        "recordedAt",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

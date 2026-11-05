@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "environment-profile",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-1",
+    "characterId": "character-mira",
+    "embodimentId": "gardener-1"
+  },
+  "hostId": "synthetic-garden-host",
+  "revision": "garden-profile-1",
+  "medium": "game",
+  "embodiment": {
+    "form": "human",
+    "description": "A gardener represented by an existing host NPC.",
+    "modalities": ["speech", "gesture", "status"]
+  },
+  "participantLinks": [
+    {
+      "claimId": "mira-link-1",
+      "participantId": "participant-mira",
+      "environmentSubjectId": "gardener-1",
+      "issuerId": "synthetic-garden-host"
+    },
+    {
+      "claimId": "visitor-link-1",
+      "participantId": "participant-visitor",
+      "environmentSubjectId": "visitor-session-1",
+      "issuerId": "synthetic-garden-host"
+    }
+  ],
+  "planning": {
+    "cadence": "daily",
+    "maxTasks": 4
+  },
+  "communication": {
+    "mode": "host-requested",
+    "availability": "persistent",
+    "allowUnrequestedMessages": false,
+    "channelIds": ["garden-nearby"]
+  },
+  "hostIntents": [
+    {
+      "intentId": "inspect-area",
+      "description": "Ask the existing host NPC system to inspect a reachable area.",
+      "parameters": [
+        {
+          "name": "area",
+          "type": "entity-ref",
+          "required": true
+        }
+      ],
+      "cancellable": true
+    },
+    {
+      "intentId": "tend-plot",
+      "description": "Ask the existing host gardening facility to tend a plot.",
+      "parameters": [
+        {
+          "name": "plot",
+          "type": "entity-ref",
+          "required": true
+        },
+        {
+          "name": "amount",
+          "type": "quantity",
+          "required": true,
+          "unit": "ml",
+          "minimum": 1,
+          "maximum": 100
+        }
+      ],
+      "cancellable": true
+    }
+  ],
+  "worldTime": {
+    "timelineId": "garden-day-1",
+    "tick": 100
+  }
+}

@@ -1,0 +1,45 @@
+# Versioning and initial source baseline
+
+The root manifest starts at **0.1.0-alpha.1** for the initial source snapshot.
+It remains `private: true`: this is not an npm release, a published SDK or a
+stable compatibility promise. No Git tag or remote release is created by setting
+the manifest version. Record changes in [CHANGELOG.md](../CHANGELOG.md).
+
+## Separate version dimensions
+
+| Surface                                          | Policy                                                                         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------ |
+| Repository snapshot                              | SemVer-style prereleases while experimental; version lives in package.json     |
+| Protocol and archive schemas                     | Their own explicit versions under the [compatibility policy](compatibility.md) |
+| Source ports and laboratory HTTP API             | Experimental; document consumer-visible breaks and test affected callers       |
+| Future published SDK packages                    | Define exports and support policy before publication; no fake entrypoints now  |
+| Character/template and host vocabulary revisions | Follow the corresponding contract, not the root package version                |
+
+Stable 1.0 requires an explicit compatibility and support decision. Before that,
+breaking source/API changes still require a changelog entry and compatibility
+review; draft status does not permit silent loss or reinterpretation of data.
+A future prerelease is prepared by updating the manifest and changelog together,
+running the applicable local checks, then explicitly authorizing any Git tag or
+remote publication. Package-manager lock consistency is checked with frozen install.
+
+The accepted schema/example inventory is
+[baseline.json](../tests/contracts/fixtures/baseline.json). Existing contract tests
+verify its paths and exact bytes. There is deliberately no auto-update command.
+A new contract version requires an explicit compatibility decision and reviewed
+inventory additions; historical baselines stay intact. Checksums detect drift,
+not authorship or semantic compatibility. Review baseline/test changes themselves.
+
+## Initial commit readiness
+
+Inspect the complete prospective commit because no previous revision exists.
+Run `pnpm check` and `pnpm build:cloud` locally; inspect `git diff --cached --stat`
+and run `pnpm check:boundaries` after staging. The latter also checks indexed
+file names and blob contents so a clean working copy cannot hide an older staged
+secret. Review licenses, original fixtures and secret boundaries separately.
+
+Local checks can be skipped or edited; they cannot enforce remote merge policy.
+A maintainer reviews the exact revision and changes to checks before acceptance.
+Remote CI, branch protection, repository creation and publication remain separate
+owner decisions. The private reporting route is documented in [SECURITY.md](../SECURITY.md).
+The owner authorized creation of the public `openifsoul/core` repository and
+its initial Git setup on 2026-11-05; this does not authorize remote CI or deployment.

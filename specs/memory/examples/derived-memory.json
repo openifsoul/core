@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "draft-0.1.0",
+  "kind": "derived-memory",
+  "memoryId": "summary-1",
+  "characterId": "character-mira",
+  "createdAt": "2026-01-01T12:00:00Z",
+  "scope": {
+    "audience": "private",
+    "subjectIds": ["actor-mira"],
+    "export": "allowed"
+  },
+  "sourceEventIds": ["memory-event-1"],
+  "derivation": {
+    "algorithmId": "synthetic-summary",
+    "algorithmVersion": "1"
+  },
+  "payload": {
+    "type": "summary",
+    "text": "Mira observed that the watering action completed."
+  }
+}

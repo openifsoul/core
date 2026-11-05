@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.1.0:permission-policy",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/policy"
+    },
+    {
+      "$ref": "#/$defs/decision"
+    }
+  ],
+  "$defs": {
+    "policy": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.1.0"
+        },
+        "kind": {
+          "const": "permission-policy"
+        },
+        "policyId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "worldId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "sessionId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ruleId": {
+                "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+              },
+              "subjectId": {
+                "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+              },
+              "resource": {
+                "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+              },
+              "action": {
+                "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+              },
+              "effect": {
+                "enum": ["grant", "revoke"]
+              }
+            },
+            "required": ["ruleId", "subjectId", "resource", "action", "effect"],
+            "additionalProperties": false
+          },
+          "minItems": 0
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "policyId",
+        "revision",
+        "worldId",
+        "sessionId",
+        "rules"
+      ],
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "draft-0.1.0"
+        },
+        "kind": {
+          "const": "permission-decision"
+        },
+        "decisionId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "policyId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "worldId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "sessionId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "subjectId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "resource": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "action": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "decision": {
+          "enum": ["allow", "deny"]
+        },
+        "evaluatedAt": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+        },
+        "extensions": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "kind",
+        "decisionId",
+        "policyId",
+        "policyRevision",
+        "worldId",
+        "sessionId",
+        "subjectId",
+        "resource",
+        "action",
+        "decision",
+        "evaluatedAt"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

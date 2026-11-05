@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.1.0:world-event",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "draft-0.1.0"
+    },
+    "kind": {
+      "const": "world-event"
+    },
+    "eventId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "adapterId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "worldId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "sessionId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "sourceSequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "recordedAt": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+    },
+    "worldTime": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/worldTime"
+    },
+    "scope": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/scope"
+    },
+    "type": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "payload": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/jsonObject"
+    },
+    "actionId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "extensions": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+    },
+    "requiredExtensions": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "kind",
+    "eventId",
+    "adapterId",
+    "worldId",
+    "sessionId",
+    "sourceSequence",
+    "recordedAt",
+    "worldTime",
+    "scope",
+    "type",
+    "payload"
+  ],
+  "additionalProperties": false
+}

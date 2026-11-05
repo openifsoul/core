@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "draft-0.1.0",
+  "kind": "perception",
+  "observationId": "observation-1",
+  "adapterId": "synthetic-garden",
+  "worldId": "garden",
+  "sessionId": "session-1",
+  "observerId": "actor-mira",
+  "observedAt": "2026-01-01T12:00:00Z",
+  "worldTime": {
+    "timelineId": "garden-day-1",
+    "tick": 19
+  },
+  "worldRevision": "revision-19",
+  "observations": [
+    {
+      "subjectId": "plant-1",
+      "scope": {
+        "audience": "private",
+        "subjectIds": ["actor-mira"],
+        "export": "allowed"
+      },
+      "payload": {
+        "visible": true,
+        "soil": "dry"
+      }
+    }
+  ],
+  "availableCapabilityIds": ["water-plant"]
+}

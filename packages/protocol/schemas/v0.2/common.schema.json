@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.2.0:common",
+  "description": "Shared definitions only; not an exchange document.",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?Z$"
+    },
+    "extensionName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"
+    },
+    "extensions": {
+      "type": "object",
+      "maxProperties": 16,
+      "propertyNames": {
+        "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/extensionName"
+      },
+      "additionalProperties": true
+    },
+    "binding": {
+      "type": "object",
+      "properties": {
+        "environmentId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "sessionId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "characterId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "embodimentId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        }
+      },
+      "required": ["environmentId", "sessionId", "characterId", "embodimentId"],
+      "additionalProperties": false
+    },
+    "worldTime": {
+      "type": "object",
+      "properties": {
+        "timelineId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+        },
+        "tick": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": ["timelineId", "tick"],
+      "additionalProperties": false
+    },
+    "period": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "basis": {
+              "const": "utc"
+            },
+            "startAt": {
+              "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+            },
+            "endAt": {
+              "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/utc"
+            }
+          },
+          "required": ["basis", "startAt", "endAt"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "basis": {
+              "const": "world-ticks"
+            },
+            "timelineId": {
+              "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+            },
+            "fromTick": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "toTick": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": ["basis", "timelineId", "fromTick", "toTick"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "argument": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "entity-ref"
+            },
+            "entityId": {
+              "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+            }
+          },
+          "required": ["type", "entityId"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "choice"
+            },
+            "value": {
+              "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+            }
+          },
+          "required": ["type", "value"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "quantity"
+            },
+            "value": {
+              "type": "number"
+            },
+            "unit": {
+              "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+            }
+          },
+          "required": ["type", "value", "unit"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": ["type", "value"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "audience": {
+          "enum": ["private", "participants", "public"]
+        },
+        "participantIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+          },
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "export": {
+          "enum": ["allowed", "consent-required", "forbidden"]
+        }
+      },
+      "required": ["audience", "participantIds", "export"],
+      "additionalProperties": false
+    },
+    "priority": {
+      "enum": ["low", "normal", "high"]
+    },
+    "taskStatus": {
+      "enum": [
+        "pending",
+        "running",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "unknown"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sourceType": {
+                "enum": [
+                  "authored",
+                  "host-report",
+                  "conversation",
+                  "memory",
+                  "derivation",
+                  "import",
+                  "plan-proposal",
+                  "plan-decision"
+                ]
+              },
+              "sourceId": {
+                "$ref": "urn:ifsoul:protocol:draft-0.2.0:common#/$defs/id"
+              }
+            },
+            "required": ["sourceType", "sourceId"],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 64
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "required": ["sources"],
+      "additionalProperties": false
+    }
+  },
+  "not": {}
+}

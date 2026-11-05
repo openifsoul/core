@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "draft-0.2.0",
+  "kind": "memory-episode",
+  "memoryId": "episode-garden",
+  "characterId": "character-mira",
+  "recordedAt": "2026-01-01T08:03:00Z",
+  "scope": {
+    "audience": "private",
+    "participantIds": ["participant-mira"],
+    "export": "allowed"
+  },
+  "provenance": {
+    "sources": [
+      {
+        "sourceType": "memory",
+        "sourceId": "event-inspection"
+      }
+    ]
+  },
+  "summary": "Mira received the host report of an inspection.",
+  "sourceMemoryIds": ["event-inspection"],
+  "period": {
+    "basis": "world-ticks",
+    "timelineId": "garden-day-1",
+    "fromTick": 100,
+    "toTick": 110
+  }
+}

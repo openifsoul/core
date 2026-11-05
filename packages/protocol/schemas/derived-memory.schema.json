@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ifsoul:protocol:draft-0.1.0:derived-memory",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "draft-0.1.0"
+    },
+    "kind": {
+      "const": "derived-memory"
+    },
+    "memoryId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "characterId": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+    },
+    "createdAt": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/utcTimestamp"
+    },
+    "scope": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/scope"
+    },
+    "sourceEventIds": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "derivation": {
+      "type": "object",
+      "properties": {
+        "algorithmId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        },
+        "algorithmVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modelId": {
+          "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+        }
+      },
+      "required": ["algorithmId", "algorithmVersion"],
+      "additionalProperties": false
+    },
+    "payload": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "fact"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["type", "text"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "relationship"
+            },
+            "subjectId": {
+              "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+            },
+            "relation": {
+              "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+            },
+            "objectId": {
+              "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/id"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["type", "subjectId", "relation", "objectId"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "summary"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["type", "text"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "embedding"
+            },
+            "vector": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            }
+          },
+          "required": ["type", "vector"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "extensions": {
+      "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensions"
+    },
+    "requiredExtensions": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:ifsoul:protocol:draft-0.1.0:common#/$defs/extensionName"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "kind",
+    "memoryId",
+    "characterId",
+    "createdAt",
+    "scope",
+    "sourceEventIds",
+    "derivation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
