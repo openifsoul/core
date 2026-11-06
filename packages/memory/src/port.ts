@@ -61,5 +61,17 @@ export interface MemoryPort {
     events: MemoryEvent[];
   }): Result<void>;
   recall(query: RecallQuery): Result<MemoryEvent[]>;
+  /** Trusted owner-only atomic retention. Exact source IDs must still exist in the
+   * nominated character/environment/scope. Replacements validate before pruning.
+   * Optional for older adapters; callers must reject unsupported retention. */
+  compact?(batch: {
+    characterId: string;
+    environmentId: string;
+    scope: MemoryEvent["scope"];
+    eventIds: string[];
+    exchangeIds: string[];
+    events: MemoryEvent[];
+    exchanges: ExchangeRecord[];
+  }): Result<void>;
   close(): Result<void>;
 }

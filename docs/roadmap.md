@@ -13,7 +13,7 @@ owner server and Workers, with Workers AI, OpenAI BYOK and local Ollama clients.
 Model changes within one runtime retain character history; local/cloud databases
 are separate. Provider latency and output quality remain variable.
 
-## Current slice: profile authoring and selectable memory
+## Implemented locally: profile authoring and selectable memory
 
 The laboratory creates manual, generated or imported fictional profiles and selects
 between them. Each receives a fresh identity and participant, empty initial history,
@@ -37,11 +37,28 @@ worlds/chat; authenticated model requests pass through the core runtime and serv
 See [scope, limits and validation](browser-demo.md). This is a demonstration transport,
 not a general authenticated game negotiation/recovery system or a production release.
 
-## Next: continuity evaluation
+## Implemented locally: bounded memory continuity
 
-Evaluate character expression and accurate memory use across providers, including
-explicit cross-profile memory selection. Model quality and fidelity to fictional
-references require evaluation; successful schema validation does not prove them.
+App persists attributed reports, retains bounded extractive episodes, selects
+scoped recall and validates optional model-proposed claims/relationship revisions.
+One directed character-to-player relationship spans worlds and App chat inside an
+owner store; roles and source provenance remain world-specific. Profiles and
+memory selection remain independent; reset removes selected bridge evidence and
+derived state. Core supplies generic storage/retention ports; SDK remains transport.
+
+This bounded slice is complete against local deterministic and isolated real-model
+service evidence. See [App memory architecture](https://github.com/openifsoul/app/blob/main/docs/memory.md)
+for its diagram, acceptance evidence, limits and implementation owners. A controlled
+Dungeon scenario, arbitrary fourth-host transport, App chat and SQLite reopen
+were exercised; this does not establish full browser E2E or production behavior.
+
+## Next: broader continuity and product acceptance
+
+Evaluate accurate memory use and character expression across providers and actual
+UI flows, including explicit cross-profile memory selection. Model quality and
+fidelity to fictional references require evaluation; successful validation does
+not prove them. Semantic retrieval, full archive transfer/restore and multiplayer
+identity negotiation remain future work.
 
 ## Then: one researched host integration and shared experience
 

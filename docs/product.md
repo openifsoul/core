@@ -86,8 +86,11 @@ complete history. This does not imply recording every unobserved game event.
 
 These conceptual retention/retrieval layers are represented by the v0.2 memory
 envelopes, including working-context, episode, event, fact, relationship, and
-intent-checkpoint records. Only event/exchange storage and bounded event recall
-are implemented in the first SQLite slice; derived stores remain planned.
+intent-checkpoint records. Core supplies event/exchange storage, bounded recall and trusted atomic retention.
+App implements bounded extractive episodes, revisable reported claims and portable
+character-to-player relationships; see the
+[App memory architecture](https://github.com/openifsoul/app/blob/main/docs/memory.md).
+These App-derived views are not a general archive or a Core facts engine.
 Model context windows are replaceable working
 views; the character's durable history must not depend on one vendor's chat ID.
 No hidden model reasoning is required or stored.

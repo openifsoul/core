@@ -31,10 +31,13 @@ implementations, establish trusted identities/policies, configure budgets and
 profiles, and inject ports into runtime. Runtime does not open SQLite, choose a
 secret store, read keys, or construct vendor clients.
 
-- **MemoryPort** belongs to `memory`: scoped history and working context,
-  episodes, facts, relationships, intent checkpoints, export, and deletion.
-  Separate the interface from concrete storage entrypoints. The first engine implements event/exchange persistence in SQLite; richer
-  derived memory, export and deletion APIs remain future work.
+- **MemoryPort** belongs to `memory`: scoped raw events, character documents,
+  exchange journals, bounded recall and optional atomic retention.
+  Separate the interface from concrete storage entrypoints. Core implements scoped
+  event/exchange persistence and optional trusted atomic retention in SQLite.
+  App composes bounded episodes, revisable interpretations and bridge reset on
+  that port; see its [memory architecture](https://github.com/openifsoul/app/blob/main/docs/memory.md).
+  General archive transfer and distributed ownership remain future work.
 - **ModelProvider** belongs to `model-providers`: bounded inference requests,
   capability declarations, responses/errors, and usage. Vendor/local clients and
   credentials stay behind separate implementation and secret boundaries.

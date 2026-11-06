@@ -42,3 +42,11 @@ Use the relevant local skills under `.agents/skills`: clean-implementation,
 architecture-review, public-api-review, documentation-sync. Follow
 `docs/development.md`, `docs/compatibility.md`, and `docs/versioning.md`.
 Coordinator reviews integration; assigned implementation agents own their files.
+
+## Authorized release on 2026-11-06
+
+The owner authorized preparation, reviewed Git commits/pushes, and manual production
+publication through private Cloud after coordinator review and local gates. This
+supersedes the split-only deployment restriction for this release. Checks and builds
+remain local; no npm publication, automatic remote execution, settings changes,
+secret operation or data migration is authorized. A Git push does not deploy.

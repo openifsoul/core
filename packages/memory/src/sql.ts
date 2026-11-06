@@ -63,6 +63,7 @@ export function createSQLMemory(
     const row = db.prepare(`SELECT document FROM ${table} WHERE id=?`).get(id);
     return row ? (JSON.parse(row.document as string) as T) : undefined;
   };
+  let pruning: Parameters<NonNullable<MemoryPort["compact"]>>[0] | undefined;
   const port: MemoryPort = {
     putCharacter: (character) =>
       guarded(() => {
@@ -146,6 +147,94 @@ export function createSQLMemory(
         }
         try {
           return db.transaction(() => {
+            if (pruning) {
+              const retention = pruning;
+              if (
+                !validScope(retention.scope) ||
+                !retention.environmentId ||
+                retention.eventIds.length > 1000 ||
+                retention.exchangeIds.length > 2000 ||
+                new Set(retention.eventIds).size !==
+                  retention.eventIds.length ||
+                new Set(retention.exchangeIds).size !==
+                  retention.exchangeIds.length
+              )
+                throw new CommitFailure(
+                  "invalid-document",
+                  "Invalid retention partition.",
+                );
+              if (
+                batch.events.some(
+                  (e) =>
+                    e.characterId !== retention.characterId ||
+                    e.environmentId !== retention.environmentId ||
+                    canonical(e.scope) !== canonical(retention.scope),
+                ) ||
+                batch.exchanges.some(
+                  (e) => e.characterId !== retention.characterId,
+                )
+              )
+                throw new CommitFailure(
+                  "unauthorized",
+                  "Replacement is outside the retention partition.",
+                );
+              const absent =
+                retention.eventIds.every(
+                  (id) =>
+                    !db
+                      .prepare("SELECT document FROM events WHERE id=?")
+                      .get(id),
+                ) &&
+                retention.exchangeIds.every(
+                  (id) => !read<ExchangeRecord>("exchanges", id),
+                );
+              if (
+                absent &&
+                batch.events.every(
+                  (e) =>
+                    db
+                      .prepare("SELECT document FROM events WHERE id=?")
+                      .get(e.memoryId)?.document === canonical(e),
+                ) &&
+                batch.exchanges.every((e) => {
+                  const old = read<ExchangeRecord>("exchanges", e.id);
+                  return old !== undefined && canonical(old) === canonical(e);
+                })
+              )
+                return success(undefined, true);
+              for (const id of retention.eventIds) {
+                const row = db
+                  .prepare("SELECT document FROM events WHERE id=?")
+                  .get(id);
+                const old =
+                  row &&
+                  (JSON.parse(String(row.document)) as MemoryEvent | undefined);
+                if (
+                  !old ||
+                  old.characterId !== retention.characterId ||
+                  old.environmentId !== retention.environmentId ||
+                  canonical(old.scope) !== canonical(retention.scope)
+                )
+                  throw new CommitFailure(
+                    "conflict",
+                    "Retention source changed or is outside the partition.",
+                  );
+              }
+              for (const id of retention.exchangeIds) {
+                const old = read<ExchangeRecord>("exchanges", id);
+                if (!old || old.characterId !== retention.characterId)
+                  throw new CommitFailure(
+                    "conflict",
+                    "Retention exchange changed or is outside the owner.",
+                  );
+              }
+              // Sources remain available during validation. Delete inside this same
+              // transaction so any replacement error restores every original.
+              for (const id of retention.eventIds)
+                db.prepare("DELETE FROM events WHERE id=?").run(id);
+              for (const id of retention.exchangeIds)
+                db.prepare("DELETE FROM exchanges WHERE id=?").run(id);
+            }
             for (const character of batch.characters ?? []) {
               const old = read<CharacterInstance>(
                 "characters",
@@ -203,6 +292,19 @@ export function createSQLMemory(
             : failure("storage", "Atomic memory write failed.");
         }
       }),
+    compact: (batch) => {
+      if (pruning)
+        return failure("conflict", "Nested retention is unsupported.");
+      pruning = batch;
+      try {
+        return port.commit({
+          events: batch.events,
+          exchanges: batch.exchanges,
+        });
+      } finally {
+        pruning = undefined;
+      }
+    },
     recall: (query: RecallQuery) =>
       guarded(() => {
         if (

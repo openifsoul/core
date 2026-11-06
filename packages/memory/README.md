@@ -11,8 +11,8 @@ SQLite stores immutable character instances, exchange journals and schema-checke
 v0.2 raw events. Linked characters, events and exchanges commit in one transaction
 or roll back together. Identical IDs are idempotent; conflicting content rejects.
 Original `recordedPayload`, provenance, scope, environment/session references and
-optional JSON extensions survive recording. A summary never replaces authorized
-original content. Proposal/adoption records never become completed tasks.
+optional JSON extensions survive recording. Ordinary `commit` never replaces original content. Optional trusted-owner
+`compact` explicitly applies retention to nominated source IDs; see below. Proposal/adoption records never become completed tasks.
 
 Recall filters one character, authorized source environments, and **every**
 intended audience participant before limiting records and serialized UTF-8 bytes.
@@ -36,7 +36,7 @@ implemented.
 The runtime reserves request IDs before controller work. An unfinished claim
 requires explicit reconciliation; no automatic recovery or exactly-once host
 execution is promised. There is no archive importer/exporter, migration,
-retention/deletion propagation, summarizer, RAG/embeddings, facts/episodes
+backup/third-party deletion propagation, summarizer, RAG/embeddings, facts/episodes
 engine, backup service, multi-writer sync or process handoff protocol. Database
 tables are a local development format, not a portable archive.
 See [runtime API](../../docs/runtime-api.md) and [contracts](../../specs/v0.2/README.md).
@@ -56,9 +56,32 @@ flowchart LR
 
 Node and Workers inject different SQL drivers into shared storage logic. These
 are separate databases, not synchronized replicas. Durable raw events are implemented;
-derived episodes, facts, archive transfer and deletion propagation remain planned.
+App composes deterministic extractive episodes through the generic retention port;
+Core has no host-specific episode semantics, facts engine or archive transfer.
+App owns bounded episodes, source-validated revisable interpretations and bridge
+reset; see [App memory architecture](https://github.com/openifsoul/app/blob/main/docs/memory.md)
+for the full evidence flow and milestone limits.
 
 The trusted owner composition can enumerate at most 100 immutable character
 documents using `listCharacters(limit)`. This experimental MemoryPort addition is
 for the owner catalog, not scoped model recall; do not expose it to a controller
 or bridge. The laboratory applies its own creation cap of 50.
+
+## Optional atomic retention
+
+`MemoryPort.compact` is an experimental source API, not a frozen wire/schema
+change. Older adapters may omit it; owners must report unsupported retention.
+The trusted single writer names exact source event/exchange IDs and replacement
+records. Event sources must exist inside the nominated character, environment
+and exact scope; replacements remain in that same partition. Exchanges are
+owner-wide records with no environment field: callers must select only their own
+categories/IDs and never unrelated runtime request claims or paid ledgers. This
+method is never exposed to a model, browser or game host.
+
+Validation and deletion/replacement execute in one synchronous transaction.
+Conflicting/missing sources or invalid replacements reject; failures roll back
+originals. Repeating an identical completed batch succeeds idempotently. Source
+selection and compaction must run without an asynchronous gap under the existing
+single-writer policy; this API is not a multi-writer lease or optimistic revision
+protocol. It does not vacuum SQLite files, erase backups or propagate deletions.
+Callers own retained excerpts, source digests, loss disclosures and rebuild policy.

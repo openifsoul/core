@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased source changes
+
+- Add optional trusted-owner atomic memory retention, constrained to explicit
+  character/environment/scope source IDs, with rollback and idempotent retry.
+  Frozen document schemas and ModelProvider contracts are unchanged.
+
 ## 0.2.0-alpha.1 — 2026-11-06
 
 - Extract SDK/App/Website/Cloud ownership; Core now builds explicit ESM and declaration exports.
