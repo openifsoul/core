@@ -348,3 +348,29 @@ test("demo replay is rejected the same UTC day but becomes a new reservation aft
   assert.equal(h.calls(), 2);
   assert.equal(JSON.parse(h.map.get("demo-budget-v2")!).global.calls, 1);
 });
+
+test("demo readiness follows local provider health without calling inference or spending quota", async () => {
+  const h = setup();
+  let ready = false;
+  const api = createDemoAPI({
+    store: h.store,
+    authenticate: async () => ({ id: "local-owner" }),
+    client: async () => {
+      throw Error("Status must not create an inference client");
+    },
+    available: async () => ready,
+  });
+  const status = async () =>
+    (await api(new Request(origin + "/api/demo/status"))).json() as Promise<{
+      available: boolean;
+      remaining: number;
+    }>;
+  const offline = await status();
+  assert.equal(offline.available, false);
+  ready = true;
+  const online = await status();
+  assert.equal(online.available, true);
+  assert.equal(online.remaining, offline.remaining);
+  assert.equal(h.calls(), 0);
+  assert.equal(h.map.size, 0);
+});

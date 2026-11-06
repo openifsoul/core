@@ -34,6 +34,8 @@ export interface GameMountOptions {
   signal: AbortSignal;
 }
 export interface MountedGame {
+  /** Optional presentation of player-requested chat. Never executes host actions. */
+  say?(speech: string): void;
   pause(): void;
   resume(): void;
   destroy(): void;

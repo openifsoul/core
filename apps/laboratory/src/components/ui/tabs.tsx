@@ -1,22 +1,24 @@
+// Source: https://ui.cuelark.com/r/tabs.json — MIT, see LICENSES/cuelark-MIT.txt.
 "use client";
 
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
 import { Tabs as TabsPrimitive } from "radix-ui";
+import { cva } from "class-variance-authority";
+
+import { gsap, motionScale, useMergedRef } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+
+type TabsVariant = "segmented" | "underline";
 
 function Tabs({
   className,
-  orientation = "horizontal",
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
-      data-orientation={orientation}
-      orientation={orientation}
       className={cn(
-        "group/tabs flex gap-2 data-[orientation=horizontal]:flex-col",
+        "flex flex-col gap-3 data-[orientation=vertical]:flex-row",
         className,
       )}
       {...props}
@@ -24,34 +26,69 @@ function Tabs({
   );
 }
 
-const tabsListVariants = cva(
-  "group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground group-data-[orientation=horizontal]/tabs:h-9 group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col data-[variant=line]:rounded-none",
+const listVariants = cva(
+  "relative inline-flex w-fit max-w-full items-center text-muted-foreground",
   {
     variants: {
       variant: {
-        default: "bg-muted",
-        line: "gap-1 bg-transparent",
+        segmented:
+          "h-11 overflow-x-auto rounded-lg bg-muted p-[3px] shadow-inner [scrollbar-width:none] data-[orientation=vertical]:h-auto data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch",
+        underline:
+          "h-11 gap-5 border-b border-border data-[orientation=vertical]:h-auto data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-start data-[orientation=vertical]:gap-1 data-[orientation=vertical]:border-s data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:ps-3",
       },
     },
-    defaultVariants: {
-      variant: "default",
-    },
+    defaultVariants: { variant: "segmented" },
   },
 );
 
+const indicatorVariants = cva(
+  "pointer-events-none absolute opacity-0 [[data-ready]>&]:opacity-100",
+  {
+    variants: {
+      variant: {
+        segmented: "rounded-md border border-border/60 bg-card shadow-sm",
+        underline:
+          "rounded-full bg-signal [[data-orientation=horizontal]>&]:-bottom-px [[data-orientation=horizontal]>&]:h-0.5 [[data-orientation=vertical]>&]:-start-px [[data-orientation=vertical]>&]:w-0.5",
+      },
+    },
+    defaultVariants: { variant: "segmented" },
+  },
+);
+
+/**
+ * One indicator travels between triggers with GSAP: it stretches to cover the old and new tab, then
+ * its trailing edge catches up (a short "caterpillar" move). Before hydration the active trigger styles itself.
+ */
 function TabsList({
   className,
-  variant = "default",
+  variant = "segmented",
+  children,
+  ref,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List> &
-  VariantProps<typeof tabsListVariants>) {
+}: React.ComponentProps<typeof TabsPrimitive.List> & {
+  variant?: TabsVariant;
+}) {
+  const listRef = React.useRef<HTMLDivElement>(null);
+  const indicatorRef = React.useRef<HTMLSpanElement>(null);
+  const mergedRef = useMergedRef(listRef, ref);
+  useIndicator(listRef, indicatorRef, variant);
+
   return (
     <TabsPrimitive.List
+      ref={mergedRef}
       data-slot="tabs-list"
       data-variant={variant}
-      className={cn(tabsListVariants({ variant }), className)}
+      className={cn(listVariants({ variant }), className)}
       {...props}
-    />
+    >
+      <span
+        ref={indicatorRef}
+        aria-hidden="true"
+        data-slot="tabs-indicator"
+        className={indicatorVariants({ variant })}
+      />
+      {children}
+    </TabsPrimitive.List>
   );
 }
 
@@ -63,10 +100,11 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 group-data-[variant=default]/tabs-list:data-[state=active]:shadow-sm group-data-[variant=line]/tabs-list:data-[state=active]:shadow-none dark:text-muted-foreground dark:hover:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-[state=active]:bg-transparent dark:group-data-[variant=line]/tabs-list:data-[state=active]:border-transparent dark:group-data-[variant=line]/tabs-list:data-[state=active]:bg-transparent",
-        "data-[state=active]:bg-background data-[state=active]:text-foreground dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 dark:data-[state=active]:text-foreground",
-        "after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-[orientation=horizontal]/tabs:after:inset-x-0 group-data-[orientation=horizontal]/tabs:after:bottom-[-5px] group-data-[orientation=horizontal]/tabs:after:h-0.5 group-data-[orientation=vertical]/tabs:after:inset-y-0 group-data-[orientation=vertical]/tabs:after:-right-1 group-data-[orientation=vertical]/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-[state=active]:after:opacity-100",
+        "relative z-10 inline-flex h-full items-center justify-center gap-1.5 rounded-md px-3 text-sm font-medium whitespace-nowrap outline-none transition-colors duration-150 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "[[data-variant=segmented]_&]:flex-1 [[data-variant=segmented][data-orientation=vertical]_&]:h-10 [[data-variant=segmented][data-orientation=vertical]_&]:justify-start",
+        "[[data-variant=underline]_&]:px-0.5 [[data-variant=underline][data-orientation=vertical]_&]:h-10",
+        "[[data-slot=tabs-list][data-variant=segmented]:not([data-ready])_&]:data-[state=active]:bg-card [[data-slot=tabs-list][data-variant=segmented]:not([data-ready])_&]:data-[state=active]:shadow-sm",
+        "[[data-slot=tabs-list][data-variant=underline]:not([data-ready])_&]:data-[state=active]:shadow-[inset_0_-2px_0_var(--primary)]",
         className,
       )}
       {...props}
@@ -81,10 +119,101 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("flex-1 outline-none", className)}
+      className={cn(
+        "flex-1 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200",
+        className,
+      )}
       {...props}
     />
   );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants };
+type Box = { left: number; top: number; width: number; height: number };
+
+function useIndicator(
+  listRef: React.RefObject<HTMLDivElement | null>,
+  indicatorRef: React.RefObject<HTMLSpanElement | null>,
+  variant: TabsVariant,
+) {
+  React.useLayoutEffect(() => {
+    const list = listRef.current;
+    const indicator = indicatorRef.current;
+    if (!list || !indicator) return;
+    let previous: Box | null = null;
+    let timeline: gsap.core.Timeline | null = null;
+
+    const place = (animate: boolean) => {
+      const active = list.querySelector<HTMLElement>(
+        ':scope > [data-slot="tabs-trigger"][data-state="active"]',
+      );
+      if (!active) return;
+      const box: Box = {
+        left: active.offsetLeft,
+        top: active.offsetTop,
+        width: active.offsetWidth,
+        height: active.offsetHeight,
+      };
+      const vertical = list.getAttribute("aria-orientation") === "vertical";
+      const [pos, size] = vertical
+        ? (["top", "height"] as const)
+        : (["left", "width"] as const);
+      const cross =
+        variant === "segmented"
+          ? vertical
+            ? { left: box.left, width: box.width }
+            : { top: box.top, height: box.height }
+          : {};
+      const scale = motionScale(list);
+      timeline?.kill();
+
+      if (!animate || !previous || scale === 0) {
+        gsap.set(indicator, { [pos]: box[pos], [size]: box[size], ...cross });
+      } else {
+        const from = previous;
+        const forward = box[pos] > from[pos];
+        timeline = gsap.timeline({ defaults: { ease: "cue" } });
+        gsap.set(indicator, cross);
+        if (forward) {
+          timeline
+            .to(indicator, {
+              [size]: box[pos] + box[size] - from[pos],
+              duration: 0.16,
+            })
+            .to(indicator, {
+              [pos]: box[pos],
+              [size]: box[size],
+              duration: 0.28,
+            });
+        } else {
+          timeline
+            .to(indicator, {
+              [pos]: box[pos],
+              [size]: from[pos] + from[size] - box[pos],
+              duration: 0.16,
+            })
+            .to(indicator, { [size]: box[size], duration: 0.28 });
+        }
+      }
+      previous = box;
+      list.dataset.ready = "";
+    };
+
+    place(false);
+    const mutations = new MutationObserver(() => place(true));
+    mutations.observe(list, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-state"],
+    });
+    const resize = new ResizeObserver(() => place(false));
+    resize.observe(list);
+    return () => {
+      timeline?.kill();
+      mutations.disconnect();
+      resize.disconnect();
+    };
+  }, [listRef, indicatorRef, variant]);
+}
+
+export { Tabs, TabsList, TabsTrigger, TabsContent };
+export type { TabsVariant };

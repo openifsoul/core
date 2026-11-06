@@ -101,19 +101,87 @@ export function scenarioResponse(
     bold: "I'm ready. Let's give this a go!",
     curious: "I wonder what we'll discover next.",
   };
-  const recent = [...request.history]
-    .reverse()
-    .find((h) => h.kind === "observation");
-  // Deterministic and visibly labeled: no claim that this canned text came from an LLM.
+  const local = request.history.filter((h) => h.hostId === request.hostId);
+  const recent = [...local].reverse().find((h) => h.kind === "observation");
+  const world =
+    request.hostId === "cards" || request.hostId === "friendly-21"
+      ? "cards"
+      : request.hostId === "garden"
+        ? "garden"
+        : request.hostId === "dungeon"
+          ? "dungeon"
+          : "chat";
+  const voice = character.temperament;
+  // Reports may select an authored reaction; their raw text is never spoken or treated as instructions.
+  const observed = recent?.summary.toLowerCase() ?? "";
+  const reaction =
+    world === "garden"
+      ? /complete|collected|harvested|picked/.test(observed)
+        ? {
+            careful: "What a lovely harvest. Shall we take a little break?",
+            bold: "Look at that basket! That was worth the effort.",
+            curious:
+              "So many little golden treasures. What should we grow next?",
+          }
+        : /watered|compost|filled/.test(observed)
+          ? {
+              careful: "A little care goes a long way. I like this quiet pace.",
+              bold: "These little plants have plenty of spirit!",
+              curious: "I wonder which sprout will surprise us first.",
+            }
+          : {
+              careful:
+                "I’ll start nearby and give each little plant some care.",
+              bold: "Let’s bring a little life to this garden!",
+              curious: "There’s a whole little world in these leaves.",
+            }
+      : world === "cards"
+        ? /you win|player wins/.test(observed)
+          ? {
+              careful: "Nicely played. I enjoyed that round.",
+              bold: "You got me! I’m ready for a rematch.",
+              curious: "Ooh, a surprise! Shall we try another hand?",
+            }
+          : /tied|tie/.test(observed)
+            ? {
+                careful: "An even match. Shall we try another hand?",
+                bold: "A tie! We’re keeping each other on our toes.",
+                curious: "The same result from different cards. How curious!",
+              }
+            : /wins the round|you lose/.test(observed)
+              ? {
+                  careful: "That went my way this time. Another round?",
+                  bold: "Ha, that was a good hand! Your turn to surprise me.",
+                  curious:
+                    "That turned out rather well. What will the next hand bring?",
+                }
+              : {
+                  careful: "I’ll take a moment to think about this hand.",
+                  bold: "I have a good feeling about this. Let’s see!",
+                  curious: "One more little mystery in the cards.",
+                }
+        : world === "dungeon"
+          ? /cleared|defeated|completed/.test(observed)
+            ? {
+                careful: "We can catch our breath here for a moment.",
+                bold: "That was a good fight. Ready for what’s next?",
+                curious: "A little further into the unknown. Shall we?",
+              }
+            : {
+                careful: "Stay close. We’ll find our way through together.",
+                bold: "I’m with you. Let’s face whatever’s ahead!",
+                curious: "Did you hear that? I wonder what’s waiting for us.",
+              }
+          : {
+              careful:
+                "I’m glad we have a moment together. What’s on your mind?",
+              bold: "Good to see you! What shall we try next?",
+              curious: "I’m listening. What have you been wondering about?",
+            };
   return {
     choiceId: request.fallbackChoiceId,
     source,
-    speech:
-      request.operation === "chat" && recent
-        ? `${phrases[character.temperament]} The host reported: ${recent.summary}`
-        : request.operation === "speak"
-          ? `${phrases[character.temperament]} ${recent ? `The host reported: ${recent.summary}` : "Let’s see what this world brings."}`
-          : phrases[character.temperament],
+    speech: reaction[voice] ?? phrases[voice],
   };
 }
 export function createGameBridge(options: {

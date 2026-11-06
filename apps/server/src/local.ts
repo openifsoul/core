@@ -1,3 +1,4 @@
+import { publicPageAsset } from "./public-pages.js";
 import { createDemoAPI } from "./demo.js";
 import { createCharacterWorkspace } from "../../runtime-host/src/characters.js";
 import { createServer } from "node:http";
@@ -133,6 +134,15 @@ const api = createAPI({
   demo: createDemoAPI({
     store,
     authenticate: async () => ({ id: "local-owner" }),
+    available: async () => {
+      const models = await ollama.listModels(AbortSignal.timeout(3000));
+      return (
+        models.ok &&
+        models.value.includes(
+          process.env.IFSOUL_DEMO_MODEL ?? "llama3.2:latest",
+        )
+      );
+    },
     client: async () => ({
       client: createOllamaProvider({
         baseUrl: process.env.OLLAMA_URL ?? "http://127.0.0.1:11434",
@@ -169,6 +179,8 @@ const mime: Record<string, string> = {
   ".svg": "image/svg+xml",
   ".png": "image/png",
   ".ico": "image/x-icon",
+  ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
 };
 const server = createServer(async (req, res) => {
   try {
@@ -202,7 +214,9 @@ const server = createServer(async (req, res) => {
     if (new URL(request.url).pathname.startsWith("/api/"))
       response = await api(request);
     else {
-      const pathname = decodeURIComponent(new URL(request.url).pathname);
+      const pageURL = new URL(request.url);
+      const pathname =
+        publicPageAsset(pageURL) ?? decodeURIComponent(pageURL.pathname);
       let file = resolve(webRoot, `.${pathname}`);
       if (!file.startsWith(webRoot + "/") || !extname(file))
         file = resolve(webRoot, "index.html");

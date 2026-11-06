@@ -1,3 +1,4 @@
+import { publicPageAsset } from "./public-pages.js";
 import {
   createCloudRouter,
   verifyCloudPrincipal,
@@ -211,8 +212,17 @@ export default {
         );
       },
       demo: (req) => env.LAB.getByName("owner-laboratory").handleDemo(req),
-      assets: async (req) =>
-        secured(await env.ASSETS.fetch(req), env.CLERK_ISSUER),
+      assets: async (req) => {
+        const url = new URL(req.url);
+        const page = publicPageAsset(url);
+        if (page)
+          url.pathname =
+            page === "/index.html" ? "/" : page.replace(/\.html$/, "");
+        return secured(
+          await env.ASSETS.fetch(page ? new Request(url, req) : req),
+          env.CLERK_ISSUER,
+        );
+      },
     })(request);
   },
 } satisfies ExportedHandler<ServerEnv>;

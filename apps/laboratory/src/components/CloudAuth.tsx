@@ -3,6 +3,7 @@ import {
   SignIn,
   UserAvatar,
   useAuth,
+  useClerk,
   useUser,
 } from "@clerk/react";
 import {
@@ -56,6 +57,7 @@ function Session({
 }) {
   const { isLoaded, isSignedIn, getToken, signOut } = useAuth();
   const { user } = useUser();
+  const { openSignIn } = useClerk();
   const previousUser = useRef<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState(false);
@@ -155,7 +157,11 @@ function Session({
           user?.primaryEmailAddress?.emailAddress ??
           "Your account",
         signIn() {
-          window.location.assign("/app?returnTo=/demo");
+          const returnUrl = window.location.pathname + window.location.search;
+          openSignIn({
+            forceRedirectUrl: returnUrl,
+            signUpForceRedirectUrl: returnUrl,
+          });
         },
         signOut: leave,
         signInView: (

@@ -304,3 +304,56 @@ test("local app allows loopback without password and rejects cross-origin reads 
     memory.close();
   }
 });
+
+test("cloud transport upgrades HTTP before handlers and sets HSTS only on HTTPS", async () => {
+  let handled = 0;
+  const handler = async () => {
+    handled++;
+    return new Response("synthetic response");
+  };
+  const route = createCloudRouter({
+    config,
+    user: handler,
+    demo: handler,
+    assets: handler,
+  });
+  for (const [path, method] of [
+    ["/", "GET"],
+    ["/app?next=%2Fplayground&mode=cloud", "GET"],
+    ["/api/config", "GET"],
+    ["/api/chat", "POST"],
+  ]) {
+    const response = await route(
+      new Request(`http://app.example${path}`, { method }),
+    );
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get("location"), origin + path);
+    assert.equal(await response.text(), "");
+    assert.equal(response.headers.has("strict-transport-security"), false);
+  }
+  assert.equal(
+    handled,
+    0,
+    "HTTP never reaches assets, authentication or storage",
+  );
+  for (const [path, status] of [
+    ["/", 200],
+    ["/api/config", 200],
+    ["/api/characters", 401],
+  ]) {
+    const response = await route(new Request(origin + path));
+    assert.equal(response.status, status);
+    assert.equal(
+      response.headers.get("strict-transport-security"),
+      "max-age=31536000",
+    );
+    if (path === "/") assert.equal(await response.text(), "synthetic response");
+  }
+  for (const hostname of ["127.0.0.1", "localhost", "[::1]"]) {
+    const response = await route(
+      new Request(`http://${hostname}:8788/api/config`),
+    );
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.has("strict-transport-security"), false);
+  }
+});

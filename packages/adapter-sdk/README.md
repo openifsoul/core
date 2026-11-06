@@ -109,3 +109,14 @@ and reconciliation, confirmed remote cancellation, permanent-memory transport
 and commercial-game connectors remain outside this package. Server authentication,
 provider selection, per-user/global quotas and storage belong to the composition
 root. The generic SDK cannot bypass those boundaries.
+
+### Optional game-owned dialogue presentation
+
+`MountedGame.say?(speech)` is an additive experimental presentation hook. Existing
+hosts implementing pause/resume/destroy remain valid. The application can deliver
+player-requested chat through this method; each game owns its bubble, animation,
+positioning, reduced-motion behavior and cleanup. It grants no action authority
+and adds nothing to the bridge wire envelope. Game-requested dialogue is shown by
+the host after its existing freshness checks. Silent planning results are valid.
+Scenario/fallback dialogue uses authored in-character reactions rather than
+repeating untrusted host reports; its source label remains explicit.

@@ -198,3 +198,21 @@ check does not verify Clerk login. The current revision requires new authenticat
 isolation and UI checks; live Clerk Google/email verification follows test-instance
 configuration. Live Cloudflare inference and publication are not implied by local
 checks. Test credentials and observations remain ignored local artifacts.
+
+## Public discovery and readable HTML
+
+The local web build prerenders the landing page, policies and demo descriptions.
+`/demo?game=garden`, `cards` and `dungeon` each return an informative HTML page
+with its own title, description and canonical URL before JavaScript runs. The
+interactive client replaces that initial content when loaded. Public readers and
+search agents do not need to run a renderer, sign in or call a model. The same
+HTML is selected for all user agents; this is not crawler-only content.
+
+`robots.txt`, `sitemap.xml` and `llms.txt` describe public content and source links.
+`/app` and `/lab` use a noindex shell, and robots excludes application/API paths.
+These discovery preferences do not replace server-side authorization. Hosted
+Cloudflare bot settings may still apply before Worker routing. Local checks of a
+user-agent string do not prove treatment of a verified crawler network.
+
+For another self-hosted origin, set `IFSOUL_PUBLIC_ORIGIN` when running
+`pnpm build:web`; canonical and discovery URLs use that origin.

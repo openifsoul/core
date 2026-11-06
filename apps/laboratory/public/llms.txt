@@ -1,0 +1,18 @@
+# IfSoul
+
+> An experimental open-source runtime for persistent AI characters, bounded plans and observable memory across games and conversation.
+
+Games provide APIs through bridges. A bridge describes the situation, exposes allowed choices and dialogue, and reports actual outcomes. IfSoul connects this context to character memory and a selected model. Each game owns its rules, movement, combat, visuals and whether to apply a response.
+
+## Public pages
+- [Project overview](https://ifsoul.h3lpkey.com/): Concept, architecture and documentation links.
+- [Playground overview](https://ifsoul.h3lpkey.com/demo): Three independent original examples; public HTML can be read without JavaScript or playing.
+- [Garden — PixiJS](https://ifsoul.h3lpkey.com/demo?game=garden): Autonomous gardening with limited water and compost. [Source](https://github.com/openifsoul/example-garden).
+- [Friendly 21 — HTML/CSS/JavaScript](https://ifsoul.h3lpkey.com/demo?game=cards): A card game with bounded companion choices. [Source](https://github.com/openifsoul/example-friendly-21).
+- [Dungeon — Phaser](https://ifsoul.h3lpkey.com/demo?game=dungeon): Host-owned tank/healer combat and requested companion dialogue. [Source](https://github.com/openifsoul/example-dungeon).
+- [Core and documentation](https://github.com/openifsoul/core).
+- [Privacy](https://ifsoul.h3lpkey.com/privacy).
+- [Terms](https://ifsoul.h3lpkey.com/terms).
+
+## Boundaries
+The playground is an experimental demonstration. Scenario replies are scripted; model replies require a connection and may fall back visibly. Demo memory is limited to the latest 48 entries per companion in a browser tab. It is not a permanent archive or evidence of production-grade character continuity. Accounts, conversations, API endpoints and credentials are not public crawl targets. Reading these pages does not require playing the games or calling any model.

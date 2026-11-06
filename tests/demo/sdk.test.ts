@@ -123,7 +123,7 @@ test("responses cannot introduce commands, unknown choices or oversized speech",
   );
 });
 
-test("scenario output is deterministic and carries honest provenance and reported context", () => {
+test("scenario speech is deterministic, contextual and keeps report wording private", () => {
   const input = {
     ...request(),
     operation: "chat" as const,
@@ -143,9 +143,29 @@ test("scenario output is deterministic and carries honest provenance and reporte
     scenarioResponse(structuredClone(input)),
   );
   assert.equal(scenarioResponse(input).source, "scenario");
-  assert.match(
+  assert.match(scenarioResponse(input).speech, /sprout/);
+  assert.doesNotMatch(
     scenarioResponse(input).speech,
-    /The host reported: Two plants watered/,
+    /host|report|Two plants watered/i,
+  );
+  const contaminated = {
+    ...input,
+    history: [
+      {
+        ...input.history[0],
+        hostId: "another-world",
+        summary: "Two plants watered. PRIVATE_MARKER",
+      },
+    ],
+  };
+  assert.doesNotMatch(scenarioResponse(contaminated).speech, /PRIVATE_MARKER/);
+  assert.equal(
+    scenarioResponse(contaminated).speech,
+    scenarioResponse({ ...input, history: [] }).speech,
+  );
+  assert.doesNotMatch(
+    scenarioResponse(input, "fallback").speech,
+    /host|report/i,
   );
   assert.equal(scenarioResponse(input, "fallback").source, "fallback");
 });

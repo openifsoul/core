@@ -22,7 +22,7 @@
     "check": "pnpm format:check && pnpm typecheck && pnpm check:contracts && pnpm test:runtime && pnpm test:lab && pnpm check:docs && pnpm check:boundaries && pnpm check:validators && pnpm test:server && pnpm test:providers && pnpm test:tooling && pnpm test:demo",
     "generate:validators": "node scripts/generate-validators.mjs",
     "check:validators": "node scripts/generate-validators.mjs --check",
-    "build:web": "vite build --config apps/laboratory/vite.config.ts && pnpm check:public-assets",
+    "build:web": "vite build --config apps/laboratory/vite.config.ts && node scripts/prerender-public.mjs && pnpm check:public-assets",
     "lab:web": "tsx apps/server/src/local.ts",
     "dev:cloud": "wrangler dev --local",
     "types:cloud": "wrangler types",

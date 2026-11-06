@@ -194,6 +194,7 @@ export function createDemoAPI(options: {
   store: PrivateStore;
   authenticate: (request: Request) => Promise<DemoPrincipal | undefined>;
   client?: () => Promise<{ client: ModelClient; model: string }>;
+  available?: () => Promise<boolean>;
   now?: () => number;
   budget?: ReturnType<typeof createPaidBudgetGate>;
 }) {
@@ -221,7 +222,9 @@ export function createDemoAPI(options: {
       if (path === "/api/demo/status" && request.method === "GET")
         return Response.json({
           version: BRIDGE_VERSION,
-          available: !!options.client,
+          available:
+            !!options.client &&
+            (options.available ? await options.available() : true),
           authenticated: !!user,
           remaining: user ? budget.remaining(user) : 0,
         });

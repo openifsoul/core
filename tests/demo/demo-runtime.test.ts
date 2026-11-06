@@ -52,6 +52,11 @@ test("demo plan traverses normative runtime and rejects unadvertised intent", as
     "test",
   );
   assert.equal(response.choiceId, "stand");
+  assert.equal(
+    response.speech,
+    "",
+    "planning explanations must not be forwarded as dialogue",
+  );
   assert.equal(response.source, "llm");
   assert.equal(calls, 1);
   await assert.rejects(

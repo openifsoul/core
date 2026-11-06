@@ -29,3 +29,40 @@ for (const name of await readdir(directory)) {
 console.log(
   "Browser bundles contain no server secret bindings, provider endpoint or credential-like values.",
 );
+
+const publicRoot = new URL("../dist/web/", import.meta.url);
+for (const [file, heading] of [
+  ["index.html", "A character’s story"],
+  ["public-pages/demo-garden.html", "Garden — an IfSoul bridge example"],
+  ["public-pages/demo-cards.html", "Friendly 21 — an IfSoul bridge example"],
+  ["public-pages/demo-dungeon.html", "Dungeon — an IfSoul bridge example"],
+]) {
+  const html = await readFile(new URL(file, publicRoot), "utf8");
+  assert(html.includes(heading), `Missing no-JavaScript content in ${file}`);
+  assert(html.includes('rel="canonical"'), `Missing canonical URL in ${file}`);
+  assert(
+    !html.includes('<div id="root"></div>'),
+    `Empty public shell in ${file}`,
+  );
+  assert(!html.includes("<canvas"), `Prerender must not run games: ${file}`);
+}
+const app = await readFile(
+  new URL("public-pages/app.html", publicRoot),
+  "utf8",
+);
+assert(
+  app.includes('content="noindex, nofollow"'),
+  "Private App shell must not be indexed",
+);
+for (const [name, marker] of [
+  ["robots.txt", "Sitemap:"],
+  ["sitemap.xml", "<urlset"],
+  ["llms.txt", "# IfSoul"],
+])
+  assert(
+    (await readFile(new URL(name, publicRoot), "utf8")).includes(marker),
+    `Missing discovery asset ${name}`,
+  );
+console.log(
+  "Public HTML contains indexable project/game information; private App is noindex.",
+);

@@ -358,26 +358,26 @@ packages:
       react: '>=17'
 
   '@ifsoul/adapter-sdk@file:vendor/sdk/ifsoul-adapter-sdk-0.1.0-alpha.1.tgz':
-    resolution: {integrity: sha512-Dsi1kDVQGv393sHRJ38hp3FVYtefeqXP+u9lK4X4HevWJq0MhgG6UY8I+mWupVYkoPSR67zSdx6UQvZd9SaL6A==, tarball: file:vendor/sdk/ifsoul-adapter-sdk-0.1.0-alpha.1.tgz}
+    resolution: {integrity: sha512-ApReVHUAka/Bknjnac3id1hL821Dh7U9u01SBEKTMv4W0T0NDWEOAnV6AoS6v1VUean6/qx3lfktQ5n0RT8Cmg==, tarball: file:vendor/sdk/ifsoul-adapter-sdk-0.1.0-alpha.1.tgz}
     version: 0.1.0-alpha.1
     engines: {node: '>=22.18'}
 
   '@ifsoul/example-dungeon@file:vendor/examples/ifsoul-example-dungeon-0.1.0-alpha.1.tgz':
-    resolution: {integrity: sha512-/y/fUzNBAelQLrBa6Eo8NOenLx/9C24PY1QNuYabTL5sDTf6q4FK4wzpofo/AWtYRtRZAKRKHYrZ6+a94qK9sw==, tarball: file:vendor/examples/ifsoul-example-dungeon-0.1.0-alpha.1.tgz}
+    resolution: {integrity: sha512-3z5Kcf4PQSgzG0MHBq/ReRooJWuF6bamW1d8jZxzKR4aP5spUIIKf4KJRFfIYu3+myQG9L/TM9aEaONArN2vgw==, tarball: file:vendor/examples/ifsoul-example-dungeon-0.1.0-alpha.1.tgz}
     version: 0.1.0-alpha.1
     engines: {node: '>=22.18 <25'}
     bundledDependencies:
       - '@ifsoul/adapter-sdk'
 
   '@ifsoul/example-friendly-21@file:vendor/examples/ifsoul-example-friendly-21-0.1.0-alpha.1.tgz':
-    resolution: {integrity: sha512-GZZs45xNdklLaGOI3dyMkjSVEHvLZrxf7q2nTRMKpO3159jV2MVozYCbdPMz6hRqhdiNa8BnJdif8wVwgt2/OA==, tarball: file:vendor/examples/ifsoul-example-friendly-21-0.1.0-alpha.1.tgz}
+    resolution: {integrity: sha512-8fuzaMCGO3lX4nd69fpkqU5fzVzEKi16rBH4IgKZyJxiiSjoArKgrkLuqoEw+9+WtvBmdfjzzbDsPdgrATfjHQ==, tarball: file:vendor/examples/ifsoul-example-friendly-21-0.1.0-alpha.1.tgz}
     version: 0.1.0-alpha.1
     engines: {node: '>=22.18 <25'}
     bundledDependencies:
       - '@ifsoul/adapter-sdk'
 
   '@ifsoul/example-garden@file:vendor/examples/ifsoul-example-garden-0.1.0-alpha.1.tgz':
-    resolution: {integrity: sha512-6EqNc5TqWxl8PsKoQK+uNBp8M+OTRJT2KT4kQCJC6llCjG0shuwH8FQFKoV4vsGMR7dLqjgQ6vVPoM+1U7/46Q==, tarball: file:vendor/examples/ifsoul-example-garden-0.1.0-alpha.1.tgz}
+    resolution: {integrity: sha512-uFDDn7pt14motNqSLgZdOGVD7uEcHpZQTRnGqnoj8xqAdp678ath+nmrnA5dvdox3lWLWuIbLuugQeOQ1TwuBg==, tarball: file:vendor/examples/ifsoul-example-garden-0.1.0-alpha.1.tgz}
     version: 0.1.0-alpha.1
     engines: {node: '>=22.18 <25'}
     bundledDependencies:

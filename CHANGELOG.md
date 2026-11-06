@@ -3,7 +3,32 @@
 Changes to the source project are recorded here. Protocol versions are separate;
 see [versioning](docs/versioning.md). No stable SDK release is implied.
 
-## Unreleased
+## Playground refresh — 2026-11-06 (source release)
+
+- Refresh companion portraits, game-owned sprites and animated dialogue; align
+  game scenes with chat/memory, use Cuelark controls, and explain the independent
+  bridges with linked example repositories and engine labels.
+- Prerender public landing, policies and game descriptions with canonical metadata;
+  add robots, sitemap and agent-readable project/source information. Public
+  discovery requires neither a game renderer nor an authenticated model call.
+  Private App shells remain noindex and server-authorized.
+
+## Earlier experimental source changes
+
+- Garden paths and beds blend into grass with soft irregular edges; companion
+  name and basket labels are removed from the playfield.
+
+- Garden uses generated grass and earth tiles, removes extra vector scenery and
+  cast shadows, and keeps the gardener visible in front of the well.
+
+- Demo model mode opens Clerk sign-in in a modal, rechecks connection and allowance,
+  and preserves drafts when sessions expire. Local readiness verifies the installed
+  Ollama model instead of assuming a configured provider is online.
+
+- Add optional game-owned dialogue presentation through `MountedGame.say?` without
+  changing the bridge wire format or host control authority. Scenario/fallback
+  speech no longer quotes raw host reports, and model plan explanations stay
+  separate from character dialogue. Demo reset uses a Cuelark alert dialog.
 
 - Package the experimental adapter SDK as installable ESM/declarations and move
   the three original hosts/adapters/standalone shells into independent local

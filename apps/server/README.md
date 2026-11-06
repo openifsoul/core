@@ -8,6 +8,10 @@ subject to its own Durable Object SQLite store. Browser-supplied identity fields
 cannot choose that store. `/lab` debug behavior is local-only; `/app` conversation
 uses a neutral chat context rather than the synthetic garden briefing.
 
+Cloud HTTP requests redirect to HTTPS with status 308 before routing assets or
+API handlers. HTTPS responses include one year of HSTS for the current hostname
+only; loopback HTTP remains available for local Worker testing.
+
 Local providers include installed Ollama, OpenAI BYOK and labeled scenario mode.
 Workers supports Workers AI, per-user OpenAI BYOK and scenario mode. BYOK keys are
 write-only through the API and encrypted separately from character history.
@@ -26,3 +30,8 @@ manual under [deployment policy](../../docs/deployment.md). This README describe
 source implementation, not production release or completed real Clerk browser QA.
 See [web guide](../../docs/web-laboratory.md) and
 [security boundary](../../docs/public-private-boundary.md).
+
+For local demo model mode, run Ollama with `llama3.2:latest` installed (or select an
+installed text model through `IFSOUL_DEMO_MODEL`). The status endpoint checks the
+configured model through Ollama discovery without running inference or charging
+quota. An offline provider leaves free scenario play available.

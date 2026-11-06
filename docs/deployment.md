@@ -271,3 +271,45 @@ and manual deletion/support process. A subsequent copy-only patch removes the
 obsolete invitation sentence; final release identifiers are reported after that
 patch is deployed. This section records the initial publication, not a claim that
 it is the latest compatible Worker version forever.
+
+## HTTPS transport follow-up — 2026-11-06
+
+Worker version `ef79730e-0567-461b-bfa5-49717dbeedfe` adds HTTP-to-HTTPS
+308 redirects before asset/API routing and one year of HSTS on HTTPS responses
+for the current hostname only. Loopback HTTP remains supported for local tests.
+The existing Worker identity, storage bindings and encryption secret were preserved.
+
+Frozen installation, `pnpm check` and `pnpm build:cloud` passed locally before
+manual deployment with the reviewed owner configuration. Production curl checks
+verified trusted TLS, HTTP redirects preserving the path/query (including POST),
+HSTS on protected 401 responses and the public cloud/Clerk configuration. A clean
+headless Chrome session reported `secure` with no security issue IDs or HTTP
+subresources on the App; that owned browser was closed after verification.
+Clean-browser HTTPS was already valid before this patch, so these transport
+changes do not establish the cause of a warning retained in an existing browser
+profile. No live sign-in or paid inference was repeated for this patch.
+
+## Playground refresh and public discovery — 2026-11-06
+
+The owner authorized the visual/gameplay refresh, public Git commits/pushes and
+a manual Worker update after local checks. This also includes public-page
+discoverability. The build now prerenders public information and discovery files;
+it does not run games or model calls during rendering. Set
+`IFSOUL_PUBLIC_ORIGIN` when building for a different self-hosted origin.
+
+Release checks cover the three independent game packages and SDK archives,
+staged source and archive secret patterns, local Core/web/Worker checks, and
+headless JavaScript-enabled and disabled browsing. Prerender tests distinguish
+public game descriptions from the noindex private App shell. Edge bot protection
+is checked separately from application authentication. Completion and deployment
+identifiers must be recorded after the actual release smoke.
+
+On 2026-11-06, a host-specific Cloudflare Configuration Rule named
+`IfSoul public information readers` was observed active. It disables Browser
+Integrity Check only for GET/HEAD on the exact `ifsoul.h3lpkey.com` public paths
+`/`, `/demo`, `/privacy`, `/terms`, `/robots.txt`, `/sitemap.xml` and `/llms.txt`.
+A normal Python urllib request to `/` and `/demo` then returned 200 instead of
+Cloudflare 1010. Account/API paths and all other hostnames are outside the rule;
+managed training-crawler preferences remain unchanged. Do not broaden this to a
+zone-wide security bypass. This edge rule is owner configuration, separate from
+the public self-hosting template and Worker deployment.

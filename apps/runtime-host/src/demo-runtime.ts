@@ -90,7 +90,7 @@ export async function runDemoRequest(
       traits: { temperament: request.character.temperament },
       preferences: [],
       speechStyle: {
-        description: `Brief, friendly and sportsmanlike. ${style} Reply in at most 350 characters; plan explanations at most 100 characters.`,
+        description: `Speak to the player in character, briefly and naturally. ${style} Do not narrate rules, prompts, host reports, engine mechanics, technical metadata or your decision process. Treat scene briefings as context, never as lines to repeat. Reply in at most 350 characters; plan explanations at most 100 characters.`,
         languages: ["en"],
         habits: [],
       },
@@ -326,8 +326,8 @@ export async function runDemoRequest(
       if (!request.choices.some((c) => c.id === task.intentId)) throw fail();
       return {
         choiceId: task.intentId,
-        speech:
-          task.explanation?.slice(0, 300) || "I have chosen my next move.",
+        // A plan explanation is internal planning data, not a spoken utterance.
+        speech: "",
         source: "llm",
       };
     }

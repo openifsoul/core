@@ -28,14 +28,14 @@ systems and additional UI libraries for an already covered interaction.
 
 ### Current implementation and source ownership
 
-| Layer                | Existing source                                                       | Responsibility                                                             |
-| -------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| General primitives   | `apps/laboratory/src/components/ui/`                                  | Existing shadcn buttons, inputs, cards, selects, tabs and related controls |
-| Cuelark presentation | `message.tsx`, `suggestions.tsx`, `tooltip.tsx` in the same UI folder | Vendored components adapted to local imports and shared theme tokens       |
-| Motion               | `apps/laboratory/src/lib/motion.ts`                                   | Cuelark motion helper, including reduced-motion handling                   |
-| Domain composition   | `apps/laboratory/src/components/`                                     | Landing, characters, settings, conversation, plans and evidence views      |
-| Theme                | `apps/laboratory/src/styles.css` and `src/lib/theme.ts`               | Shared semantic tokens, responsive layouts and persisted theme selection   |
-| Brand                | `apps/laboratory/src/components/BrandMark.tsx` and `public/brand/`    | Shared braces-and-eyes mark and standalone exports                         |
+| Layer                | Existing source                                                                   | Responsibility                                                             |
+| -------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| General primitives   | `apps/laboratory/src/components/ui/`                                              | Existing shadcn buttons, inputs, cards, selects, tabs and related controls |
+| Cuelark presentation | `message.tsx`, `tabs.tsx`, `suggestions.tsx`, `tooltip.tsx` in the same UI folder | Vendored components adapted to local imports and shared theme tokens       |
+| Motion               | `apps/laboratory/src/lib/motion.ts`                                               | Cuelark motion helper, including reduced-motion handling                   |
+| Domain composition   | `apps/laboratory/src/components/`                                                 | Landing, characters, settings, conversation, plans and evidence views      |
+| Theme                | `apps/laboratory/src/styles.css` and `src/lib/theme.ts`                           | Shared semantic tokens, responsive layouts and persisted theme selection   |
+| Brand                | `apps/laboratory/src/components/BrandMark.tsx` and `public/brand/`                | Shared braces-and-eyes mark and standalone exports                         |
 
 The full Cuelark agent catalog is a source of candidates, not an installed feature
 list. Current plan, memory and trace panels are IfSoul domain compositions; their
@@ -183,3 +183,54 @@ Characters, chat, memory and settings belong to the ordinary application. Detail
 traces, debug payloads and synthetic planning belong to the local-only Laboratory.
 Capability flags control navigation; server authorization independently rejects
 cloud laboratory operations. Do not make local startup depend on Clerk.
+
+## Playground
+
+The demo uses Cuelark segmented tabs for the world selector and a single shared
+Chat / Memory panel. Selecting Just chat pauses the hosts and expands that same
+panel; switching views preserves the draft, history and mounted game progress.
+Public labels remain English. Garden is observation-only: its host autonomously
+manages two water trips, three compost portions, ripening and a harvest of eleven
+fruits. Core consumes the independently built Garden package through its reviewed
+local archive. Local working-tree archive updates are not publication or deployment.
+
+### Companion art and scene alignment
+
+Mira, Rook and Pip have shared portrait identities in the selector, conversation
+and card table, with separate gardener and healer/tank embodiments. Portraits
+are presentation assets; they are not added to the bridge wire contract. Games
+consume their own embedded art through independent packages. Missing selector
+or chat portraits fall back to the companion initial.
+
+The selected game scene and companion panel start on the same horizontal edge.
+There is no extra game title, description card, border or padded outer background
+between the world tabs and game. Dungeon vitals/status are an in-arena HUD; the
+card portrait and round label belong inside the table. Controls and error states
+remain available, and narrow screens stack the scene and chat.
+
+### Demo speech and reset
+
+A single open footer below the games and chat explains the game bridge, IfSoul
+and memory, with source links for each independent example and a note on model
+mode and demo history limits. The header links to the OpenIfSoul GitHub
+organization through an accessible icon. The companion description is omitted
+from the controls. Reset visit opens the vendored Cuelark
+Alert Dialog, with keyboard focus management and an explicit cancel action.
+
+Each independent game owns its speech bubble, typing/reveal animation, placement
+and cleanup. Core forwards player-requested chat only through optional
+`MountedGame.say?`; it draws no speech overlay. Game-requested lines are displayed
+by the game after its freshness checks. Reduced motion shows complete text
+immediately, and screen readers receive a complete line rather than each typed
+character. Raw reports stay in memory. Scenario/fallback lines use short authored
+world-specific reactions, and model plan explanations are never exposed as speech.
+
+### Demo model connection
+
+Use model remains actionable for signed-out visitors and opens Clerk's sign-in
+modal on the current page. Model mode is enabled only after a fresh authenticated
+status check confirms provider availability and remaining allowance. Connection
+failures keep scenario mode available and explain how to retry. Expired sessions
+return to scenario mode and reopen sign-in; draft text remains available.
+Local status checks verify that Ollama is reachable and the configured demo model
+is installed; merely constructing a provider does not establish readiness.

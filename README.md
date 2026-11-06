@@ -246,3 +246,8 @@ adapters and standalone developer shells belong to separate local repositories;
 siblings or a registry. The SDK is installable as a local experimental package;
 the example sources are public on GitHub, while npm packages remain unpublished
 and stable external-game support is not claimed. Builds and deployments remain local/manual.
+
+The landing page and each demo description are readable as HTML without
+JavaScript or playing a game. Public discovery includes `robots.txt`,
+`sitemap.xml` and `llms.txt`; account and API access remains protected. See
+[the browser demo](docs/browser-demo.md#public-discovery-and-readable-html).

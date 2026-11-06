@@ -103,7 +103,7 @@ export function createCloudRouter(options: {
   assets: (request: Request) => Promise<Response>;
   authenticate?: (request: Request) => Promise<AppPrincipal | undefined>;
 }) {
-  return async (request: Request): Promise<Response> => {
+  const route = async (request: Request): Promise<Response> => {
     const url = new URL(request.url);
     const path = url.pathname;
     if (path === "/api/config" && request.method === "GET")
@@ -156,5 +156,20 @@ export function createCloudRouter(options: {
         ? await options.demo(request)
         : await options.user(principal, request),
     );
+  };
+  return async (request: Request): Promise<Response> => {
+    const url = new URL(request.url);
+    if (
+      url.protocol === "http:" &&
+      !["127.0.0.1", "localhost", "[::1]"].includes(url.hostname)
+    ) {
+      url.protocol = "https:";
+      return Response.redirect(url.href, 308);
+    }
+    const response = await route(request);
+    if (url.protocol !== "https:") return response;
+    const result = new Response(response.body, response);
+    result.headers.set("Strict-Transport-Security", "max-age=31536000");
+    return result;
   };
 }
