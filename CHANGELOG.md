@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0-alpha.1 — 2026-11-06
+
+- Extract SDK/App/Website/Cloud ownership; Core now builds explicit ESM and declaration exports.
+- Preserve frozen normative contracts and existing runtime/provider behavior.
+- Remove web, game, Clerk and deployment dependencies from public Core.
+
 Changes to the source project are recorded here. Protocol versions are separate;
 see [versioning](docs/versioning.md). No stable SDK release is implied.
 

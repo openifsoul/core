@@ -80,9 +80,9 @@ placement. Managed cloud **may host/import the public runtime and public ports**
 the earlier memory-only cloud restriction is superseded. Private billing,
 accounts, provisioning, and managed operations may wrap it. The open runtime
 cannot import or require those private services, and public self-hosting must
-remain possible. Website consumes public docs/metadata only, with no runtime or
-private character-state dependency. IfSoul App cloud composition verifies Clerk identity before selecting a user
-store; local mode has no Clerk dependency. Shared owner-funded inference budgets
+remain possible. Private Website consumes public package artifacts for its Playground; private Cloud
+verifies Clerk identity before selecting a user store. Public App local mode has
+no Clerk dependency. Shared owner-funded inference budgets
 remain outside individual user stores. Laboratory operations are local-only;
 managed billing and a production service launch remain deferred.
 

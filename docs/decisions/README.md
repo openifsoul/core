@@ -25,3 +25,5 @@ consequences and distinction between an accepted direction and measured behavior
 - [0012 — IfSoul App identity and local laboratory](0012-app-auth-and-local-laboratory.md)
 
 - [0013 — Independent game examples and an installable experimental SDK](0013-independent-game-examples.md)
+
+- [0014: independent public libraries and product compositions](0014-repository-product-split.md).

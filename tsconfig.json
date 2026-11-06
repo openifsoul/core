@@ -9,18 +9,14 @@
     "noEmit": true,
     "skipLibCheck": true,
     "types": ["node"],
-    "jsx": "react-jsx",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "paths": {
-      "@/*": ["./apps/laboratory/src/*"]
-    }
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
   "include": [
-    "packages/**/*.ts",
-    "apps/**/*.ts",
-    "tests/**/*.ts",
-    "worker-configuration.d.ts",
-    "apps/**/*.tsx",
-    "packages/**/*.tsx"
+    "packages/protocol/src/**/*.ts",
+    "packages/runtime/src/**/*.ts",
+    "packages/memory/src/**/*.ts",
+    "packages/model-providers/src/**/*.ts",
+    "tests/runtime/**/*.ts",
+    "tests/providers/**/*.ts"
   ]
 }

@@ -1,8 +1,8 @@
 # Bridge authoring guide
 
 Status: **general integration design with a limited executable browser demo SDK**.
-The [adapter SDK](../packages/adapter-sdk/README.md) and
-[three original hosts](../apps/demo-games/README.md) implement an experimental
+The [adapter SDK](https://github.com/openifsoul/sdk/blob/main/README.md) and
+[three original hosts](https://github.com/openifsoul/app/blob/main/apps/demo-games/README.md) implement an experimental
 choice/dialogue transport. Full version/capability negotiation, external-game
 connectors and recovery remain future work. Use [v0.2](../specs/v0.2/README.md) as the contract source for
 exact wire fields. This guide describes responsibilities and conceptual examples,

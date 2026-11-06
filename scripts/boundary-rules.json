@@ -1,52 +1,11 @@
 {
-  "packages/model-providers": ["packages/protocol"],
-  "apps/server": [
-    "packages/protocol",
-    "packages/memory",
-    "packages/model-providers",
-    "apps/runtime-host",
-    "packages/adapter-sdk"
-  ],
-  "apps/laboratory": [
-    "apps/runtime-host",
-    "packages/model-providers",
-    "packages/protocol",
-    "packages/adapter-sdk",
-    "apps/demo-games"
-  ],
   "packages/protocol": [],
   "packages/memory": ["packages/protocol"],
+  "packages/model-providers": ["packages/protocol"],
   "packages/runtime": [
     "packages/protocol",
     "packages/memory",
     "packages/permissions",
-    "packages/model-providers",
-    "packages/adapter-sdk"
-  ],
-  "packages/testing": [
-    "packages/protocol",
-    "packages/adapter-sdk",
     "packages/model-providers"
-  ],
-  "apps/simulator": [
-    "packages/protocol",
-    "packages/runtime",
-    "packages/memory",
-    "packages/permissions",
-    "packages/model-providers",
-    "packages/adapter-sdk",
-    "packages/testing"
-  ],
-  "apps/runtime-host": [
-    "packages/protocol",
-    "packages/runtime",
-    "packages/memory",
-    "packages/permissions",
-    "packages/model-providers",
-    "packages/adapter-sdk",
-    "apps/simulator"
-  ],
-  "packages/adapter-sdk": ["packages/protocol"],
-  "apps/demo-games": ["packages/adapter-sdk"],
-  "apps/test-host": ["packages/adapter-sdk"]
+  ]
 }

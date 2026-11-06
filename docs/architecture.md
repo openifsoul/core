@@ -1,66 +1,28 @@
 # Architecture
 
-Status: **experimental local runtime slice within a broader design**. Runtime,
-SQLite event memory, CLI/web laboratory and real provider clients are implemented.
-IfSoul App has local loopback and Clerk-authenticated Workers composition roots;
-cloud users receive separate stores. This slice is locally developed, not a
-production launch. Real external game bridges and managed billing remain future work. See the
-[runtime API](runtime-api.md) and [laboratory](laboratory.md) for implemented scope. The revised product
-and contracts are described in [product](product.md) and
-[v0.2](../specs/v0.2/README.md). The original v0.1 action-centric contracts remain
-historical; their presence does not add low-level control to the revised design.
-
-A persistent character is independent of its current embodiment and inference
-model. Games and chat are environments; chat can also be a simultaneous channel.
-Supported data/history follows a character across models and worlds without
-promising identical behavior or psychological identity.
+Core is the public headless library. SDK and App are separate public repositories;
+Website and managed Cloud are private compositions. See [ADR 0014](decisions/0014-repository-product-split.md)
+for package exports, ownership and reproducible artifacts. Historical application
+and laboratory descriptions below explain the design; their composition roots
+now belong to App, Website or Cloud, not this library.
 
 ## Permitted import graph
 
-`A → B` means A imports B. This is the revised permitted dependency graph, not
-published package entrypoints. The runtime host contains the source-run CLI and shared web service.
-For this development laboratory only, it imports `apps/simulator` to compose the
-synthetic host; future production hosting must not depend on simulator behavior.
-
 <!-- BOUNDARY_MATRIX_START -->
 
-| Component                  | Allowed IfSoul dependencies                                                                                                                                |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/laboratory`          | `apps/runtime-host`, `packages/model-providers`, `packages/protocol`, `packages/adapter-sdk`, `apps/demo-games`                                            |
-| `apps/runtime-host`        | `packages/protocol`, `packages/runtime`, `packages/memory`, `packages/permissions`, `packages/model-providers`, `packages/adapter-sdk`, `apps/simulator`   |
-| `apps/server`              | `packages/protocol`, `packages/memory`, `packages/model-providers`, `apps/runtime-host`, `packages/adapter-sdk`                                            |
-| `apps/simulator`           | `packages/protocol`, `packages/runtime`, `packages/memory`, `packages/permissions`, `packages/model-providers`, `packages/adapter-sdk`, `packages/testing` |
-| `packages/memory`          | `packages/protocol`                                                                                                                                        |
-| `packages/model-providers` | `packages/protocol`                                                                                                                                        |
-| `packages/protocol`        | None                                                                                                                                                       |
-| `packages/runtime`         | `packages/protocol`, `packages/memory`, `packages/permissions`, `packages/model-providers`, `packages/adapter-sdk`                                         |
-| `packages/testing`         | `packages/protocol`, `packages/adapter-sdk`, `packages/model-providers`                                                                                    |
-
-| `packages/adapter-sdk` | `packages/protocol` |
-| `apps/demo-games` | `packages/adapter-sdk` |
-| `apps/test-host` | `packages/adapter-sdk` |
+| Component                  | Allowed IfSoul dependencies                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `packages/protocol`        | None                                                                                       |
+| `packages/memory`          | `packages/protocol`                                                                        |
+| `packages/model-providers` | `packages/protocol`                                                                        |
+| `packages/runtime`         | `packages/protocol`, `packages/memory`, `packages/permissions`, `packages/model-providers` |
 
 <!-- BOUNDARY_MATRIX_END -->
 
-This current implementation matrix is checked against
-[scripts/boundary-rules.json](../scripts/boundary-rules.json). Runtime dependencies
-on memory, providers and future adapter SDK are restricted to their ports; UI
-imports from backend components are type-only; the browser-safe adapter SDK and
-demo game hosts are executable frontend dependencies. The laboratory composition explicitly
-allows runtime-host to use the simulator. Planned components are not automatically
-authorized by this matrix; adding an implementation requires updating the agreed
-boundary and its checks. Future game/chat bridges may depend on protocol and
-adapter-sdk; private managed hosting may compose public core, never the reverse.
-
-The previous memory-only restriction on cloud is superseded: managed hosting can
-run/import the public runtime and its ports. Private accounts, billing, and
-provisioning may orchestrate it, but the open runtime never imports those private
-services. Public self-hosting must remain possible without them.
-
-No cycles, production imports from `testing`, public-to-private dependencies, or
-relative imports across repositories are permitted. Protocol has no runtime,
-game, provider, Node API, or cloud dependency. Game-specific APIs stay outside
-public core; host mechanics stay in the game/mod even for first-party bridges.
+Runtime imports memory/provider ports only. Core never imports SDK, games, UI,
+Clerk or private services. Protocol has no runtime, provider or platform IO.
+Permissions are currently implemented inside runtime semantic validation.
+Cross-repository source imports and dependency cycles are prohibited.
 
 ## Composition roots and ports
 
@@ -167,52 +129,16 @@ Hidden model reasoning is not required or stored. See
 [runtime profiles](runtime-profiles.md), [bridge authoring](bridge-authoring.md),
 and [security](security.md) for detailed requirements.
 
-## Web/server composition
+## Composition outside Core
 
-`apps/laboratory` is the source directory for IfSoul App (React/TypeScript/shadcn).
-It imports backend types only, plus the browser-safe SDK and demo hosts.
-`apps/server` composes runtime-host service, provider clients and memory. Local
-Node SQLite and Workers Durable Object SQLite share storage semantics through a
-synchronous SQL driver. Protocol validators are generated ahead of time from
-normative schemas, avoiding dynamic compilation inside Workers. The generic
-server and adapters remain open self-hostable code. See
-[public/private boundary](public-private-boundary.md) for owner infrastructure.
+Public App owns the generic service, local loopback server and laboratory. SDK
+owns browser-safe bridge requests and host conformance. Private Website owns the
+curated game catalog and authenticated Playground presentation. Private Cloud
+owns Clerk verification, per-user Durable Objects, encrypted user credentials,
+shared owner-funded inference quotas and production routing/deployment.
 
-### Application identity and local debugging
-
-The browser reads public deployment capabilities; it cannot choose a trusted
-principal or enable cloud debug routes. Cloud authentication verifies Clerk
-session signatures and claims before selecting a per-user Durable Object.
-Characters, history and encrypted provider credentials live within that user
-store. A separate shared budget coordinator prevents user partitions from
-multiplying owner-funded inference allowances. Local mode needs no Clerk and
-accepts only protected loopback access. Laboratory operations are local-only.
-
-```mermaid
-flowchart LR
-  UI["IfSoul App · sidebar-07"] --> Mode{"Server mode"}
-  Mode -->|"Local"| Loop["Loopback Host/Origin checks"]
-  Loop --> Local[("Owner SQLite + encrypted credentials")]
-  Loop --> Lab["Local Laboratory debugging"]
-  Mode -->|"Cloud"| Auth["Verified Clerk session · Google/email"]
-  Auth --> User[("Per-user Durable Object")]
-  Auth --> Budget["Shared paid-inference budget"]
-  User --> Runtime["Runtime and provider ports"]
-  Budget --> Runtime
-```
-
-See [ADR 0012](decisions/0012-app-auth-and-local-laboratory.md). No public runtime
-package depends on Clerk. Account management belongs to application composition,
-not the portable character schema or MemoryPort.
-
-## Independent game package consumers
-
-Core's `apps/demo-games` owns only the curated package catalog and its App
-integration. Garden, Friendly 21 and Dungeon own their mechanics, narrow adapter,
-standalone shell and rule tests in independent repositories. Their package exports
-are consumed through reviewed versioned distributions; no relative import crosses
-checkout boundaries. The one SDK child package is compiled ESM/declarations and
-remains an experimental bounded transport rather than the full normative bridge.
-See [ADR 0013](decisions/0013-independent-game-examples.md) and
-[distribution provenance](../vendor/README.md). Third-party implementations belong
-in their owners' repositories, not an expanding central game directory.
+Node SQLite and Workers SQLite share the public synchronous SQL driver semantics.
+Protocol validators are generated ahead of time and included in the built Core
+artifact; no runtime dynamic compilation is needed. Core imports no composition
+root, account system or game package. A public self-hosted App remains usable
+without Clerk or private services. See [ADR 0014](decisions/0014-repository-product-split.md).

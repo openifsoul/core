@@ -1,11 +1,11 @@
 # Contributing to IfSoul
 
-IfSoul has draft contracts and an experimental local runtime, SQLite memory
-and CLI/web laboratory with real provider clients and an owner server. Published
-SDKs and real game integrations remain future work. Start with the [product](docs/product.md), [architecture](docs/architecture.md),
-[boundaries](docs/boundaries.md) and active [v0.2 specification](specs/v0.2/README.md).
-Useful contributions now include contract review, clear documentation and focused
-positive or negative fixtures.
+Core owns experimental protocol/runtime/memory/permissions/provider primitives.
+SDK and self-hostable App are independent public repositories; Website and Cloud
+are private compositions. Start with [architecture](docs/architecture.md),
+[repository ownership](docs/decisions/0014-repository-product-split.md), and the
+active [v0.2 specification](specs/v0.2/README.md). Run local checks described in
+[development](docs/development.md). No public checkout requires private access.
 
 ## Changes and decisions
 

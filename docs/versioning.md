@@ -1,19 +1,20 @@
-# Versioning and initial source baseline
+# Versioning
 
-The root manifest starts at **0.1.0-alpha.1** for the initial source snapshot.
-It remains `private: true`: this is not an npm release, a published SDK or a
-stable compatibility promise. No Git tag or remote release is created by setting
-the manifest version. Record changes in [CHANGELOG.md](../CHANGELOG.md).
+The built public package is `@ifsoul/core@0.2.0-alpha.1`. It has explicit ESM and
+declaration exports but has not been published to npm. Consumers use reviewed
+pinned tarballs with checksums and provenance. SDK remains independently versioned
+at `@ifsoul/adapter-sdk@0.1.0-alpha.1`; see [ADR 0014](decisions/0014-repository-product-split.md).
+No version field creates a Git tag, registry release or stability promise.
 
 ## Separate version dimensions
 
-| Surface                                          | Policy                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------ |
-| Repository snapshot                              | SemVer-style prereleases while experimental; version lives in package.json     |
-| Protocol and archive schemas                     | Their own explicit versions under the [compatibility policy](compatibility.md) |
-| Source ports and laboratory HTTP API             | Experimental; document consumer-visible breaks and test affected callers       |
-| Future published SDK packages                    | Define exports and support policy before publication; no fake entrypoints now  |
-| Character/template and host vocabulary revisions | Follow the corresponding contract, not the root package version                |
+| Surface                                          | Policy                                                                              |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| Repository snapshot                              | SemVer-style prereleases while experimental; version lives in package.json          |
+| Protocol and archive schemas                     | Their own explicit versions under the [compatibility policy](compatibility.md)      |
+| Source ports and laboratory HTTP API             | Experimental; document consumer-visible breaks and test affected callers            |
+| Future published SDK packages                    | Define exports and support policy before publication; explicit experimental exports |
+| Character/template and host vocabulary revisions | Follow the corresponding contract, not the root package version                     |
 
 Stable 1.0 requires an explicit compatibility and support decision. Before that,
 breaking source/API changes still require a changelog entry and compatibility
@@ -32,7 +33,7 @@ not authorship or semantic compatibility. Review baseline/test changes themselve
 ## Initial commit readiness
 
 Inspect the complete prospective commit because no previous revision exists.
-Run `pnpm check` and `pnpm build:cloud` locally; inspect `git diff --cached --stat`
+Run `pnpm check` and `pnpm build` locally; inspect `git diff --cached --stat`
 and run `pnpm check:boundaries` after staging. The latter also checks indexed
 file names and blob contents so a clean working copy cannot hide an older staged
 secret. Review licenses, original fixtures and secret boundaries separately.

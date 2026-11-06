@@ -69,4 +69,4 @@ preservation, loss reports, export/restore, deletion and backup retention.
 Local/BYOK/managed provider disclosure, credentials, local service authentication
 and origin/session protection also require implementation tests. None of those
 is established by the current static checks of either version. See
-[testing](../../packages/testing/README.md) and [security](../../docs/security.md).
+[testing](https://github.com/openifsoul/app/blob/main/packages/testing/README.md) and [security](../../docs/security.md).

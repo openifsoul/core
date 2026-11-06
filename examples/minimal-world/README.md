@@ -45,6 +45,6 @@ execute watering, authorize a real actor, persist memory or import an archive.
 
 New examples must follow the v0.2 host-owned planning boundary instead of adding
 gameplay skills to this trace. The planned
-[simulator](../../apps/simulator/README.md) must distinguish deterministic host
+[simulator](https://github.com/openifsoul/app/blob/main/apps/simulator/README.md) must distinguish deterministic host
 fixtures, recorded replay and fresh model responses, and independently test
 planning cadence and conversation modes. No end-to-end behavior is proven here.

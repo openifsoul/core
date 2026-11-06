@@ -64,20 +64,15 @@ test("runtime imports ports but not implementations", () => {
     /port only/,
   );
 });
-test("UI reexports and imports are type-only across components", () => {
-  checkEdge(
-    "apps/laboratory/src/App.tsx",
-    "apps/runtime-host/src/service-types.ts",
-    true,
-  );
+test("UI and application components cannot import Core source internally", () => {
   assert.throws(
     () =>
       checkEdge(
         "apps/laboratory/src/App.tsx",
-        "apps/runtime-host/src/service.ts",
-        false,
+        "packages/runtime/src/index.ts",
+        true,
       ),
-    /server types/,
+    /Forbidden/,
   );
 });
 test("protocol cannot import a higher layer", () =>

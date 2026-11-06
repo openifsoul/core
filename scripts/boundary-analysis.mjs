@@ -7,10 +7,6 @@ import path from "node:path";
 import { isBuiltin } from "node:module";
 import { execFileSync } from "node:child_process";
 import { hasPotentialSecret } from "./secret-scan.mjs";
-import {
-  allowedDistributions,
-  checkDistributions,
-} from "./distribution-analysis.mjs";
 import { parsers } from "prettier/plugins/typescript";
 
 export const rules = JSON.parse(
@@ -24,7 +20,6 @@ const componentOf = (file) =>
 const ports = {
   "packages/memory": ["packages/memory/src/port.ts"],
   "packages/model-providers": ["packages/model-providers/src/types.ts"],
-  "packages/adapter-sdk": ["packages/adapter-sdk/src/port.ts"],
 };
 
 export async function dependencies(text, filename) {
@@ -160,11 +155,6 @@ export function checkEdge(from, to, typeOnly) {
     target && rules[source]?.includes(target),
     `Forbidden dependency ${source} -> ${target ?? to}`,
   );
-  if (
-    source === "apps/laboratory" &&
-    !["packages/adapter-sdk", "apps/demo-games"].includes(target)
-  )
-    assert(typeOnly, "Web UI may only import server types");
   if (source === "packages/runtime" && ports[target])
     assert(
       ports[target].includes(to),
@@ -279,8 +269,7 @@ export function assertIndexPath(file) {
     `Private/generated file in Git index: ${file}`,
   );
   assert(
-    !/\.(?:sqlite3?|db|zip|tgz|log)(?:[.-]|$)/.test(file) ||
-      allowedDistributions.has(file),
+    !/\.(?:sqlite3?|db|zip|tgz|log)(?:[.-]|$)/.test(file),
     `Data/archive file in Git index: ${file}`,
   );
 }
@@ -306,18 +295,9 @@ export async function checkGitIndex(root) {
       maxBuffer: 16 * 1024 * 1024,
     });
     indexed.set(file, content);
-    if (!allowedDistributions.has(file))
-      assert(
-        !hasPotentialSecret(content.toString("utf8")),
-        `Potential secret in indexed file ${file}; inspect without printing`,
-      );
+    assert(
+      !hasPotentialSecret(content.toString("utf8")),
+      `Potential secret in indexed file ${file}; inspect without printing`,
+    );
   }
-  if ([...indexed.keys()].some((file) => allowedDistributions.has(file)))
-    await checkDistributions(root, async (relative) => {
-      assert(
-        indexed.has(relative),
-        `Missing staged distribution/inventory: ${relative}`,
-      );
-      return indexed.get(relative);
-    });
 }

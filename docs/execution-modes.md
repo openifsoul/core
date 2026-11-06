@@ -31,7 +31,7 @@ there is no requirement for a network round trip each game tick.
 
 ## Public headless runtime host
 
-The experimental [runtime-host application](../apps/runtime-host/README.md) is
+The experimental [runtime-host application](https://github.com/openifsoul/app/blob/main/apps/runtime-host/README.md) is
 a local CLI composition root for SQLite, runtime and the synthetic laboratory.
 It is not yet a server or distribution. Future hosting will construct
 memory/provider/controller/connector implementations, configure

@@ -36,7 +36,7 @@ the license of every document and example in the repository.
 
 ## shadcn/ui components
 
-Copied and adapted UI primitives in `apps/laboratory/src/components/ui` retain
+UI primitives now owned by App and Website retain
 shadcn's MIT license, copyright 2023 shadcn. See [license](../LICENSES/shadcn-MIT.txt)
 and the [official source](https://github.com/shadcn-ui/ui). This exception is
 separate from original Apache-2.0 application code.

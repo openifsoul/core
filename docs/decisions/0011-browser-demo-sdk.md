@@ -60,8 +60,8 @@ Integrated browser QA must separately exercise controls, tab pauses, themes,
 mobile layout and cleanup. These tests establish neither external commercial-game
 compatibility nor permanent-memory portability.
 
-See [browser demo](../browser-demo.md), [SDK](../../packages/adapter-sdk/README.md),
-[games](../../apps/demo-games/README.md), [standalone host](../../apps/test-host/README.md)
+See [browser demo](../browser-demo.md), [SDK](https://github.com/openifsoul/sdk/blob/main/README.md),
+[games](https://github.com/openifsoul/app/blob/main/apps/demo-games/README.md), [standalone host](https://github.com/openifsoul/sdk/blob/main/apps/test-host/README.md)
 and [execution policy](../deployment.md).
 
 The invitation access decision is superseded by [ADR 0012](0012-app-auth-and-local-laboratory.md); keep this decision as historical rationale.

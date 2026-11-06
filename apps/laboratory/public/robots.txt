@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /app
-Disallow: /lab
-Disallow: /public-pages/
-Sitemap: https://ifsoul.h3lpkey.com/sitemap.xml

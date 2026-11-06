@@ -1,9 +1,9 @@
 {
-  "name": "ifsoul-core-local",
-  "version": "0.1.0-alpha.1",
-  "private": true,
+  "name": "@ifsoul/core",
+  "version": "0.2.0-alpha.1",
+  "private": false,
   "type": "module",
-  "description": "Experimental IfSoul runtime, memory, providers and self-hostable App",
+  "description": "Experimental public IfSoul protocol, runtime, memory and provider primitives",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.15.0",
   "engines": {
@@ -15,58 +15,69 @@
     "check:contracts": "node --test tests/contracts/*.test.mjs",
     "check:docs": "node scripts/check-docs.mjs",
     "check:boundaries": "node scripts/check-boundaries.mjs",
-    "typecheck": "tsc --noEmit",
     "test:runtime": "tsx --test tests/runtime/*.test.ts",
-    "test:lab": "tsx --test tests/lab/*.test.ts",
-    "lab": "tsx apps/runtime-host/src/cli.ts",
-    "check": "pnpm format:check && pnpm typecheck && pnpm check:contracts && pnpm test:runtime && pnpm test:lab && pnpm check:docs && pnpm check:boundaries && pnpm check:validators && pnpm test:server && pnpm test:providers && pnpm test:tooling && pnpm test:demo",
     "generate:validators": "node scripts/generate-validators.mjs",
     "check:validators": "node scripts/generate-validators.mjs --check",
-    "build:web": "vite build --config apps/laboratory/vite.config.ts && node scripts/prerender-public.mjs && pnpm check:public-assets",
-    "lab:web": "tsx apps/server/src/local.ts",
-    "dev:cloud": "wrangler dev --local",
-    "types:cloud": "wrangler types",
-    "build:cloud": "pnpm build:web && wrangler deploy --dry-run --outdir dist/worker",
-    "deploy:cloud": "pnpm build:web && wrangler deploy",
-    "test:server": "tsx --test tests/server/*.test.ts",
-    "test:providers": "tsx --test tests/providers/*.test.ts tests/service/*.test.ts",
-    "check:public-assets": "node scripts/check-public-assets.mjs",
-    "test:tooling": "node --test tests/tooling/*.test.mjs",
-    "test:demo": "tsx --test tests/demo/*.test.ts",
-    "demo:host": "tsx apps/test-host/src/index.ts",
-    "build:sdk": "tsc --project packages/adapter-sdk/tsconfig.build.json",
-    "pack:sdk": "pnpm build:sdk && pnpm --config.ignore-scripts=true --dir packages/adapter-sdk pack --pack-destination ../../.local/packages"
+    "build": "tsc --project tsconfig.build.json && node scripts/copy-build-assets.mjs",
+    "pack:core": "pnpm build && pnpm --config.ignore-scripts=true pack --pack-destination .local/packages",
+    "typecheck": "tsc --noEmit --project tsconfig.build.json && tsc --noEmit --project tsconfig.json",
+    "test:providers": "tsx --test tests/providers/*.test.ts",
+    "test:tooling": "node --test tests/tooling/boundaries.test.mjs tests/tooling/core-package.test.mjs",
+    "check": "pnpm format:check && pnpm typecheck && pnpm check:contracts && pnpm test:runtime && pnpm test:providers && pnpm check:validators && pnpm test:tooling && pnpm check:docs && pnpm check:boundaries && pnpm build"
   },
   "devDependencies": {
-    "@clerk/backend": "3.27.0",
-    "@clerk/react": "6.18.6",
-    "@cloudflare/workers-types": "5.20261104.1",
-    "@fontsource-variable/ibm-plex-sans": "5.3.0",
-    "@gsap/react": "2.1.2",
-    "@tailwindcss/vite": "4.3.4",
     "@types/node": "22.20.5",
-    "@types/react": "19.3.0",
-    "@types/react-dom": "19.3.0",
-    "@vitejs/plugin-react": "6.2.1",
-    "ajv": "8.20.0",
-    "ajv-formats": "3.0.1",
-    "class-variance-authority": "0.7.1",
-    "clsx": "2.1.1",
-    "gsap": "3.15.1",
-    "lucide-react": "1.69.0",
     "prettier": "3.9.10",
-    "radix-ui": "1.8.1",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "tailwind-merge": "3.7.0",
-    "tailwindcss": "4.3.4",
     "tsx": "4.23.15",
-    "typescript": "7.0.2",
-    "vite": "8.3.6",
-    "wrangler": "4.158.0",
-    "@ifsoul/adapter-sdk": "file:vendor/sdk/ifsoul-adapter-sdk-0.1.0-alpha.1.tgz",
-    "@ifsoul/example-garden": "file:vendor/examples/ifsoul-example-garden-0.1.0-alpha.1.tgz",
-    "@ifsoul/example-dungeon": "file:vendor/examples/ifsoul-example-dungeon-0.1.0-alpha.1.tgz",
-    "@ifsoul/example-friendly-21": "file:vendor/examples/ifsoul-example-friendly-21-0.1.0-alpha.1.tgz"
+    "typescript": "7.0.2"
+  },
+  "files": [
+    "dist/packages",
+    "packages/protocol/schemas",
+    "specs",
+    "README.md",
+    "LICENSE",
+    "LICENSES/CC-BY-4.0.txt",
+    "LICENSES/CC0-1.0.txt"
+  ],
+  "sideEffects": false,
+  "exports": {
+    "./protocol": {
+      "types": "./dist/packages/protocol/src/index.d.ts",
+      "import": "./dist/packages/protocol/src/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/packages/runtime/src/index.d.ts",
+      "import": "./dist/packages/runtime/src/index.js"
+    },
+    "./memory/port": {
+      "types": "./dist/packages/memory/src/port.d.ts",
+      "import": "./dist/packages/memory/src/port.js"
+    },
+    "./memory/sql": {
+      "types": "./dist/packages/memory/src/sql.d.ts",
+      "import": "./dist/packages/memory/src/sql.js"
+    },
+    "./memory/sqlite": {
+      "types": "./dist/packages/memory/src/sqlite.d.ts",
+      "import": "./dist/packages/memory/src/sqlite.js"
+    },
+    "./model-providers": {
+      "types": "./dist/packages/model-providers/src/index.d.ts",
+      "import": "./dist/packages/model-providers/src/index.js"
+    },
+    "./model-providers/types": {
+      "types": "./dist/packages/model-providers/src/types.d.ts",
+      "import": "./dist/packages/model-providers/src/types.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openifsoul/core.git"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
   }
 }
