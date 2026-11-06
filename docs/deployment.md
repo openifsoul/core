@@ -313,3 +313,50 @@ Cloudflare 1010. Account/API paths and all other hostnames are outside the rule;
 managed training-crawler preferences remain unchanged. Do not broaden this to a
 zone-wide security bypass. This edge rule is owner configuration, separate from
 the public self-hosting template and Worker deployment.
+
+### Observed release result
+
+The source refresh is published in Core commit
+[`f766b54`](https://github.com/openifsoul/core/commit/f766b543d1fff64251a599ca73da1595aa52c90a),
+Garden [`0e3a568`](https://github.com/openifsoul/example-garden/commit/0e3a568d6dc60dca8090a81658d072d06b6c5a5e),
+Friendly 21 [`753ac01`](https://github.com/openifsoul/example-friendly-21/commit/753ac01ba277f34733eaf626558af222c82fc77f),
+and Dungeon [`74e1ca5`](https://github.com/openifsoul/example-dungeon/commit/74e1ca5df1f06e8a30424a6eff5f6bb80ced1505).
+The manual deployment produced Worker version
+`44d42126-2336-49dd-b17d-00e25a5a93eb`, preserving the existing domain, Worker,
+Durable Object bindings, encryption material and shared quota coordinator.
+The preceding compatible version was `ef79730e-0567-461b-bfa5-49717dbeedfe`.
+
+Frozen installs and checks passed in all four repositories. Core also passed
+checks and a web build from an isolated indexed-source copy without sibling
+repositories, plus a build with `IFSOUL_PUBLIC_ORIGIN=https://example.test`.
+Staged source, reachable Git history and the unpacked distribution members were
+checked for known secret patterns; this is not an exhaustive secret-detection
+claim. The reviewed production configuration preflight and local Worker dry-run
+passed before the manual upload.
+
+Production HTTPS smoke observed:
+
+- Landing, all three game descriptions, policies, robots, sitemap and llms.txt
+  return 200. Canonical metadata and readable descriptions are in the HTML.
+- A JavaScript-disabled browser can read the landing and each game description
+  without creating any canvas. Interactive Garden, Friendly 21 and Dungeon also
+  loaded and responded to their primary controls in a clean browser.
+- Normal Python urllib, Googlebot, Bingbot, OAI-SearchBot, ChatGPT-User and
+  Claude-User request headers received 200 on the sampled public information
+  URLs. Header simulation is not proof of indexing or access from every verified
+  crawler network. Managed training-crawler restrictions remain in place.
+- `/api/config` reports cloud/Clerk with `laboratory:false`; unauthenticated
+  character requests return 401 and laboratory API access returns 403. `/app`
+  remains noindex. HTTPS responses retain HSTS.
+- A signed-out browser opens the Clerk modal from Use model. An existing real
+  authenticated session was recognized, and one bounded Workers AI demo chat
+  returned an `llm` response, cleared the draft and reduced the allowance from
+  15 to 14. No tokens or private conversation state were copied into source.
+
+Fresh Google sign-in, email OTP delivery and the full two-account isolation
+scenario were not repeated in this refresh; the existing authentication boundary
+has deterministic tests and the production session/model check above. The
+optional edge-injected Cloudflare analytics beacon remains blocked by the existing
+CSP; this does not block public HTML, games, sign-in or model responses. No
+analytics permissions were widened as part of this release. No npm publication,
+remote CI, automatic build/deployment or scheduled monitor was added.
