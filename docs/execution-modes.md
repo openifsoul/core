@@ -5,7 +5,7 @@ composes runtime, SQLite and a synthetic host. There is no game connector,
 inference client, managed deployment or self-hosting distribution.
 This document names intended product modes; [deployment policy](deployment.md)
 still requires local checks and a separate decision before actual deployment.
-The revised protocol direction is [v0.2](../specs/v0.2/README.md).
+The revised protocol direction is [current contracts](../specs/current/README.md).
 
 ## Runtime location and model billing
 

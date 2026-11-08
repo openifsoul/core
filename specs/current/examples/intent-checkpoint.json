@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "intent-checkpoint",
+  "memoryId": "checkpoint-initial",
+  "characterId": "character-mira",
+  "recordedAt": "2026-01-01T08:00:00Z",
+  "scope": {
+    "audience": "private",
+    "participantIds": ["participant-mira"],
+    "export": "allowed"
+  },
+  "provenance": {
+    "sources": [
+      {
+        "sourceType": "authored",
+        "sourceId": "template-mira-v2"
+      }
+    ]
+  },
+  "intents": [
+    {
+      "portableIntentId": "learn-herb-care",
+      "description": "Learn to care for herbs when an environment supports it.",
+      "desiredOutcome": "Understand appropriate care through permitted experiences.",
+      "status": "pending",
+      "sourceMemoryIds": []
+    }
+  ]
+}

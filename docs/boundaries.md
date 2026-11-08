@@ -3,7 +3,7 @@
 Status: **design boundaries with a limited local implementation**. The
 [runtime API](runtime-api.md) documents implemented validation and trusted-local
 assumptions; these responsibilities do not imply complete security or isolation. [Architecture](architecture.md) owns the revised import graph;
-[v0.2](../specs/v0.2/README.md) owns revised wire contracts. Original v0.1 remains
+[current contracts](../specs/current/README.md) owns revised wire contracts. Original v0.1 remains
 historical material rather than an additional implementation commitment.
 
 ## State and authority

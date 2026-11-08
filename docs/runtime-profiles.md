@@ -4,7 +4,7 @@ Status: **design profiles with a limited local runtime implementation**. The
 [laboratory](laboratory.md) exercises host requests and scripted conversation;
 there is no autonomous scheduler, persistent live-model loop or game integration.
 This guide explains policy choices for the revised
-[v0.2 contracts](../specs/v0.2/README.md); the specification owns exact fields.
+[current contracts](../specs/current/README.md); the specification owns exact fields.
 Profiles are negotiated behavior and local policy, not claims that every bridge
 supports every mode.
 

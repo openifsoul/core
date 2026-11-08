@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 — coordinated source candidate (not a publication receipt)
+
+- Align all current package and format release identifiers to IfSoul 0.3.0.
+- Add current schemas beside immutable historical contracts and exact legacy
+  bridge/archive readers; stored evidence and identity remain unchanged.
+- Keep substantive model relationship reassessment an open quality gap.
+
 ## Unreleased source changes
 
 - Add optional trusted-owner atomic memory retention, constrained to explicit

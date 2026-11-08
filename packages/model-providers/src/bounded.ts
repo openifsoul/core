@@ -1,8 +1,14 @@
+import {
+  resolveResourceLimits,
+  BUFFERED_JSON_MAX_BYTES,
+  MAX_TIMER_MS,
+} from "../../protocol/src/resource-policy.js";
 import type {
   FetchLike,
   GenerationInput,
   ProviderErrorCode,
   ProviderLimits,
+  ProviderBudgetPolicy,
   ProviderResult,
 } from "./types.js";
 export const DEFAULT_LIMITS: ProviderLimits = {
@@ -18,6 +24,8 @@ export class ProviderFailure extends Error {
 }
 const messages: Record<ProviderErrorCode, string> = {
   configuration: "Provider configuration is unavailable or invalid.",
+  "unsupported-policy":
+    "The configured resource policy requires an unsupported transport or model capacity.",
   "unsupported-model": "The selected model is not supported or installed.",
   timeout: "The model request exceeded its time limit.",
   cancelled: "The model request was cancelled.",
@@ -39,29 +47,150 @@ export const object = (value: unknown): Record<string, unknown> =>
     : {};
 export const byteSize = (value: string): number =>
   new TextEncoder().encode(value).byteLength;
-export function limitsFor(partial?: Partial<ProviderLimits>): ProviderLimits {
-  const limits = { ...DEFAULT_LIMITS, ...partial };
+export const PROVIDER_LEGACY_CEILINGS: ProviderLimits = {
+  timeoutMs: 60_000,
+  maxRequestBytes: 1_000_000,
+  maxResponseBytes: 1_000_000,
+  maxOutputTokens: 4096,
+};
+export function resolveProviderLimits(
+  partial?: Partial<ProviderLimits>,
+  policy?: ProviderBudgetPolicy,
+) {
+  return resolveResourceLimits({
+    layer: "provider",
+    defaults: DEFAULT_LIMITS,
+    legacyCeilings: PROVIDER_LEGACY_CEILINGS,
+    requested: partial,
+    ceilings: policy?.ceilings,
+    implementationCeilings: {
+      timeoutMs: MAX_TIMER_MS,
+      maxRequestBytes: BUFFERED_JSON_MAX_BYTES,
+      maxResponseBytes: BUFFERED_JSON_MAX_BYTES,
+    },
+  });
+}
+export function limitsFor(
+  partial?: Partial<ProviderLimits>,
+  policy?: ProviderBudgetPolicy,
+): ProviderLimits {
+  const report = resolveProviderLimits(partial, policy);
+  try {
+    policy?.onBudget?.(structuredClone(report));
+  } catch {
+    /* Observers cannot affect inference. */
+  }
+  if (report.status !== "accepted")
+    throw new ProviderFailure(
+      report.status === "unsupported"
+        ? "unsupported-policy"
+        : !policy
+          ? "configuration"
+          : report.status === "exceeded"
+            ? "budget-exceeded"
+            : "configuration",
+    );
+  return report.effective;
+}
+export function validateContextBudget(
+  input: GenerationInput,
+  limits: ProviderLimits,
+  policy?: ProviderBudgetPolicy,
+) {
+  const declared = policy?.contexts?.[input.model];
+  const report = resolveProviderLimits(limits, policy);
+  if (!declared) {
+    const requiresWindow =
+      limits.maxRequestBytes > PROVIDER_LEGACY_CEILINGS.maxRequestBytes ||
+      limits.maxOutputTokens > PROVIDER_LEGACY_CEILINGS.maxOutputTokens;
+    try {
+      policy?.onBudget?.({
+        ...report,
+        ...(requiresWindow
+          ? {
+              layer: "model-context",
+              status: "unsupported" as const,
+              failure: {
+                field: "windowTokens",
+                reason: "explicit-model-window-required",
+              },
+            }
+          : {}),
+        context: { source: "unknown", accounting: "unknown" },
+      });
+    } catch {}
+    if (requiresWindow) throw new ProviderFailure("unsupported-policy");
+    return undefined;
+  }
+  const counted = declared.countInputTokens?.(input);
+  const context = {
+    windowTokens: declared.windowTokens,
+    modelMaxTokens: declared.modelMaxTokens,
+    source: declared.source,
+    accounting:
+      counted?.kind ?? ("unknown" as "unknown" | "exact" | "estimate"),
+    ...(counted ? { inputTokens: counted.tokens, method: counted.method } : {}),
+  };
+  try {
+    policy?.onBudget?.({ ...report, context });
+  } catch {}
   if (
-    !Object.values(limits).every((v) => Number.isSafeInteger(v) && v > 0) ||
-    limits.timeoutMs > 60_000 ||
-    limits.maxRequestBytes > 1_000_000 ||
-    limits.maxResponseBytes > 1_000_000 ||
-    limits.maxOutputTokens > 4096
+    !Number.isSafeInteger(declared.windowTokens) ||
+    declared.windowTokens < 1 ||
+    !["operator", "provider"].includes(declared.source) ||
+    (declared.modelMaxTokens !== undefined &&
+      (!Number.isSafeInteger(declared.modelMaxTokens) ||
+        declared.modelMaxTokens < 1))
   )
     throw new ProviderFailure("configuration");
-  return limits;
+  if (
+    declared.modelMaxTokens !== undefined &&
+    declared.windowTokens > declared.modelMaxTokens
+  )
+    throw new ProviderFailure("unsupported-policy");
+  if (limits.maxOutputTokens > declared.windowTokens)
+    throw new ProviderFailure("budget-exceeded");
+  if (
+    counted &&
+    (!Number.isSafeInteger(counted.tokens) ||
+      counted.tokens < 0 ||
+      !["exact", "estimate"].includes(counted.kind))
+  )
+    throw new ProviderFailure("configuration");
+  if (
+    counted &&
+    counted.tokens + limits.maxOutputTokens > declared.windowTokens
+  )
+    throw new ProviderFailure("budget-exceeded");
+  return declared;
+}
+export function emitProviderUsage(
+  policy: ProviderBudgetPolicy | undefined,
+  model: string,
+  fields: Record<string, unknown>,
+) {
+  const valid = Object.fromEntries(
+    Object.entries(fields).filter(
+      ([, value]) =>
+        typeof value === "number" && Number.isFinite(value) && value >= 0,
+    ),
+  );
+  try {
+    policy?.onUsage?.({ model, ...valid });
+  } catch {}
 }
 /** Covers fetch AND body reading, even if injected transport ignores cancellation. */
 export async function bounded<T>(
   partial: Partial<ProviderLimits> | undefined,
   parent: AbortSignal | undefined,
   operation: (signal: AbortSignal, limits: ProviderLimits) => Promise<T>,
+  policy?: ProviderBudgetPolicy,
 ): Promise<ProviderResult<T>> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let listener: (() => void) | undefined;
   const abort = new AbortController();
   try {
-    const limits = limitsFor(partial);
+    const limits = limitsFor(partial, policy);
     if (parent?.aborted) return providerFailure("cancelled");
     const cancelled = new Promise<never>((_resolve, reject) => {
       listener = () => {

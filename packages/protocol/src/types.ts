@@ -1,6 +1,6 @@
 /** Convenience views for the implemented slice. JSON Schemas remain normative. */
 export interface Envelope {
-  schemaVersion: "draft-0.2.0";
+  schemaVersion: "0.3.0" | "draft-0.2.0";
   kind: string;
   extensions?: Record<string, unknown>;
   requiredExtensions?: string[];

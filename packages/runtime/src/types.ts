@@ -53,6 +53,11 @@ export interface RuntimeOptions {
   controller: AgentController;
   now?: () => Date;
   limits?: Partial<RuntimeLimits>;
+  /** Explicit trusted ceilings; omitted fields retain legacy implementation policy. */
+  ceilings?: Partial<RuntimeLimits>;
+  onBudget?: (
+    report: import("../../protocol/src/resource-policy.js").BudgetReport<RuntimeLimits>,
+  ) => void;
   trace?: (entry: {
     stage: string;
     operation?: string;

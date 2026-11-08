@@ -1,3 +1,14 @@
+# Protocol — IfSoul 0.3.0
+
+Current schemas and examples are documented in [current contracts](../../specs/current/README.md).
+`validateDocument` dispatches exact current/legacy v0.2 envelopes; `upgradeDocument`
+validates and copies reviewed shape-preserving documents without mutating evidence.
+General archive conversion is explicitly unsupported by that helper. The separate
+current ModelProvider structural validator does not implement a wire transport.
+See [compatibility](../../docs/compatibility.md).
+
+## Historical contract guide
+
 # Protocol
 
 Current design: [draft-0.2.0 contracts](../../specs/v0.2/README.md), with schemas

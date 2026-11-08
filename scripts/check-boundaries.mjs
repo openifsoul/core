@@ -49,8 +49,9 @@ let inspected = 0;
 for (const file of files) {
   const relative = path.relative(root, file).split(path.sep).join("/");
   assert(
-    !relative.startsWith(".github/workflows/"),
-    "Remote workflows are not authorized",
+    !relative.startsWith(".github/workflows/") ||
+      relative === ".github/workflows/checks.yml",
+    `Only the reviewed public checks workflow is authorized: ${relative}`,
   );
   assert(
     !/(?:^|\/)(?:package\.json|pnpm-workspace\.yaml)$/.test(relative) ||
@@ -82,5 +83,5 @@ for (const file of files) {
   inspected += 1;
 }
 console.log(
-  `Core boundaries: ${inspected} text files; explicit package/source/import boundaries, no workflows; known-pattern secret scan.`,
+  `Core boundaries: ${inspected} text files; explicit package/source/import boundaries, reviewed checks workflow only; known-pattern secret scan.`,
 );

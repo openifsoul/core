@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "archive-manifest",
+  "archiveVersion": "0.3.0",
+  "archiveId": "archive-mira-resume",
+  "characterId": "character-mira",
+  "createdAt": "2026-01-01T08:03:01Z",
+  "transferIntent": {
+    "mode": "resume",
+    "expectedCharacterId": "character-mira"
+  },
+  "schemaInventory": [
+    {
+      "schemaId": "urn:ifsoul:protocol:0.3.0:character",
+      "schemaVersion": "0.3.0"
+    },
+    {
+      "schemaId": "urn:ifsoul:protocol:0.3.0:memory",
+      "schemaVersion": "0.3.0"
+    }
+  ],
+  "files": [
+    {
+      "path": "character-template.json",
+      "role": "character-template",
+      "schemaId": "urn:ifsoul:protocol:0.3.0:character",
+      "recordCount": 1,
+      "sha256": "d566787cdbc14ce0535d90279e5fff6f75ede69e453e23ffa0adbff7af4a7711",
+      "sizeBytes": 1263
+    },
+    {
+      "path": "character-instance.json",
+      "role": "character-instance",
+      "schemaId": "urn:ifsoul:protocol:0.3.0:character",
+      "recordCount": 1,
+      "sha256": "b4106e7faf05be8005a1ff2bafa4dfa82547273f0ea94c1acad027a946944368",
+      "sizeBytes": 1574
+    },
+    {
+      "path": "portable-memory.jsonl",
+      "role": "memory",
+      "schemaId": "urn:ifsoul:protocol:0.3.0:memory",
+      "recordCount": 9,
+      "sha256": "4dbbb5a7002ef9c55f58a5ba9c0f1b8713590a2116921058ef10997df5853edb",
+      "sizeBytes": 7253
+    }
+  ],
+  "filter": {
+    "mode": "complete-authorized",
+    "omittedCategories": [],
+    "reasons": [],
+    "externalReferences": false
+  },
+  "provenance": {
+    "sources": [
+      {
+        "sourceType": "authored",
+        "sourceId": "template-mira-v2"
+      }
+    ]
+  },
+  "portableCheckpointIds": ["checkpoint-initial"]
+}

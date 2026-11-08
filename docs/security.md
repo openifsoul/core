@@ -4,7 +4,7 @@ This is a threat model and a set of implementation requirements. The experimenta
 a private owner web laboratory. Implemented controls and limits are documented in
 [public/private boundaries](public-private-boundary.md) and
 [web laboratory](web-laboratory.md); the wider threat model remains a requirement. Schema validation is not a security review or proof of authorization.
-The revised contracts are [v0.2](../specs/v0.2/README.md); original v0.1 remains
+The revised contracts are [current contracts](../specs/current/README.md); original v0.1 remains
 historical. See [SECURITY.md](../SECURITY.md) for the private reporting route and current support limits.
 
 ## Assets and trust
@@ -64,7 +64,7 @@ other's private context.
 A future importer must validate schema/version support, extension requirements,
 identity/references, file roles, exact uncompressed byte sizes and checksums,
 and limits before committing data. Validate on a copy/staging area and leave the
-source unchanged on failure. For independently versioned ModelProvider tool
+source unchanged on failure. For separately named ModelProvider tool
 schemas, reject remote reference fetching and apply local allowlists/complexity
 bounds before compilation. v0.2 host intents instead require validation of typed
 parameter descriptors and values, including required names, choices,

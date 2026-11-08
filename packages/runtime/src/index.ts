@@ -1,3 +1,8 @@
+import {
+  resolveResourceLimits,
+  BUFFERED_JSON_MAX_BYTES,
+  MAX_TIMER_MS,
+} from "../../protocol/src/resource-policy.js";
 import { createHash } from "node:crypto";
 import type {
   CharacterInstance,
@@ -52,6 +57,32 @@ const safeMessages: Partial<Record<ErrorCode, string>> = {
   "budget-exceeded": "Controller call budget exhausted.",
 };
 
+export const RUNTIME_LEGACY_CEILINGS: RuntimeLimits = {
+  controllerTimeoutMs: 60_000,
+  maxCalls: 10_000,
+  maxDocumentBytes: 1_000_000,
+  maxMemoryRecords: 1000,
+  maxMemoryBytes: 1_000_000,
+  maxContextAgeMs: Number.MAX_SAFE_INTEGER,
+};
+export function resolveRuntimeLimits(
+  requested?: Partial<RuntimeLimits>,
+  ceilings?: Partial<RuntimeLimits>,
+) {
+  return resolveResourceLimits({
+    layer: "runtime",
+    defaults,
+    legacyCeilings: RUNTIME_LEGACY_CEILINGS,
+    requested,
+    ceilings,
+    implementationCeilings: {
+      controllerTimeoutMs: MAX_TIMER_MS,
+      maxDocumentBytes: BUFFERED_JSON_MAX_BYTES,
+      maxMemoryBytes: BUFFERED_JSON_MAX_BYTES,
+    },
+  });
+}
+
 /** Collision-free local storage identity, including IDs that contain colons. */
 export const exchangeKey = (
   characterId: string,
@@ -62,14 +93,14 @@ export const exchangeKey = (
 /** A bounded local orchestrator. No keys, provider construction, host execution or SQLite dependency. */
 export function createRuntime(options: RuntimeOptions): Runtime {
   const { memory, controller } = options;
-  const limits = { ...defaults, ...options.limits };
-  const configurationValid =
-    Object.values(limits).every((v) => Number.isSafeInteger(v) && v > 0) &&
-    limits.controllerTimeoutMs <= 60_000 &&
-    limits.maxDocumentBytes <= 1_000_000 &&
-    limits.maxMemoryBytes <= 1_000_000 &&
-    limits.maxMemoryRecords <= 1000 &&
-    limits.maxCalls <= 10_000;
+  const budget = resolveRuntimeLimits(options.limits, options.ceilings);
+  const limits = budget.effective;
+  const configurationValid = budget.status === "accepted";
+  try {
+    options.onBudget?.(structuredClone(budget));
+  } catch {
+    /* Diagnostic observers cannot widen authority. */
+  }
   let session: TrustedSession | undefined;
   let generation = 0,
     calls = 0;
@@ -113,7 +144,7 @@ export function createRuntime(options: RuntimeOptions): Runtime {
     recordedAt: string,
     sourceType: MemoryEvent["provenance"]["sources"][number]["sourceType"],
   ): MemoryEvent => ({
-    schemaVersion: "draft-0.2.0",
+    schemaVersion: "0.3.0",
     kind: "memory-event",
     memoryId: `event-${createHash("sha256")
       .update(key(s, category, id))
@@ -140,8 +171,10 @@ export function createRuntime(options: RuntimeOptions): Runtime {
   const sessionNow = (): Result<TrustedSession> => {
     if (!configurationValid)
       return failure(
-        "budget-exceeded",
-        "Runtime limits must be positive bounded integers.",
+        budget.status === "unsupported" ? "unsupported" : "budget-exceeded",
+        budget.status === "unsupported"
+          ? "The runtime policy exceeds the supported buffered implementation capacity."
+          : "Runtime limits must be positive integers within trusted ceilings.",
       );
     if (!session)
       return failure("no-session", "A trusted local session must be selected.");
@@ -523,7 +556,9 @@ export function createRuntime(options: RuntimeOptions): Runtime {
         if (!configurationValid)
           return failure(
             "budget-exceeded",
-            "Runtime limits must be positive bounded integers.",
+            budget.status === "unsupported"
+              ? "The runtime policy exceeds the supported buffered implementation capacity."
+              : "Runtime limits must be positive integers within trusted ceilings.",
           );
         if (!input || typeof input !== "object")
           return failure("invalid-document", "A trusted session is required.");

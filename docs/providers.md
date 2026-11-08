@@ -32,8 +32,10 @@ claim implementation of every v0.1 tool/usage capability or a new wire version.
 
 Defaults are 45 seconds for the complete asynchronous request/body wait,
 200,000 serialized request bytes, 100,000 response bytes and 2,000 output tokens.
-Configuration ceilings are 60 seconds, 1,000,000 request/response bytes and 4,096
-output tokens. Streaming response bodies are read with a running byte bound;
+Legacy configuration ceilings are 60 seconds, 1,000,000 request/response bytes and 4,096
+output tokens. Explicit trusted ceilings, configured model context and safe usage
+observations are described in [resource budgets](resource-budgets.md). Defaults
+remain unchanged; bytes are not token context. Streaming response bodies are read with a running byte bound;
 oversized bodies are cancelled. Redirects reject. Aborted or timed-out operations
 return even if an injected transport/binding ignores its signal. Actual upstream
 work or charges may continue. No retries or persistent token/cost budget exist.

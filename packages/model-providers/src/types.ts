@@ -12,7 +12,8 @@ export type ProviderErrorCode =
   | "rate-limited"
   | "unavailable"
   | "invalid-response"
-  | "budget-exceeded";
+  | "budget-exceeded"
+  | "unsupported-policy";
 export type ProviderResult<T> =
   | { ok: true; value: T }
   | { ok: false; error: { code: ProviderErrorCode; message: string } };
@@ -46,3 +47,38 @@ export type CloudflareInvoke = (
   input: Record<string, unknown>,
   signal: AbortSignal,
 ) => Promise<unknown>;
+
+/** Trusted composition configuration; never inferred from a prompt or request body. */
+export interface ModelContextBudget {
+  windowTokens: number;
+  modelMaxTokens?: number;
+  source: "operator" | "provider";
+  countInputTokens?: (input: GenerationInput) => {
+    tokens: number;
+    kind: "exact" | "estimate";
+    method?: string;
+  };
+}
+export interface ProviderBudgetPolicy {
+  ceilings?: Partial<ProviderLimits>;
+  contexts?: Record<string, ModelContextBudget>;
+  onBudget?: (
+    report: import("../../protocol/src/resource-policy.js").BudgetReport<ProviderLimits> & {
+      context?: {
+        windowTokens?: number;
+        modelMaxTokens?: number;
+        source: "unknown" | "operator" | "provider";
+        inputTokens?: number;
+        accounting: "unknown" | "exact" | "estimate";
+        method?: string;
+      };
+    },
+  ) => void;
+  onUsage?: (usage: {
+    model: string;
+    inputTokens?: number;
+    outputTokens?: number;
+    prefillMs?: number;
+    decodeMs?: number;
+  }) => void;
+}

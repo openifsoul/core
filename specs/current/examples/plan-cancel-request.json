@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "plan-cancel-request",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-1",
+    "characterId": "character-mira",
+    "embodimentId": "gardener-1"
+  },
+  "correlationId": "daily-cycle-1",
+  "planId": "plan-day-1",
+  "cancellationId": "cancel-inspect-1",
+  "taskIds": ["task-inspect"],
+  "requestedAt": "2026-01-01T08:00:45Z",
+  "reason": "The host operator requested a stop."
+}

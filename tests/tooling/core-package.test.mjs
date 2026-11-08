@@ -12,10 +12,7 @@ test("built Core installs outside the repository and exports runnable validation
     execFileSync(cmd, args, { cwd, stdio: "pipe", timeout: 120_000 });
   try {
     run("pnpm", ["pack:core"]);
-    const archive = path.join(
-      root,
-      ".local/packages/ifsoul-core-0.2.0-alpha.1.tgz",
-    );
+    const archive = path.join(root, ".local/packages/ifsoul-core-0.3.0.tgz");
     await writeFile(
       path.join(directory, "package.json"),
       JSON.stringify({

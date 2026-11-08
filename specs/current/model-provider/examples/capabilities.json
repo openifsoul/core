@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "provider-capabilities",
+  "providerId": "synthetic-provider",
+  "modelId": "fixture-model",
+  "toolCalling": false,
+  "structuredOutput": false,
+  "cancellation": "unsupported",
+  "usage": true
+}

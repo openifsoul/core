@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "conversation-response",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-1",
+    "characterId": "character-mira",
+    "embodimentId": "gardener-1"
+  },
+  "requestId": "utterance-request-1",
+  "correlationId": "utterance-cycle-1",
+  "channelId": "garden-nearby",
+  "speakerParticipantId": "participant-mira",
+  "recipientParticipantIds": ["participant-visitor"],
+  "responseId": "utterance-response-1",
+  "createdAt": "2026-01-01T08:02:01Z",
+  "expiresAt": "2026-01-01T08:02:05Z",
+  "output": {
+    "type": "utterance",
+    "modality": "speech",
+    "content": "I inspected the herb beds. One plot is dry, but there is no water available."
+  }
+}

@@ -6,7 +6,7 @@ planning and memory-backed conversation. Workers AI, OpenAI BYOK and Ollama
 clients are implemented. Cloud source verifies Clerk identity and isolates each
 user workspace in a Durable Object; local loopback mode needs no Clerk or owner
 password prompt. Real game bridges, packaged applications and commercial billing
-remain deferred. A development Clerk instance and one real owner sign-in were verified locally. The revised contract direction is [v0.2](../specs/v0.2/README.md);
+remain deferred. A development Clerk instance and one real owner sign-in were verified locally. The revised contract direction is [current contracts](../specs/current/README.md);
 the original v0.1 documents remain historical design material.
 
 IfSoul is intended to make a persistent character independent of the particular
@@ -51,7 +51,7 @@ active character-state writer; see [execution modes](execution-modes.md).
 
 ## Planning and conversation
 
-The intended Zomboid profile is host-driven daily briefing. The host supplies
+One intended batch planning profile is a host-driven briefing. The host supplies
 yesterday's permitted events, current metrics/needs, and relevant changes; IfSoul
 returns a bounded high-level plan. Start of the game day is an illustrative
 trigger, configurable by the host. The host validates the plan, accepts all or
@@ -99,8 +99,10 @@ Export/import must distinguish **resume** from **fork**. Resume continues one
 lineage after an explicit ownership handoff and prevents two active writers;
 loading a second copy does not silently acquire that right. Fork creates a
 separate continuation with recorded parent provenance. Neither mode silently
-merges divergent histories. Concrete identity/lineage validation follows the
-versioned contract; merge and multi-writer conflict resolution are deferred.
+merges divergent histories. App currently implements a bounded filtered-fork JSON archive with fresh destination
+identities, eligible retained evidence and explicit losses. It is not complete
+backup, same-identity resume or the frozen Core v0.2 archive contract. General
+ownership handoff, merge and multi-writer conflict resolution remain deferred.
 
 ## Planned ways to run
 
@@ -111,4 +113,7 @@ private account/billing orchestration does not become a core dependency. See
 [execution modes](execution-modes.md). The App implements local and per-user Workers placement; commercial billing
 and real game connectors remain planned. Main chat uses neutral context; local
 `/lab` keeps synthetic planning and trace debugging separate. The shared `/app`
-sidebar shell is implemented and locally browser-checked.
+sidebar shell is implemented and locally browser-checked. The 2026-11-06 managed
+release also passed public HTTP/security smoke and headless sign-in/demo rendering;
+authenticated production persistence, archives and BYOK remain unverified. See
+[current status and acceptance sequence](roadmap.md).

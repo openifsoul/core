@@ -1,6 +1,6 @@
 {
   "name": "@ifsoul/core",
-  "version": "0.2.0-alpha.1",
+  "version": "0.3.0",
   "private": false,
   "type": "module",
   "description": "Experimental public IfSoul protocol, runtime, memory and provider primitives",
@@ -23,7 +23,8 @@
     "typecheck": "tsc --noEmit --project tsconfig.build.json && tsc --noEmit --project tsconfig.json",
     "test:providers": "tsx --test tests/providers/*.test.ts",
     "test:tooling": "node --test tests/tooling/boundaries.test.mjs tests/tooling/core-package.test.mjs",
-    "check": "pnpm format:check && pnpm typecheck && pnpm check:contracts && pnpm test:runtime && pnpm test:providers && pnpm check:validators && pnpm test:tooling && pnpm check:docs && pnpm check:boundaries && pnpm build"
+    "check": "pnpm check:version && pnpm format:check && pnpm typecheck && pnpm check:contracts && pnpm test:runtime && pnpm test:providers && pnpm check:validators && pnpm test:tooling && pnpm check:docs && pnpm check:boundaries && pnpm build",
+    "check:version": "node scripts/check-version.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.5",
@@ -38,7 +39,8 @@
     "README.md",
     "LICENSE",
     "LICENSES/CC-BY-4.0.txt",
-    "LICENSES/CC0-1.0.txt"
+    "LICENSES/CC0-1.0.txt",
+    "release.json"
   ],
   "sideEffects": false,
   "exports": {

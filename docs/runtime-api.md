@@ -1,7 +1,7 @@
 # Local runtime API
 
 Status: first local experimental runtime/SQLite/synthetic-host slice. The
-[v0.2 JSON Schemas](../specs/v0.2/README.md) remain normative and unchanged.
+[current JSON Schemas](../specs/current/README.md) remain normative and unchanged.
 TypeScript views do not replace structural validation. No package is published;
 imports are relative within core, run through `tsx` without a release build.
 
@@ -166,3 +166,5 @@ TypeScript view now represents the optional field already defined in v0.2.
 the immutable memory owner. The composition root substitutes only expression
 profile data; runtime bindings, authorization and history ownership stay unchanged.
 See [the laboratory API](web-laboratory.md#own-characters) for endpoint semantics.
+
+Trusted `ceilings` can explicitly configure supported runtime bounds while preserving legacy defaults; `onBudget` observes requested/effective policy. This does not override frozen structural schemas or scope/authority checks. See [resource budgets](resource-budgets.md).

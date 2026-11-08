@@ -21,7 +21,7 @@ pnpm build
 pnpm pack:core
 ```
 
-`@ifsoul/core@0.2.0-alpha.1` builds ESM and TypeScript declarations. It has not
+`@ifsoul/core@0.3.0` builds ESM and TypeScript declarations. It has not
 been published to npm. Consumers install a reviewed pinned local tarball; no
 sibling/private repository or account is needed. [Development](docs/development.md)
 describes validation; [deployment policy](docs/deployment.md) prohibits automatic
@@ -50,3 +50,13 @@ Package version changes do not change protocol versions. See
 
 This remains experimental: tests do not prove production readiness, universal
 game interoperability, permanent memory portability or model equivalence.
+
+Trusted configurable provider/runtime budgets preserve legacy defaults and remain separate from model token context, permission and host authority. See [resource budgets](https://github.com/openifsoul/core/blob/main/docs/resource-budgets.md).
+
+## Current release and compatibility
+
+The current coordinated release is **IfSoul 0.3.0**. Package, current-format and
+artifact identifiers share this release. Historical formats remain explicit
+compatibility inputs; matching release numbers do not make different format
+families interchangeable. See [compatibility](docs/compatibility.md).
+Registry publication and deployment are separate authorized release actions.

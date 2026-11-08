@@ -26,7 +26,8 @@ test("all 13 frozen schemas compile strictly with only local URN references", ()
 });
 
 const normative = (await jsonFiles("specs")).filter(
-  (file) => !file.startsWith("specs/v0.2/"),
+  (file) =>
+    !file.startsWith("specs/v0.2/") && !file.startsWith("specs/current/"),
 );
 test("the frozen normative example inventory contains 17 documents", () => {
   assert.equal(normative.length, 17);

@@ -18,6 +18,8 @@ test("accepted contract baseline retains exact inventory and bytes", async () =>
     if (
       (relative.startsWith("packages/protocol/schemas/") ||
         relative.startsWith("specs/")) &&
+      !relative.startsWith("packages/protocol/schemas/current/") &&
+      !relative.startsWith("specs/current/") &&
       /\.(json|jsonl)$/.test(relative)
     )
       actual[relative] = createHash("sha256")

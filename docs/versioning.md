@@ -1,3 +1,26 @@
+# IfSoul versioning
+
+The common current release is **0.3.0**. All eight repositories, current package
+artifacts and current format families share this identifier. Each independent
+checkout carries `release.json`; `pnpm check:version` checks its manifest and exact
+IfSoul artifact pins. The Core policy coordinates the release without imposing a
+private service or sibling source dependency on public consumers.
+
+While 0.x, patch releases contain compatible fixes and minor releases may break
+contracts. Stable 1.0 requires an explicit compatibility/support decision.
+Alpha/beta channels require explicit approval and are not the default.
+
+Format families retain descriptive names. Exact family/version validation is
+required; equal versions do not imply matching shapes, host capabilities or
+execution authority. See [compatibility](compatibility.md) for current and legacy
+readers. Frozen historical bytes and original stored evidence remain unchanged.
+A new release prepares all manifests, metadata, writers, artifacts, receipts and
+docs together, then runs local gates and independent acceptance. Git tags, registry
+publication and production deployment are separate authorized actions. No version
+field proves that any of those happened.
+
+## Historical versioning policy (superseded for current release coordination)
+
 # Versioning
 
 The built public package is `@ifsoul/core@0.2.0-alpha.1`. It has explicit ESM and

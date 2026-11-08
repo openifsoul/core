@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "task-report",
+  "binding": {
+    "environmentId": "garden",
+    "sessionId": "garden-session-1",
+    "characterId": "character-mira",
+    "embodimentId": "gardener-1"
+  },
+  "correlationId": "daily-cycle-1",
+  "planId": "plan-day-1",
+  "reportId": "outcome-inspect-1",
+  "taskId": "task-inspect",
+  "contextRevision": "context-102",
+  "recordedAt": "2026-01-01T08:01:00Z",
+  "status": "succeeded",
+  "summary": "The host reports inspection completed.",
+  "observedEffects": [
+    "Two herb beds were inspected by the existing host facility."
+  ]
+}
