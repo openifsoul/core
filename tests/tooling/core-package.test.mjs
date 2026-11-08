@@ -21,7 +21,7 @@ test("built Core installs outside the repository and exports runnable validation
         dependencies: { "@ifsoul/core": `file:${archive}` },
       }),
     );
-    run("pnpm", ["install", "--offline", "--ignore-scripts"], directory);
+    run("pnpm", ["install", "--ignore-scripts"], directory);
     const fixture = JSON.parse(
       await readFile(
         path.join(root, "specs/v0.2/examples/character-instance.json"),
