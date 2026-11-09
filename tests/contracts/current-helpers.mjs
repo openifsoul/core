@@ -4,7 +4,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
 const root = new URL("../../", import.meta.url);
-export const prefix = "urn:ifsoul:protocol:draft-0.2.0:";
+export const prefix = "urn:ifsoul:protocol:0.4.0:";
 export const kinds = {
   "character-template": "character",
   "character-instance": "character",
@@ -59,11 +59,11 @@ function visit(value, callback) {
 }
 
 export async function createRegistry() {
-  const paths = await jsonPaths("packages/protocol/schemas/v0.2");
+  const paths = await jsonPaths("packages/protocol/schemas/current");
   assert.equal(
     paths.length,
-    8,
-    "v0.2 has eight schemas; ModelProvider stays v0.1",
+    10,
+    "current registry includes protocol and provider schemas",
   );
   const schemas = await Promise.all(paths.map(readJson));
   const ids = new Set(schemas.map((schema) => schema.$id));
@@ -85,7 +85,7 @@ export async function createRegistry() {
         const [id] = node[field].split("#");
         assert.ok(
           !id || ids.has(id),
-          `nonlocal v0.2 reference: ${node[field]}`,
+          `nonlocal current reference: ${node[field]}`,
         );
       }
     });
@@ -98,9 +98,9 @@ export async function createRegistry() {
 }
 
 export function check(ajv, document, stem = kinds[document.kind]) {
-  assert.ok(stem, `unsupported v0.2 kind ${document.kind}`);
+  assert.ok(stem, `unsupported current kind ${document.kind}`);
   const validator = ajv.getSchema(`${prefix}${stem}`);
-  assert.ok(validator, `missing v0.2 schema ${stem}`);
+  assert.ok(validator, `missing current schema ${stem}`);
   const before = structuredClone(document);
   const valid = validator(document);
   const errors = structuredClone(validator.errors ?? []);

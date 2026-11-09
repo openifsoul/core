@@ -2,16 +2,14 @@
 
 IfSoul is experimental source software with a runtime, real provider clients and
 an authenticated single-owner laboratory server. It has no supported stable
-production release or multi-tenant managed service. The active
-[v0.2 design](specs/v0.2/README.md), retained v0.1 regressions and independently
-retained v0.1 ModelProvider contract are not a security assurance or release
-maintenance commitment.
+production release or multi-tenant managed service. The current
+[0.4.0 contracts](specs/current/README.md) are experimental and provide no security
+assurance or stable-release maintenance commitment.
 
 ## Report a vulnerability privately
 
 Use [GitHub private vulnerability reporting](https://github.com/openifsoul/core/security/advisories/new)
-for this repository. Private vulnerability reporting was enabled and verified on
-2026-11-05. Reports are handled by the repository maintainers and organization
+for this repository. Reports are handled by the repository maintainers and organization
 owners; the current maintainer is [h3lpkey](https://github.com/h3lpkey).
 
 Sign in to GitHub and use **Security → Advisories → Report a vulnerability**.
@@ -42,7 +40,7 @@ connection grants no control authority. Bridges must not execute imported text
 or model proposals as game skills. Selected context, host outcomes and live
 conversation are still untrusted data and can contain private information.
 
-The v0.1 provider contract remains a separate model-input/output boundary; tool
+The current provider specification remains a separate model-input/output boundary; tool
 calling support is not permission to control a game. Local/BYOK/managed profiles
 need explicit disclosure and credential boundaries. Current checks cover contracts and selected runtime semantics, not a complete
 security audit. The CLI trusts local composition and its database; it is not

@@ -10,10 +10,10 @@ import {
   prefix,
   readBytes,
   rejects,
-} from "./v02-helpers.mjs";
+} from "./current-helpers.mjs";
 
 const ajv = await createRegistry();
-const paths = await jsonPaths("specs/v0.2/examples", [".json", ".jsonl"]);
+const paths = await jsonPaths("specs/current/examples", [".json", ".jsonl"]);
 const examples = new Map();
 const exampleBytes = new Map();
 for (const path of paths) {
@@ -30,7 +30,7 @@ for (const path of paths) {
   } else examples.set(path, JSON.parse(bytes.toString("utf8")));
 }
 function example(name) {
-  const path = `specs/v0.2/examples/${name}.json`;
+  const path = `specs/current/examples/${name}.json`;
   assert.ok(
     examples.has(path),
     `required normative example is absent: ${path}`,
@@ -38,23 +38,23 @@ function example(name) {
   return structuredClone(examples.get(path));
 }
 
-test("v0.2 local strict registry compiles independently of frozen v0.1 ModelProvider", () => {
-  assert.equal(ajv.getSchema(`${prefix}model-provider`), undefined);
+test("current local strict registry compiles independently of the separate ModelProvider family", () => {
+  assert.equal(typeof ajv.getSchema(`${prefix}model-provider`), "function");
   assert.equal(check(ajv, {}, "common").valid, false);
   assert.deepEqual(
     [
       ...new Set([...examples.values()].map((document) => document.kind)),
     ].sort(),
     Object.keys(kinds).sort(),
-    "the normative examples must cover every v0.2 document kind; absence is never skipped",
+    "the normative examples must cover every current document kind; absence is never skipped",
   );
 });
 
 for (const [path, document] of examples) {
-  test(`v0.2 normative structure: ${path}`, () => accepts(ajv, document));
+  test(`current normative structure: ${path}`, () => accepts(ajv, document));
 }
 
-test("v0.2 rejects v0.1 versions without coercing or deleting fields", () => {
+test("current rejects v0.1 versions without coercing or deleting fields", () => {
   const document = example("character-instance");
   document.schemaVersion = "draft-0.1.0";
   rejects(ajv, document, "const", "/schemaVersion");
@@ -658,7 +658,7 @@ test("static archive bytes/counts and original host/chat payloads match their de
     "character-instance.json",
     "portable-memory.jsonl",
   ];
-  const streamPath = "specs/v0.2/examples/portable-memory.jsonl";
+  const streamPath = "specs/current/examples/portable-memory.jsonl";
   assert.ok(
     exampleBytes.has(streamPath),
     "the declared normative memory stream must exist",
@@ -678,7 +678,7 @@ test("static archive bytes/counts and original host/chat payloads match their de
       // Read only bytes already discovered under the static example directory;
       // arbitrary manifest paths are never resolved or extracted by this test.
       assert.ok(allowedPaths.includes(entry.path));
-      const path = `specs/v0.2/examples/${entry.path}`;
+      const path = `specs/current/examples/${entry.path}`;
       const bytes = exampleBytes.get(path);
       assert.ok(bytes, `missing static bytes ${path}`);
       assert.equal(entry.sizeBytes, bytes.length);

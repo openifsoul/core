@@ -42,7 +42,7 @@ for (const folder of [
         const family =
           kinds[doc.kind] ??
           (doc.kind.startsWith("conversation-") ? "conversation" : "planning");
-        const check = ajv.getSchema("urn:ifsoul:protocol:0.3.0:" + family);
+        const check = ajv.getSchema("urn:ifsoul:protocol:0.4.0:" + family);
         assert(check(doc), JSON.stringify(check.errors));
         assert.equal(check({ ...doc, schemaVersion: "0.9.0" }), false);
         assert.equal(check({ ...doc, kind: "wrong-family" }), false);

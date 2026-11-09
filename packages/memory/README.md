@@ -8,7 +8,7 @@ Runtime imports only the port/helpers. A trusted composition root opens/closes
 SQLite and never gives the controller unrestricted storage access.
 
 SQLite stores immutable character instances, exchange journals and schema-checked
-v0.2 raw events. Linked characters, events and exchanges commit in one transaction
+current 0.4.0 raw events. Linked characters, events and exchanges commit in one transaction
 or roll back together. Identical IDs are idempotent; conflicting content rejects.
 Original `recordedPayload`, provenance, scope, environment/session references and
 optional JSON extensions survive recording. Ordinary `commit` never replaces original content. Optional trusted-owner
@@ -39,7 +39,7 @@ execution is promised. There is no archive importer/exporter, migration,
 backup/third-party deletion propagation, summarizer, RAG/embeddings, facts/episodes
 engine, backup service, multi-writer sync or process handoff protocol. Database
 tables are a local development format, not a portable archive.
-See [runtime API](../../docs/runtime-api.md) and [contracts](../../specs/v0.2/README.md).
+See [runtime API](../../docs/runtime-api.md) and [contracts](../../specs/current/README.md).
 
 ## Storage and recall
 
@@ -60,7 +60,7 @@ App composes deterministic extractive episodes through the generic retention por
 Core has no host-specific episode semantics, facts engine or archive transfer.
 App owns bounded episodes, source-validated revisable interpretations and bridge
 reset; see [App memory architecture](https://github.com/openifsoul/app/blob/main/docs/memory.md)
-for the full evidence flow and milestone limits.
+for the evidence flow and API limits.
 
 The trusted owner composition can enumerate at most 100 immutable character
 documents using `listCharacters(limit)`. This experimental MemoryPort addition is

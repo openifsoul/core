@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:model-provider",
+  "$id": "urn:ifsoul:protocol:0.4.0:model-provider",
   "oneOf": [
     {
       "$ref": "#/$defs/capabilities"
@@ -20,16 +20,16 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "provider-capabilities"
         },
         "providerId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "modelId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "toolCalling": {
           "type": "boolean"
@@ -44,12 +44,12 @@
           "type": "boolean"
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensionName"
           },
           "minItems": 0,
           "uniqueItems": true
@@ -71,19 +71,19 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "model-request"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "providerId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "modelId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "messages": {
           "type": "array",
@@ -97,7 +97,7 @@
                 "type": "string"
               },
               "toolCallId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
               },
               "toolCalls": {
                 "type": "array",
@@ -105,13 +105,13 @@
                   "type": "object",
                   "properties": {
                     "toolCallId": {
-                      "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+                      "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
                     },
                     "name": {
-                      "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+                      "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
                     },
                     "arguments": {
-                      "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/jsonObject"
+                      "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/jsonObject"
                     }
                   },
                   "required": ["toolCallId", "name", "arguments"],
@@ -131,14 +131,14 @@
             "type": "object",
             "properties": {
               "name": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
               },
               "description": {
                 "type": "string",
                 "minLength": 1
               },
               "argumentsSchema": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/jsonSchema"
+                "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/jsonSchema"
               }
             },
             "required": ["name", "description", "argumentsSchema"],
@@ -153,22 +153,22 @@
           "enum": ["text", "json-object"]
         },
         "deadlineAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/utcTimestamp"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/utcTimestamp"
         },
         "cancellationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "maxOutputTokens": {
           "type": "integer",
           "minimum": 1
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensionName"
           },
           "minItems": 0,
           "uniqueItems": true
@@ -191,22 +191,22 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "model-response"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "providerId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "modelId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "recordedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/utcTimestamp"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/utcTimestamp"
         },
         "status": {
           "enum": ["completed", "incomplete", "cancelled"]
@@ -223,13 +223,13 @@
                 "type": "object",
                 "properties": {
                   "toolCallId": {
-                    "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+                    "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
                   },
                   "name": {
-                    "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+                    "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
                   },
                   "arguments": {
-                    "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/jsonObject"
+                    "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/jsonObject"
                   }
                 },
                 "required": ["toolCallId", "name", "arguments"],
@@ -245,15 +245,15 @@
           "enum": ["stop", "tool-calls", "length", "cancelled"]
         },
         "usage": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/usage"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/usage"
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensionName"
           },
           "minItems": 0,
           "uniqueItems": true
@@ -276,36 +276,36 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "model-error"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "providerId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "modelId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "recordedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/utcTimestamp"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/utcTimestamp"
         },
         "error": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/error"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/error"
         },
         "usage": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/usage"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/usage"
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensionName"
           },
           "minItems": 0,
           "uniqueItems": true

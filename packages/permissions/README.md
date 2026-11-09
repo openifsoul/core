@@ -2,10 +2,8 @@
 
 Status: **planned; no implementation**. There is no evaluator, consent registry,
 identity service, enforcement layer, or package entrypoint. The revised
-[v0.2 specification](../../specs/v0.2/README.md) requires trusted authorization;
-it does not embed a new permission-policy wire envelope. The original
-[draft-0.1.0 policy/decision format](../../specs/world-adapter/README.md) remains
-an independently versioned historical baseline, not an automatic v0.2 mapping.
+[current 0.4.0 specification](../../specs/current/README.md) requires trusted authorization;
+it does not embed a new permission-policy wire envelope. Obsolete permission-policy formats are unsupported.
 
 ## Input and output contracts
 
@@ -15,13 +13,10 @@ and bound context. Outputs will be explicit allow/deny decisions and safe
 reasons/provenance. Concrete policy/consent APIs are deferred; this README adds
 no wire fields or implied grants.
 
-Use default deny and least privilege. If using the exact v0.1 evaluator baseline,
-match exact subject/resource/action within its world/session: revoke takes
-precedence, otherwise grant allows, and no match denies. It has no wildcard or
-inheritance semantics. Using that format in a revised application requires an
-explicit trusted mapping; copying IDs between versions does not authorize it.
-A stored allow decision is evidence about a revision, not a bearer token or a
-promise it stays current.
+Use default deny and least privilege. Concrete policy/consent evaluator semantics
+require an explicit implementation decision and trusted identity mapping. A stored
+allow decision is evidence about a revision, not a bearer token or a promise it
+stays current.
 
 ## Ownership and imports
 
@@ -39,7 +34,7 @@ or persistent channel cannot independently permit speech. Constrained nonhuman
 embodiments must not acquire unavailable expression channels. Concurrent chat
 and game access must remain scope-isolated even under one state writer.
 
-Memory access and export/disclosure are separate. In v0.2 scope participants are
+Memory access and export/disclosure are separate. In current 0.4.0 scope participants are
 explicit participant IDs: private has its intended participant, participants has
 its explicit audience, and public means environment visibility rather than
 Internet publication consent. `allowed` still needs authorization;

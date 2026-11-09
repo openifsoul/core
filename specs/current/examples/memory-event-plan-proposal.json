@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "kind": "memory-event",
   "memoryId": "event-plan-proposal",
   "characterId": "character-mira",
@@ -23,7 +23,7 @@
   "environmentId": "garden",
   "sessionId": "garden-session-1",
   "recordedPayload": {
-    "schemaVersion": "0.3.0",
+    "schemaVersion": "0.4.0",
     "kind": "plan-proposal",
     "binding": {
       "environmentId": "garden",

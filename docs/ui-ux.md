@@ -1,7 +1,7 @@
 # UI ownership
 
 Public App and private Website own web panels and their React/TypeScript/shadcn layout policies. Core contains no UI. See the [maintained owner](https://github.com/openifsoul/app) and
-[repository split](decisions/0014-repository-product-split.md).
+[repository split](architecture.md).
 
 Core checks library contracts/runtime/storage/providers only. Consumer UI and
 browser tests run in their owning repositories. Historical release records and

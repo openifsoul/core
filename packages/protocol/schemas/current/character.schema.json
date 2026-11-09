@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:character",
+  "$id": "urn:ifsoul:protocol:0.4.0:character",
   "oneOf": [
     {
       "$ref": "#/$defs/template"
@@ -14,13 +14,13 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "character-template"
         },
         "templateId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "revision": {
           "type": "integer",
@@ -59,12 +59,12 @@
           "additionalProperties": false
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -85,25 +85,25 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "character-instance"
         },
         "characterId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "participantId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "createdAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "template": {
           "type": "object",
           "properties": {
             "templateId": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             },
             "revision": {
               "type": "integer",
@@ -120,7 +120,7 @@
         "memoryRecordIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "minItems": 0,
           "uniqueItems": true
@@ -128,7 +128,7 @@
         "relationshipMemoryIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "minItems": 0,
           "uniqueItems": true
@@ -142,13 +142,13 @@
                 "enum": ["fork", "import"]
               },
               "sourceCharacterId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "sourceArchiveId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "recordedAt": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
               }
             },
             "required": [
@@ -163,12 +163,12 @@
           "maxItems": 64
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -204,7 +204,7 @@
           "type": "object",
           "maxProperties": 32,
           "propertyNames": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "additionalProperties": {
             "anyOf": [
@@ -227,7 +227,7 @@
             "type": "object",
             "properties": {
               "preferenceId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "subject": {
                 "type": "string",
@@ -293,7 +293,7 @@
             "type": "object",
             "properties": {
               "goalId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "description": {
                 "type": "string",
@@ -301,7 +301,7 @@
                 "maxLength": 500
               },
               "priority": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/priority"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/priority"
               },
               "status": {
                 "enum": ["desired", "active", "paused", "complete"]

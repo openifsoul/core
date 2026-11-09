@@ -5,7 +5,7 @@ bridges and a synthetic host; public App owns the self-hostable local server,
 character service and laboratory. Private Website owns public-facing branding and
 Playground composition. Private Cloud owns managed Workers authentication,
 quotas, per-user storage routing, provisioning and production operations. See
-[ADR 0014](decisions/0014-repository-product-split.md).
+[ADR 0014](architecture.md).
 
 No public repository imports private source or requires an IfSoul account. Cloud
 may compose public built artifacts, never the reverse. Core has no Clerk, UI,

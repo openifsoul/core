@@ -8,9 +8,8 @@ code. Credentials stay in the trusted root/client closure and transport headers.
 
 [`src/index.ts`](src/index.ts) exports `createOpenAIProvider`,
 `createCloudflareProvider`, `createOllamaProvider`, model allowlists/defaults and
-local callable types. These convenience APIs do not replace the unchanged
-independently versioned v0.1 ModelProvider schema, implement its entire tool
-surface, or add a new normative protocol version. See [provider API and current
+local callable types. These callable APIs do not implement the separately named current ModelProvider
+JSON specification as a serialized transport or claim its entire tool surface. See [provider API and current
 verification](../../docs/providers.md).
 
 Each client returns a safe discriminated result, bounds request/response bytes,

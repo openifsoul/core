@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "kind": "memory-event",
   "memoryId": "event-inspection",
   "characterId": "character-mira",
@@ -27,7 +27,7 @@
     "tick": 110
   },
   "recordedPayload": {
-    "schemaVersion": "0.3.0",
+    "schemaVersion": "0.4.0",
     "kind": "task-report",
     "binding": {
       "environmentId": "garden",

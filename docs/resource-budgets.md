@@ -2,7 +2,7 @@
 
 Resource limits are independent from permission, model capability and host
 mechanics. They are experimental callable configuration, not changes to the
-frozen v0.1/v0.2 schemas or the separately named ModelProvider wire format.
+current schemas or the separately named ModelProvider specification.
 Defaults remain compatible. A larger byte allowance never grants control or
 means that those bytes fit a model's token context.
 
@@ -106,11 +106,10 @@ assuming all allowed tokens become visible text. See official
 Provider response reads check declared length and a cumulative stream byte count,
 cancelling on overflow before parsing the complete body. Runtime rechecks
 freshness, session identity and deadlines after asynchronous work. A larger wait
-or document budget never bypasses frozen structural maxima, scope, permission,
+or document budget never bypasses current structural maxima, scope, permission,
 CAS/history validation or confirmed host outcomes.
 
 Incomplete/truncated structured output is rejected. Lowering an output cap can
 truncate a response; it does not guarantee faster valid completion. No automatic
 retry, model download, hardware detection, paid-output increase or remote quota
-change is performed. Source/tests, real-provider usage, browser acceptance and
-production evidence must be reported separately.
+change is performed.

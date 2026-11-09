@@ -26,9 +26,9 @@ ollama.listModels(signal?) // Promise<ProviderResult<string[]>>
 `{ok:false,error:{code,message}}`. Safe codes distinguish configuration,
 unsupported-model, timeout, cancelled, unauthorized, rate-limited, unavailable,
 invalid-response and budget-exceeded. Upstream exception text and error bodies
-are never returned. Clients import no other IfSoul implementation; the unchanged
-v0.1 ModelProvider schemas remain independent. These local text clients do not
-claim implementation of every v0.1 tool/usage capability or a new wire version.
+are never returned. Clients import no other IfSoul implementation; the current
+ModelProvider specification remains a distinct family. These callable text clients
+do not implement the serialized specification as a wire transport.
 
 Defaults are 45 seconds for the complete asynchronous request/body wait,
 200,000 serialized request bytes, 100,000 response bytes and 2,000 output tokens.
@@ -56,7 +56,7 @@ or best model. Their documented Responses and Structured Outputs support was
 checked against the official [GPT-4.1 mini](https://developers.openai.com/api/docs/models/gpt-4.1-mini),
 [GPT-4.1](https://developers.openai.com/api/docs/models/gpt-4.1) and
 [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
-pages on 2026-11-05. Account/model availability remains provider-controlled.
+documentation. Account/model availability remains provider-controlled.
 `store:false` is a request option, not a general zero-retention assurance.
 
 ## Cloudflare Workers AI
@@ -74,8 +74,7 @@ and [Llama 3.1 8B FP8](https://developers.cloudflare.com/workers-ai/models/llama
 Cloudflare's [JSON mode documentation](https://developers.cloudflare.com/workers-ai/features/json-mode/)
 describes the request and explicitly warns that schema fulfillment can fail.
 The old unquantized Llama 3.1 URL redirects to unavailable; the FP8 ID is used.
-These facts were checked on 2026-11-05; actual deployment access needs a live
-binding check. A binding timeout is bounded locally and does not promise that
+A binding timeout is bounded locally and does not promise that
 inference was cancelled upstream.
 
 ## Ollama

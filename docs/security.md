@@ -35,13 +35,10 @@ selected authorized context. A full controller is not an inference provider or
 an execution/policy authority. No text, model proposal, imported policy-shaped
 record, or capability advertisement grants permissions. Apply trusted policy
 before offering proposals for adoption, then check current host restrictions
-again. Use default deny. The separate historical v0.1 policy format has
-exact-match revoke precedence; v0.2 does not embed that wire format or imply an
-automatic identity mapping. Do not treat a recorded allow decision as a bearer
-token.
+again. Use default deny. Obsolete policy formats are not supported; a stored policy-shaped document grants no authority.
 
 Every access must bind character, embodiment, environment/session, and
-participant/channel identities through trusted mapping. v0.2 `private` has one
+participant/channel identities through trusted mapping. current 0.4.0 `private` has one
 intended participant, `participants` lists its explicit audience, and `public`
 means an environment audience rather than permission to publish on the Internet.
 Validate the semantic scope/cardinality rules independently of schemas. Derived
@@ -66,7 +63,7 @@ identity/references, file roles, exact uncompressed byte sizes and checksums,
 and limits before committing data. Validate on a copy/staging area and leave the
 source unchanged on failure. For separately named ModelProvider tool
 schemas, reject remote reference fetching and apply local allowlists/complexity
-bounds before compilation. v0.2 host intents instead require validation of typed
+bounds before compilation. current 0.4.0 host intents instead require validation of typed
 parameter descriptors and values, including required names, choices,
 units/ranges, and authorized entity references. Bound document size,
 string/array depth and length, entry count, expanded bytes, compression ratio,
@@ -83,7 +80,7 @@ required extensions. Preserve unknown optional extensions in a lossless path or
 explicitly record filtering; never quietly remove properties until validation
 succeeds.
 
-v0.2 `complete-authorized` filtering includes all data authorized for that
+current 0.4.0 `complete-authorized` filtering includes all data authorized for that
 transfer/backup, with no omissions or external references. It is not
 unrestricted access. Any exclusion requires `filtered` mode and recorded
 reasons/categories; external references must be declared where retained. Loss

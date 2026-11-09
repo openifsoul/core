@@ -1,7 +1,7 @@
 # Browser demonstrations
 
 Private Website owns the curated Playground composition; SDK and the three public example repositories own bridge/host behavior. See the [maintained owner](https://github.com/openifsoul/sdk) and
-[repository split](decisions/0014-repository-product-split.md).
+[repository split](architecture.md).
 
 Core checks library contracts/runtime/storage/providers only. Consumer UI and
 browser tests run in their owning repositories. Historical release records and

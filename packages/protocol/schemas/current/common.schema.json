@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:common",
+  "$id": "urn:ifsoul:protocol:0.4.0:common",
   "description": "Shared definitions only; not an exchange document.",
   "$defs": {
     "id": {
@@ -20,7 +20,7 @@
       "type": "object",
       "maxProperties": 16,
       "propertyNames": {
-        "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+        "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
       },
       "additionalProperties": true
     },
@@ -28,16 +28,16 @@
       "type": "object",
       "properties": {
         "environmentId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "sessionId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "characterId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "embodimentId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         }
       },
       "required": ["environmentId", "sessionId", "characterId", "embodimentId"],
@@ -47,7 +47,7 @@
       "type": "object",
       "properties": {
         "timelineId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "tick": {
           "type": "integer",
@@ -67,10 +67,10 @@
               "const": "utc"
             },
             "startAt": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
             },
             "endAt": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
             }
           },
           "required": ["basis", "startAt", "endAt"],
@@ -83,7 +83,7 @@
               "const": "world-ticks"
             },
             "timelineId": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             },
             "fromTick": {
               "type": "integer",
@@ -110,7 +110,7 @@
               "const": "entity-ref"
             },
             "entityId": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             }
           },
           "required": ["type", "entityId"],
@@ -123,7 +123,7 @@
               "const": "choice"
             },
             "value": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             }
           },
           "required": ["type", "value"],
@@ -139,7 +139,7 @@
               "type": "number"
             },
             "unit": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             }
           },
           "required": ["type", "value", "unit"],
@@ -169,7 +169,7 @@
         "participantIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "minItems": 0,
           "maxItems": 32,
@@ -216,7 +216,7 @@
                 ]
               },
               "sourceId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               }
             },
             "required": ["sourceType", "sourceId"],

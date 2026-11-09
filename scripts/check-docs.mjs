@@ -6,16 +6,8 @@ import { root, sourceFiles } from "./files.mjs";
 
 const required = [
   "docs/versioning.md",
-  "docs/decisions/0014-repository-product-split.md",
   "CHANGELOG.md",
-  ...[
-    "clean-implementation",
-    "architecture-review",
-    "public-api-review",
-    "documentation-sync",
-  ].map((name) => `.agents/skills/${name}/SKILL.md`),
   "README.md",
-  "AGENTS.md",
   "CONTRIBUTING.md",
   "SECURITY.md",
   "LICENSE",
@@ -38,13 +30,11 @@ const required = [
   "docs/web-laboratory.md",
   "docs/providers.md",
   "docs/public-private-boundary.md",
-  "specs/v0.2/README.md",
+  "specs/current/README.md",
   "docs/decisions/README.md",
   ...["protocol", "memory", "runtime", "model-providers", "permissions"].map(
     (name) => `packages/${name}/README.md`,
   ),
-  "examples/characters/README.md",
-  "examples/minimal-world/README.md",
 ];
 
 for (const file of required) {

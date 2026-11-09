@@ -52,16 +52,74 @@ export function createSQLMemory(
     if (closed) return failure("closed", "Memory store is closed.");
     try {
       return action();
-    } catch {
+    } catch (error) {
+      if (error instanceof CommitFailure)
+        return failure(error.code, error.message);
       return failure("storage", "Memory operation failed.");
     }
+  };
+  const productKinds = new Set([
+    "character-instance",
+    "character-template",
+    "environment-profile",
+    "context-report",
+    "plan-proposal",
+    "plan-decision",
+    "task-report",
+    "plan-cancel-request",
+    "plan-cancel-result",
+    "conversation-request",
+    "conversation-response",
+    "conversation-delivery",
+    "memory-event",
+    "working-context",
+    "memory-episode",
+    "memory-fact",
+    "memory-relationship",
+    "intent-checkpoint",
+    "archive-manifest",
+    "provider-capabilities",
+    "model-request",
+    "model-response",
+    "model-error",
+  ]);
+  const stored = <T>(text: string, kind?: string): T => {
+    const value: unknown = JSON.parse(text);
+    if (kind && !validateDocument(value, kind))
+      throw new CommitFailure(
+        "unsupported",
+        "Stored document format is unsupported; no migration or reset was performed.",
+      );
+    // Journals may nest protocol/provider envelopes. They are not silently adapted.
+    const rejectObsolete = (node: unknown): void => {
+      if (!node || typeof node !== "object") return;
+      const object = node as Record<string, unknown>;
+      if (
+        typeof object.kind === "string" &&
+        productKinds.has(object.kind) &&
+        typeof object.schemaVersion === "string" &&
+        object.schemaVersion !== "0.4.0"
+      )
+        throw new CommitFailure(
+          "unsupported",
+          "Stored document format is unsupported; no migration or reset was performed.",
+        );
+      for (const child of Object.values(object)) rejectObsolete(child);
+    };
+    rejectObsolete(value);
+    return value as T;
   };
   const read = <T>(
     table: "characters" | "exchanges",
     id: string,
   ): T | undefined => {
     const row = db.prepare(`SELECT document FROM ${table} WHERE id=?`).get(id);
-    return row ? (JSON.parse(row.document as string) as T) : undefined;
+    return row
+      ? stored<T>(
+          row.document as string,
+          table === "characters" ? "character-instance" : undefined,
+        )
+      : undefined;
   };
   let pruning: Parameters<NonNullable<MemoryPort["compact"]>>[0] | undefined;
   const port: MemoryPort = {
@@ -97,8 +155,11 @@ export function createSQLMemory(
           db
             .prepare("SELECT document FROM characters ORDER BY id LIMIT ?")
             .all(limit)
-            .map(
-              (row) => JSON.parse(row.document as string) as CharacterInstance,
+            .map((row) =>
+              stored<CharacterInstance>(
+                row.document as string,
+                "character-instance",
+              ),
             ),
         );
       }),
@@ -208,7 +269,7 @@ export function createSQLMemory(
                   .get(id);
                 const old =
                   row &&
-                  (JSON.parse(String(row.document)) as MemoryEvent | undefined);
+                  stored<MemoryEvent>(String(row.document), "memory-event");
                 if (
                   !old ||
                   old.characterId !== retention.characterId ||
@@ -344,7 +405,9 @@ export function createSQLMemory(
           ).byteLength;
           if (size + bytes > query.maxBytes) continue;
           size += bytes;
-          selected.push(JSON.parse(row.document as string) as MemoryEvent);
+          selected.push(
+            stored<MemoryEvent>(row.document as string, "memory-event"),
+          );
         }
         return success(selected.reverse());
       }),

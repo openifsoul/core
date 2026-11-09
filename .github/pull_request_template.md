@@ -7,7 +7,7 @@ State what is implemented and what remains a proposal.
 
 Identify schema/version, compatibility, extension, fixture and ADR changes, or
 state why none are needed. Contract changes require maintainer agreement before
-changing the frozen baseline.
+relaxing current contract/security assertions.
 
 ## Validation
 

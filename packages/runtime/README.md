@@ -2,7 +2,7 @@
 
 The first **local experimental slice** orchestrates bounded host plans and
 requested conversation through an injected `AgentController` and `MemoryPort`.
-It validates the frozen v0.2 contracts and selected semantics, records raw events,
+It validates the current 0.4.0 contracts and selected semantics, records raw events,
 and correlates host adoption, execution reports and dialogue delivery. Provider clients and local/Workers servers are composed outside this package;
 the runtime is not a published package.
 

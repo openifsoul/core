@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "kind": "archive-manifest",
-  "archiveVersion": "0.3.0",
+  "archiveVersion": "0.4.0",
   "archiveId": "archive-mira-resume",
   "characterId": "character-mira",
   "createdAt": "2026-01-01T08:03:01Z",
@@ -11,37 +11,37 @@
   },
   "schemaInventory": [
     {
-      "schemaId": "urn:ifsoul:protocol:0.3.0:character",
-      "schemaVersion": "0.3.0"
+      "schemaId": "urn:ifsoul:protocol:0.4.0:character",
+      "schemaVersion": "0.4.0"
     },
     {
-      "schemaId": "urn:ifsoul:protocol:0.3.0:memory",
-      "schemaVersion": "0.3.0"
+      "schemaId": "urn:ifsoul:protocol:0.4.0:memory",
+      "schemaVersion": "0.4.0"
     }
   ],
   "files": [
     {
       "path": "character-template.json",
       "role": "character-template",
-      "schemaId": "urn:ifsoul:protocol:0.3.0:character",
+      "schemaId": "urn:ifsoul:protocol:0.4.0:character",
       "recordCount": 1,
-      "sha256": "d566787cdbc14ce0535d90279e5fff6f75ede69e453e23ffa0adbff7af4a7711",
+      "sha256": "ae65535b6f932bbc504c98bf7e12a2b3a7b91f97adbb22d20332c507e6a1afbe",
       "sizeBytes": 1263
     },
     {
       "path": "character-instance.json",
       "role": "character-instance",
-      "schemaId": "urn:ifsoul:protocol:0.3.0:character",
+      "schemaId": "urn:ifsoul:protocol:0.4.0:character",
       "recordCount": 1,
-      "sha256": "b4106e7faf05be8005a1ff2bafa4dfa82547273f0ea94c1acad027a946944368",
+      "sha256": "587f3259fa51cc2f70aa376a1ace4be0ffe9dd621450cd6d84466c1cb88c21fe",
       "sizeBytes": 1574
     },
     {
       "path": "portable-memory.jsonl",
       "role": "memory",
-      "schemaId": "urn:ifsoul:protocol:0.3.0:memory",
+      "schemaId": "urn:ifsoul:protocol:0.4.0:memory",
       "recordCount": 9,
-      "sha256": "4dbbb5a7002ef9c55f58a5ba9c0f1b8713590a2116921058ef10997df5853edb",
+      "sha256": "5f716035bfde7e1f5e40e5dac8e499f32957f6a0b41209ff4116cd83603cd8ca",
       "sizeBytes": 7253
     }
   ],

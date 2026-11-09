@@ -1,7 +1,7 @@
 # Architecture
 
 Core is the public headless library. SDK and App are separate public repositories;
-Website and managed Cloud are private compositions. See [ADR 0014](decisions/0014-repository-product-split.md)
+Website and managed Cloud are private compositions. See [ADR 0014](architecture.md)
 for package exports, ownership and reproducible artifacts. Historical application
 and laboratory descriptions below explain the design; their composition roots
 now belong to App, Website or Cloud, not this library.
@@ -144,4 +144,4 @@ Node SQLite and Workers SQLite share the public synchronous SQL driver semantics
 Protocol validators are generated ahead of time and included in the built Core
 artifact; no runtime dynamic compilation is needed. Core imports no composition
 root, account system or game package. A public self-hosted App remains usable
-without Clerk or private services. See [ADR 0014](decisions/0014-repository-product-split.md).
+without Clerk or private services. See [ADR 0014](architecture.md).

@@ -1,25 +1,25 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:archive",
+  "$id": "urn:ifsoul:protocol:0.4.0:archive",
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "const": "0.3.0"
+      "const": "0.4.0"
     },
     "kind": {
       "const": "archive-manifest"
     },
     "archiveVersion": {
-      "const": "0.3.0"
+      "const": "0.4.0"
     },
     "archiveId": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
     },
     "characterId": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
     },
     "createdAt": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
     },
     "transferIntent": {
       "oneOf": [
@@ -30,7 +30,7 @@
               "const": "resume"
             },
             "expectedCharacterId": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             }
           },
           "required": ["mode", "expectedCharacterId"],
@@ -43,10 +43,10 @@
               "const": "fork"
             },
             "newCharacterId": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             },
             "newParticipantId": {
-              "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+              "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
             }
           },
           "required": ["mode", "newCharacterId", "newParticipantId"],
@@ -61,10 +61,10 @@
         "properties": {
           "schemaId": {
             "type": "string",
-            "pattern": "^urn:ifsoul:protocol:0[.]3[.]0:(character|memory)$"
+            "pattern": "^urn:ifsoul:protocol:0[.]4[.]0:(character|memory)$"
           },
           "schemaVersion": {
-            "const": "0.3.0"
+            "const": "0.4.0"
           }
         },
         "required": ["schemaId", "schemaVersion"],
@@ -88,7 +88,7 @@
           },
           "schemaId": {
             "type": "string",
-            "pattern": "^urn:ifsoul:protocol:0[.]3[.]0:(character|memory)$"
+            "pattern": "^urn:ifsoul:protocol:0[.]4[.]0:(character|memory)$"
           },
           "recordCount": {
             "type": "integer",
@@ -164,23 +164,23 @@
       "additionalProperties": false
     },
     "provenance": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/provenance"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/provenance"
     },
     "portableCheckpointIds": {
       "type": "array",
       "items": {
-        "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+        "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
       },
       "minItems": 0,
       "uniqueItems": true
     },
     "extensions": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
     },
     "requiredExtensions": {
       "type": "array",
       "items": {
-        "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+        "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
       },
       "minItems": 0,
       "maxItems": 16,

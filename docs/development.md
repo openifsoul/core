@@ -2,20 +2,19 @@
 
 Core owns protocol/runtime/memory/provider primitives and permission semantics.
 The public SDK and App are independent repositories; private Website/Cloud are
-not required for ordinary development. See [ADR 0014](decisions/0014-repository-product-split.md).
+not required for ordinary development. See [ADR 0014](architecture.md).
 
 Use Node.js in the manifest engine range and pinned pnpm 10.15.0. Install with
 `pnpm install --frozen-lockfile`; run `pnpm check` and `pnpm build` locally.
-`pnpm pack:core` writes a compiled prerelease to ignored `.local/packages/`.
+`pnpm pack:core` writes a compiled package to ignored `.local/packages/`.
 No npm publication or automatic remote execution is configured.
 
-`pnpm check` runs formatting, strict types, frozen contract checks, runtime/SQLite
+`pnpm check` runs formatting, strict types, current contract checks, runtime/SQLite
 and provider tests, generated validator verification, boundary/parser/security
 checks, isolated packed-consumer proof, documentation links and the ESM build.
 Checks require no account, private checkout, game or inference key. Registry
-access may be needed for installation; isolated package tests use cached pinned
-public dependencies. Test failures must not be silenced by regenerating frozen
-contract inventory.
+access may be needed for installation; isolated package tests initially resolve public dependencies, then verify an
+offline frozen reinstall in that consumer. Test failures must not be silenced by relaxing current contract/security assertions.
 
 Run the full check for source/dependency/boundary changes. For documentation-only
 changes format edited files and run `pnpm check:docs`. Browser tests belong to

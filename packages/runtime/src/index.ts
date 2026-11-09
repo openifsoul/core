@@ -144,7 +144,7 @@ export function createRuntime(options: RuntimeOptions): Runtime {
     recordedAt: string,
     sourceType: MemoryEvent["provenance"]["sources"][number]["sourceType"],
   ): MemoryEvent => ({
-    schemaVersion: "0.3.0",
+    schemaVersion: "0.4.0",
     kind: "memory-event",
     memoryId: `event-${createHash("sha256")
       .update(key(s, category, id))

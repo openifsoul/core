@@ -6,8 +6,7 @@ planning and memory-backed conversation. Workers AI, OpenAI BYOK and Ollama
 clients are implemented. Cloud source verifies Clerk identity and isolates each
 user workspace in a Durable Object; local loopback mode needs no Clerk or owner
 password prompt. Real game bridges, packaged applications and commercial billing
-remain deferred. A development Clerk instance and one real owner sign-in were verified locally. The revised contract direction is [current contracts](../specs/current/README.md);
-the original v0.1 documents remain historical design material.
+remain deferred. The revised contract direction is [current contracts](../specs/current/README.md);
 
 IfSoul is intended to make a persistent character independent of the particular
 model, game, or chat surface currently expressing it. A character could be
@@ -84,7 +83,7 @@ complete history. This does not imply recording every unobserved game event.
   relationships, preferences, and claims with source/derivation provenance.
   Derived material can be corrected, recomputed, or deleted.
 
-These conceptual retention/retrieval layers are represented by the v0.2 memory
+These conceptual retention/retrieval layers are represented by the current 0.4.0 memory
 envelopes, including working-context, episode, event, fact, relationship, and
 intent-checkpoint records. Core supplies event/exchange storage, bounded recall and trusted atomic retention.
 App implements bounded extractive episodes, revisable reported claims and portable
@@ -101,7 +100,7 @@ loading a second copy does not silently acquire that right. Fork creates a
 separate continuation with recorded parent provenance. Neither mode silently
 merges divergent histories. App currently implements a bounded filtered-fork JSON archive with fresh destination
 identities, eligible retained evidence and explicit losses. It is not complete
-backup, same-identity resume or the frozen Core v0.2 archive contract. General
+backup, same-identity resume or the Core current archive contract. General
 ownership handoff, merge and multi-writer conflict resolution remain deferred.
 
 ## Planned ways to run
@@ -113,7 +112,4 @@ private account/billing orchestration does not become a core dependency. See
 [execution modes](execution-modes.md). The App implements local and per-user Workers placement; commercial billing
 and real game connectors remain planned. Main chat uses neutral context; local
 `/lab` keeps synthetic planning and trace debugging separate. The shared `/app`
-sidebar shell is implemented and locally browser-checked. The 2026-11-06 managed
-release also passed public HTTP/security smoke and headless sign-in/demo rendering;
-authenticated production persistence, archives and BYOK remain unverified. See
-[current status and acceptance sequence](roadmap.md).
+sidebar shell provides the shared App interface. See [roadmap](roadmap.md).

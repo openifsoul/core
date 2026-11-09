@@ -16,7 +16,7 @@ facilities; it does not hide an executable movement/skill engine in an adapter.
 
 ## Contract map
 
-| Exchange                          | v0.2 document kinds                                                      |
+| Exchange                          | current 0.4.0 document kinds                                             |
 | --------------------------------- | ------------------------------------------------------------------------ |
 | Bridge/profile declaration        | `environment-profile`                                                    |
 | Host briefing                     | `context-report`                                                         |

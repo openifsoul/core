@@ -36,7 +36,7 @@ import type {
 const fixture = <T>(name: string): T =>
   JSON.parse(
     readFileSync(
-      new URL(`../../specs/v0.2/examples/${name}.json`, import.meta.url),
+      new URL(`../../specs/current/examples/${name}.json`, import.meta.url),
       "utf8",
     ),
   ) as T;
@@ -194,7 +194,7 @@ test("durable complete cycle separates proposal, acceptance, execution and deliv
       true,
     );
     const delivery: ConversationDelivery = {
-      schemaVersion: "draft-0.2.0",
+      schemaVersion: "0.4.0",
       kind: "conversation-delivery",
       binding: response.binding,
       requestId: response.requestId,

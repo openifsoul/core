@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:planning",
+  "$id": "urn:ifsoul:protocol:0.4.0:planning",
   "oneOf": [
     {
       "$ref": "#/$defs/proposal"
@@ -23,40 +23,40 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "plan-proposal"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "planId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "contextReportId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "contextRevision": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "environmentRevision": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "createdAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "expiresAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "horizon": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/period"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/period"
         },
         "tasks": {
           "type": "array",
@@ -64,28 +64,28 @@
             "type": "object",
             "properties": {
               "taskId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "intentId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "arguments": {
                 "type": "object",
                 "maxProperties": 16,
                 "propertyNames": {
-                  "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                  "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
                 },
                 "additionalProperties": {
-                  "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/argument"
+                  "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/argument"
                 }
               },
               "priority": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/priority"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/priority"
               },
               "dependsOnTaskIds": {
                 "type": "array",
                 "items": {
-                  "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                  "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
                 },
                 "minItems": 0,
                 "maxItems": 16,
@@ -110,12 +110,12 @@
           "maxItems": 16
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -143,31 +143,31 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "plan-decision"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "planId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "decisionId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "contextRevision": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "recordedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "status": {
           "enum": ["accepted", "partially-accepted", "rejected"]
@@ -178,7 +178,7 @@
             "type": "object",
             "properties": {
               "taskId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "decision": {
                 "enum": ["accepted", "rejected"]
@@ -196,12 +196,12 @@
           "maxItems": 16
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -227,34 +227,34 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "task-report"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "planId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "reportId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "taskId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "contextRevision": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "recordedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "status": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/taskStatus"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/taskStatus"
         },
         "summary": {
           "type": "string",
@@ -272,15 +272,15 @@
           "maxItems": 16
         },
         "nextContextReportId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -307,34 +307,34 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "plan-cancel-request"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "planId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "cancellationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "taskIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "minItems": 1,
           "maxItems": 16,
           "uniqueItems": true
         },
         "requestedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "reason": {
           "type": "string",
@@ -342,12 +342,12 @@
           "maxLength": 500
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -371,25 +371,25 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "plan-cancel-result"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "planId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "cancellationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "recordedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "taskResults": {
           "type": "array",
@@ -397,7 +397,7 @@
             "type": "object",
             "properties": {
               "taskId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "status": {
                 "enum": ["cancelled", "already-finished", "rejected", "unknown"]
@@ -415,12 +415,12 @@
           "maxItems": 16
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,

@@ -1,6 +1,6 @@
 # Licensing
 
-The owner approved this split on 2026-11-05. It applies to original IfSoul
+This licensing split applies to original IfSoul
 contributions in this repository; dependency licenses remain their own.
 
 | Material                                                                                                   | License                                                           |
@@ -20,9 +20,6 @@ does not grant trademark rights or promise compatibility with every game or
 mod distribution channel. Review each adapter's dependencies and permissions
 before publishing it.
 
-The Apache text was retrieved unchanged from the Apache Software Foundation.
-Creative Commons texts were retrieved unchanged from the SPDX license-list
-copies because direct text downloads from Creative Commons were unavailable.
 Canonical terms and the copied sources are linked here:
 
 - [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)

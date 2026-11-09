@@ -8,24 +8,18 @@ This repository contains no game, website, React UI, Clerk authentication or
 managed deployment. The public [SDK](https://github.com/openifsoul/sdk) owns
 bounded host bridges; public [App](https://github.com/openifsoul/app) owns
 self-hostable composition and the local laboratory. Private Website and Cloud
-compose these public artifacts. See [repository ownership](docs/decisions/0014-repository-product-split.md).
+compose these public artifacts. See [repository ownership](https://github.com/openifsoul/core/blob/main/docs/architecture.md).
 
-## Build and check locally
+## Install
 
-Use Node.js within the manifest's engine range and pnpm 10.15.0:
+Use Node.js 22.18–24 and an ESM project:
 
 ```sh
-pnpm install --frozen-lockfile
-pnpm check
-pnpm build
-pnpm pack:core
+npm install @ifsoul/core@0.4.0
 ```
 
-`@ifsoul/core@0.3.0` builds ESM and TypeScript declarations. It has not
-been published to npm. Consumers install a reviewed pinned local tarball; no
-sibling/private repository or account is needed. [Development](docs/development.md)
-describes validation; [deployment policy](docs/deployment.md) prohibits automatic
-remote execution.
+The package includes compiled JavaScript and TypeScript declarations. Import the
+explicit module you need:
 
 ```ts
 import { validateDocument } from "@ifsoul/core/protocol";
@@ -41,22 +35,30 @@ connections confer no control authority.
 
 ## Contracts and limits
 
-The [v0.2 design](specs/v0.2/README.md) is active. Frozen v0.1 schemas/examples
-remain regression evidence; ModelProvider retains its independent v0.1 contract.
-Package version changes do not change protocol versions. See
-[compatibility](docs/compatibility.md), [runtime API](docs/runtime-api.md),
-[architecture](docs/architecture.md), [security](docs/security.md),
-[contribution](CONTRIBUTING.md), and [versioning](docs/versioning.md).
+The [current contracts](specs/current/README.md) use IfSoul 0.4.0. See
+[compatibility](https://github.com/openifsoul/core/blob/main/docs/compatibility.md)
+for identifiers and validation, and the
+[runtime API](https://github.com/openifsoul/core/blob/main/docs/runtime-api.md)
+for integration details. Matching release identifiers do not make different
+format families interchangeable.
 
-This remains experimental: tests do not prove production readiness, universal
-game interoperability, permanent memory portability or model equivalence.
+Trusted configurable provider/runtime budgets are separate from model token
+context, permissions and host authority. See
+[resource budgets](https://github.com/openifsoul/core/blob/main/docs/resource-budgets.md)
+and [security](https://github.com/openifsoul/core/blob/main/docs/security.md).
+Relationship interpretation and revision are model-dependent. Current validation
+and persistence checks do not establish reliable semantic reassessment.
 
-Trusted configurable provider/runtime budgets preserve legacy defaults and remain separate from model token context, permission and host authority. See [resource budgets](https://github.com/openifsoul/core/blob/main/docs/resource-budgets.md).
+## Develop locally
 
-## Current release and compatibility
+Clone this repository and use pnpm 10.15.0:
 
-The current coordinated release is **IfSoul 0.3.0**. Package, current-format and
-artifact identifiers share this release. Historical formats remain explicit
-compatibility inputs; matching release numbers do not make different format
-families interchangeable. See [compatibility](docs/compatibility.md).
-Registry publication and deployment are separate authorized release actions.
+```sh
+pnpm install --frozen-lockfile
+pnpm check
+pnpm build
+```
+
+See [development](https://github.com/openifsoul/core/blob/main/docs/development.md),
+[architecture](https://github.com/openifsoul/core/blob/main/docs/architecture.md)
+and [contribution](https://github.com/openifsoul/core/blob/main/CONTRIBUTING.md).

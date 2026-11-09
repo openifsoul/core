@@ -1,22 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:environment",
+  "$id": "urn:ifsoul:protocol:0.4.0:environment",
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "const": "0.3.0"
+      "const": "0.4.0"
     },
     "kind": {
       "const": "environment-profile"
     },
     "binding": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
     },
     "hostId": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
     },
     "revision": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
     },
     "medium": {
       "enum": ["game", "chat"]
@@ -25,7 +25,7 @@
       "type": "object",
       "properties": {
         "form": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "description": {
           "type": "string",
@@ -51,16 +51,16 @@
         "type": "object",
         "properties": {
           "claimId": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "participantId": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "environmentSubjectId": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "issuerId": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           }
         },
         "required": [
@@ -104,7 +104,7 @@
         "channelIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -125,7 +125,7 @@
         "type": "object",
         "properties": {
           "intentId": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "description": {
             "type": "string",
@@ -138,7 +138,7 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                  "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
                 },
                 "type": {
                   "enum": ["entity-ref", "choice", "quantity", "boolean"]
@@ -149,14 +149,14 @@
                 "choices": {
                   "type": "array",
                   "items": {
-                    "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                    "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
                   },
                   "minItems": 1,
                   "maxItems": 32,
                   "uniqueItems": true
                 },
                 "unit": {
-                  "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                  "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
                 },
                 "minimum": {
                   "type": "number"
@@ -182,15 +182,15 @@
       "maxItems": 32
     },
     "worldTime": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/worldTime"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/worldTime"
     },
     "extensions": {
-      "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+      "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
     },
     "requiredExtensions": {
       "type": "array",
       "items": {
-        "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+        "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
       },
       "minItems": 0,
       "maxItems": 16,

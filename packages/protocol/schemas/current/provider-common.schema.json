@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:provider-common",
+  "$id": "urn:ifsoul:protocol:0.4.0:provider-common",
   "description": "Shared definitions, not an exchange document.",
   "$defs": {
     "id": {
@@ -19,7 +19,7 @@
     "extensions": {
       "type": "object",
       "propertyNames": {
-        "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/extensionName"
+        "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/extensionName"
       },
       "additionalProperties": true
     },
@@ -36,7 +36,7 @@
       "type": "object",
       "properties": {
         "timelineId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "tick": {
           "type": "integer",
@@ -56,7 +56,7 @@
         "subjectIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
           },
           "minItems": 0,
           "uniqueItems": true
@@ -82,7 +82,7 @@
         "traits": {
           "type": "object",
           "propertyNames": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
           },
           "additionalProperties": {
             "anyOf": [
@@ -106,7 +106,7 @@
       "type": "object",
       "properties": {
         "code": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:provider-common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:provider-common#/$defs/id"
         },
         "message": {
           "type": "string",

@@ -2,49 +2,38 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import {
-  IFSOUL_VERSION,
-  upgradeDocument,
   validateDocument,
   validateModelProviderDocument,
 } from "../../packages/protocol/src/index.js";
-import type { CharacterInstance } from "../../packages/protocol/src/types.js";
-test("current and legacy validation dispatch and typed copy adapter preserve original evidence", () => {
-  const legacy = JSON.parse(
+const fixture = (path: string) =>
+  JSON.parse(
     readFileSync(
-      new URL(
-        "../../specs/v0.2/examples/character-instance.json",
-        import.meta.url,
-      ),
+      new URL("../../specs/current/" + path, import.meta.url),
       "utf8",
     ),
-  ) as CharacterInstance;
-  const bytes = JSON.stringify(legacy);
-  assert(validateDocument(legacy));
-  const current = upgradeDocument(legacy);
-  assert.equal(current.schemaVersion, IFSOUL_VERSION);
-  assert(validateDocument(current));
-  assert.equal(JSON.stringify(legacy), bytes);
-  assert(!validateDocument({ ...current, schemaVersion: "0.4.0" }));
-  assert.throws(() =>
-    upgradeDocument({
-      ...legacy,
-      schemaVersion: "draft-0.1.0",
-    } as unknown as CharacterInstance),
   );
+test("only current exact product families validate without rewriting", () => {
+  const doc = fixture("examples/character-instance.json");
+  const bytes = JSON.stringify(doc);
+  assert(validateDocument(doc));
+  for (const schemaVersion of [
+    "draft-0.1.0",
+    "draft-0.2.0",
+    "0.3.0",
+    "0.5.0",
+    "ifsoul-bridge/0.4.0",
+  ]) {
+    const old = { ...doc, schemaVersion };
+    const before = JSON.stringify(old);
+    assert(!validateDocument(old));
+    assert.equal(JSON.stringify(old), before);
+  }
+  assert.equal(JSON.stringify(doc), bytes);
 });
-test("current provider spec validation is separate from callable clients", () => {
-  const doc = JSON.parse(
-    readFileSync(
-      new URL(
-        "../../specs/current/model-provider/examples/request.json",
-        import.meta.url,
-      ),
-      "utf8",
-    ),
-  );
+test("provider specification is distinct from protocol and callable clients", () => {
+  const doc = fixture("model-provider/examples/request.json");
   assert(validateModelProviderDocument(doc));
   assert(!validateDocument(doc));
-  assert(
-    !validateModelProviderDocument({ ...doc, schemaVersion: "draft-0.1.0" }),
-  );
+  for (const schemaVersion of ["draft-0.1.0", "0.3.0", "ifsoul-bridge/0.4.0"])
+    assert(!validateModelProviderDocument({ ...doc, schemaVersion }));
 });

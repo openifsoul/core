@@ -19,7 +19,7 @@ function unwrap<T>(result: Result<T>): T {
 const fixture = <T>(name: string): T =>
   JSON.parse(
     readFileSync(
-      new URL(`../../specs/v0.2/examples/${name}.json`, import.meta.url),
+      new URL(`../../specs/current/examples/${name}.json`, import.meta.url),
       "utf8",
     ),
   );

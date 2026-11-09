@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ifsoul:protocol:0.3.0:conversation",
+  "$id": "urn:ifsoul:protocol:0.4.0:conversation",
   "oneOf": [
     {
       "$ref": "#/$defs/request"
@@ -17,40 +17,40 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "conversation-request"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "channelId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "speakerParticipantId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "recipientParticipantIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "minItems": 0,
           "maxItems": 32,
           "uniqueItems": true
         },
         "environmentRevision": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "contextRevision": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "mode": {
           "enum": ["host-requested", "live-channel"]
@@ -62,10 +62,10 @@
           "enum": ["text", "speech", "vocalization", "gesture", "status"]
         },
         "receivedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "deadlineAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "messages": {
           "type": "array",
@@ -73,13 +73,13 @@
             "type": "object",
             "properties": {
               "messageId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "participantId": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
               },
               "recordedAt": {
-                "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+                "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
               },
               "modality": {
                 "enum": ["text", "speech", "vocalization", "gesture", "status"]
@@ -103,12 +103,12 @@
           "maxItems": 50
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -158,43 +158,43 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "conversation-response"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "channelId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "speakerParticipantId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "recipientParticipantIds": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
           },
           "minItems": 0,
           "maxItems": 32,
           "uniqueItems": true
         },
         "responseId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "createdAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "expiresAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "output": {
           "oneOf": [
@@ -243,12 +243,12 @@
           ]
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,
@@ -275,31 +275,31 @@
       "type": "object",
       "properties": {
         "schemaVersion": {
-          "const": "0.3.0"
+          "const": "0.4.0"
         },
         "kind": {
           "const": "conversation-delivery"
         },
         "binding": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/binding"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/binding"
         },
         "requestId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "responseId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "correlationId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "channelId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "deliveryId": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/id"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/id"
         },
         "recordedAt": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/utc"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/utc"
         },
         "status": {
           "enum": ["accepted", "delivered", "rejected", "unknown"]
@@ -310,12 +310,12 @@
           "maxLength": 500
         },
         "extensions": {
-          "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensions"
+          "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensions"
         },
         "requiredExtensions": {
           "type": "array",
           "items": {
-            "$ref": "urn:ifsoul:protocol:0.3.0:common#/$defs/extensionName"
+            "$ref": "urn:ifsoul:protocol:0.4.0:common#/$defs/extensionName"
           },
           "minItems": 0,
           "maxItems": 16,

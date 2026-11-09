@@ -159,12 +159,11 @@ the authenticated HTTP interface and limits. Controllers still receive only
 selected scoped memory, never this catalog API.
 
 The owner workspace also exposes profile-only template import/export and bounded
-model-assisted authoring. These laboratory methods are experimental; normative
-v0.1/v0.2 schemas are unchanged. `CharacterInstance.template` in the convenience
-TypeScript view now represents the optional field already defined in v0.2.
+model-assisted authoring. These laboratory methods are experimental; only the current schema family is accepted. `CharacterInstance.template` in the
+convenience TypeScript view represents the schema's optional template reference.
 `ControllerInput.portrayal` optionally identifies a selected profile separate from
 the immutable memory owner. The composition root substitutes only expression
 profile data; runtime bindings, authorization and history ownership stay unchanged.
 See [the laboratory API](web-laboratory.md#own-characters) for endpoint semantics.
 
-Trusted `ceilings` can explicitly configure supported runtime bounds while preserving legacy defaults; `onBudget` observes requested/effective policy. This does not override frozen structural schemas or scope/authority checks. See [resource budgets](resource-budgets.md).
+Trusted `ceilings` can explicitly configure supported runtime bounds while preserving legacy defaults; `onBudget` observes requested/effective policy. This does not override current structural schemas or scope/authority checks. See [resource budgets](resource-budgets.md).

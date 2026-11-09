@@ -3,8 +3,8 @@
 Core owns experimental protocol/runtime/memory/permissions/provider primitives.
 SDK and self-hostable App are independent public repositories; Website and Cloud
 are private compositions. Start with [architecture](docs/architecture.md),
-[repository ownership](docs/decisions/0014-repository-product-split.md), and the
-active [v0.2 specification](specs/v0.2/README.md). Run local checks described in
+[repository ownership](docs/architecture.md), and the
+active [current specification](specs/current/README.md). Run local checks described in
 [development](docs/development.md). No public checkout requires private access.
 
 ## Changes and decisions
@@ -13,21 +13,13 @@ Keep changes focused and distinguish implemented behavior from proposals. Public
 documentation is English. Check the [roadmap](docs/roadmap.md) before adding a
 component; implementation requires an agreed scope and owner.
 
-The owner approved the v0.2 design revision. Preserve v0.1 schema and example
-bytes as historical regression evidence; add v0.2 separately. The
-[ModelProvider contract](specs/model-provider/README.md) remains independently at
-`draft-0.1.0`. Passing an old action fixture does not recommend an action-control
-architecture for new bridges.
+Current contracts use only IfSoul 0.4.0. Remove obsolete format support rather
+than adding implicit migration/downgrade paths. Meaningful current
+semantic/security tests remain required.
 
-Discuss further contract changes with the maintainer. Record architectural or
-compatibility decisions in an [ADR](docs/decisions/README.md), then update the
-normative schema, specification, examples, tests and
-[compatibility notes](docs/compatibility.md) together. A proposed ADR is not an
-accepted decision. Wire versions, archive versions, template revisions and future
-package versions are separate dimensions. Incompatible changes need explicit
-versions; draft status does not authorize silent data loss. Do not maintain a
-second normative type definition or remove unsupported fields to pass validation.
-A schema revision alone does not implement migration.
+Discuss contract changes with the maintainer. Update architecture, normative
+schemas, specifications, examples, tests and API reference together. Keep
+implemented behavior distinct from proposals.
 
 ## Preserve host authority
 
@@ -59,7 +51,7 @@ pnpm check
 
 Report checks actually run, their results and limitations. Schema checks prove
 structure, not consent, truthful provenance, host behavior or archive round-trip
-safety. Keep v0.1 regressions distinct from v0.2 coverage; use original synthetic
+safety. Use current-format and explicit rejected-version tests with original synthetic
 data and test the boundary being changed.
 
 The [execution policy](docs/deployment.md) runs checks locally. Checks/builds are local and Workers deployment is manual. No scheduled production
@@ -86,7 +78,6 @@ report exploitable details through public issues.
 ## Review and versioning
 
 Use [versioning](docs/versioning.md) to distinguish source snapshots, experimental
-APIs and frozen contracts. Project-local [skills](AGENTS.md#project-skills) support
-implementation and review; the same checks apply to human and AI contributions.
+APIs and current contracts. Apply the documented checks to every contribution.
 Maintainers inspect changes to guardrails and contract baselines explicitly; a
 passing check changed in the same patch is not independent approval.
