@@ -172,7 +172,7 @@ request formatting, safe failures, byte/time/cancellation bounds, loopback/model
 restrictions, provider switching, restart/replay, partial host acceptance,
 dependency execution order, no invented watering, and unfinished claim conflicts.
 Live credentials, inference quality, deployment/authentication and browser
-verification are separate composition checks reported by the coordinator.
+verification are separate composition checks.
 
 HTTP adapters use manual redirect handling and reject non-success responses.
 They never follow a redirect with credentials. Workers does not support the

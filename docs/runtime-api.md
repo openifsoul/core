@@ -167,3 +167,10 @@ profile data; runtime bindings, authorization and history ownership stay unchang
 See [the laboratory API](web-laboratory.md#own-characters) for endpoint semantics.
 
 Trusted `ceilings` can explicitly configure supported runtime bounds while preserving legacy defaults; `onBudget` observes requested/effective policy. This does not override current structural schemas or scope/authority checks. See [resource budgets](resource-budgets.md).
+
+See [participant sessions](sessions.md) for the additive trusted session API.
+
+See [group planning and autonomous cadence](group-scheduler.md) for the additive planning API.
+
+See [behavior configuration and dynamic parameters](behavior.md) for shared goals,
+reaction policy and evidence-linked state.

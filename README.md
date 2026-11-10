@@ -15,7 +15,7 @@ compose these public artifacts. See [repository ownership](https://github.com/op
 Use Node.js 22.18–24 and an ESM project:
 
 ```sh
-npm install @ifsoul/core@0.4.0
+npm install @ifsoul/core@0.5.0
 ```
 
 The package includes compiled JavaScript and TypeScript declarations. Import the
@@ -62,3 +62,6 @@ pnpm build
 See [development](https://github.com/openifsoul/core/blob/main/docs/development.md),
 [architecture](https://github.com/openifsoul/core/blob/main/docs/architecture.md)
 and [contribution](https://github.com/openifsoul/core/blob/main/CONTRIBUTING.md).
+
+See [behavior configuration and dynamic parameters](docs/behavior.md) for shared goals,
+reaction policy and evidence-linked state.

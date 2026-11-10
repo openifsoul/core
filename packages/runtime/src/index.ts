@@ -768,3 +768,10 @@ export function createRuntime(options: RuntimeOptions): Runtime {
       }),
   };
 }
+
+export * from "./participants.js";
+
+export * from "./group-scheduler.js";
+export type * from "./behavior-types.js";
+
+export * from "./behavior.js";

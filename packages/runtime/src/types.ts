@@ -28,6 +28,10 @@ export interface TrustedSession {
   access: TrustedAccess;
 }
 export interface ControllerInput {
+  behavior?: Pick<
+    import("./behavior-types.js").BehaviorInspection,
+    "configRevision" | "effective" | "parameters" | "values"
+  >;
   portrayal?: { characterId: string; name: string; memoryOwnerName: string };
   operation: "plan" | "conversation";
   character: CharacterInstance;
