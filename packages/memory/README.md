@@ -85,3 +85,26 @@ selection and compaction must run without an asynchronous gap under the existing
 single-writer policy; this API is not a multi-writer lease or optimistic revision
 protocol. It does not vacuum SQLite files, erase backups or propagate deletions.
 Callers own retained excerpts, source digests, loss disclosures and rebuild policy.
+
+## Retained event inspection
+
+The optional trusted-owner `MemoryPort.scan` pages through event envelopes in
+storage insertion order. The caller provides the owner memory ID and the complete
+set of participant IDs it is authorized to inspect. A private or participant
+record is visible only when every recorded recipient is in that set. Exchange
+journals and controller state stay outside the scan.
+
+The SQL adapter returns a high-water anchor and continuation sequence. Continue
+with that anchor to exclude later writes. If the anchor is removed or its scope is
+no longer visible, restart the scan. A caller-supplied reset marker excludes
+earlier events in its environment on every page. The local SQLite adapter uses an
+additive owner/sequence index. Each call reads up to 128 event envelopes and limits
+the selected document bytes to 512,000, allowing a single larger envelope to make
+progress. Adapters may omit the inspection method.
+
+The SQLite owner scan accepts an optional full-text phrase. It matches retained
+canonical event documents using SQLite FTS5 Unicode tokenization. Search totals
+count authorized events within the cursor anchor and active reset partition.
+Applications that project multiple records from an event must distinguish this
+candidate event count from the count of projected records. Drivers without
+full-text support return an explicit unsupported result for text searches.

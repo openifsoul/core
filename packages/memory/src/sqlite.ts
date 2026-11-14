@@ -14,6 +14,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { failure, success } from "./port.js";
 import type { MemoryPort, Result } from "./port.js";
 import { createSQLMemory, MEMORY_SCHEMA } from "./sql.js";
+import { initializeEventSearch } from "./sqlite-search.js";
 export { validScope } from "./sql.js";
 
 /** Opens one locally owned SQLite writer. Never removes an existing ownership lock. */
@@ -68,6 +69,10 @@ export function openSQLiteMemory(filename: string): Result<MemoryPort> {
     if (path !== ":memory:") chmodSync(path, 0o600);
     database.exec("PRAGMA foreign_keys=ON; PRAGMA journal_mode=DELETE;");
     database.exec(MEMORY_SCHEMA);
+    database.exec(
+      "CREATE INDEX IF NOT EXISTS event_owner_sequence ON events(character_id, sequence)",
+    );
+    const indexedSearch = initializeEventSearch(database);
     const db = database;
     let closed = false;
     return success(
@@ -93,6 +98,7 @@ export function openSQLiteMemory(filename: string): Result<MemoryPort> {
           }
           release();
         },
+        { indexedSearch },
       ),
     );
   } catch {

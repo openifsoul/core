@@ -20,7 +20,7 @@ test("only current exact product families validate without rewriting", () => {
     "draft-0.1.0",
     "draft-0.2.0",
     "0.3.0",
-    "0.5.0",
+    "0.6.0",
     "ifsoul-bridge/0.4.0",
   ]) {
     const old = { ...doc, schemaVersion };

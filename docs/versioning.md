@@ -1,11 +1,11 @@
 # Versioning
 
-The current IfSoul package and product release is **0.5.0**. Each independently
+The current IfSoul package and product release is **0.6.0**. Each independently
 usable checkout carries release.json and an exact consistency check; public
 packages have no private central metadata dependency.
 
 Package releases and serialized format families are versioned separately. A
-package update does not relabel stored data. Release0.5.0 preserves the compatible
+package update does not relabel stored data. Release0.6.0 preserves the compatible
 0.4.0 protocol, provider specification, bridge, resource capability, App archive
 and participant/behavior/planning families. Validators continue to require their
 exact documented family; matching numbers do not make distinct families

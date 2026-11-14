@@ -47,6 +47,29 @@ export interface RecallQuery {
   maxBytes: number;
   publicOnly?: boolean;
 }
+export interface MemoryScanQuery {
+  characterId: string;
+  /** Trusted owner-visible identities. Every participant on a non-public row must be listed. */
+  visibleParticipantIds: string[];
+  /** Exact full-text phrase over retained canonical event documents. */
+  text?: string;
+  /** Skip the candidate count when iterating an anchored projection. */
+  includeTotal?: boolean;
+  after?: number;
+  through?: number;
+  anchor?: string;
+  /** A reset excludes earlier entries in this environment, including after cursor creation. */
+  reset?: { environmentId: string; eventType: string };
+  limit: number;
+}
+export interface MemoryScanPage {
+  entries: { sequence: number; event: MemoryEvent }[];
+  through: number;
+  anchor: string;
+  next?: number;
+  /** Authorized event count within the current search anchor. */
+  total?: number;
+}
 /** Trusted local storage port; do not expose unrestricted methods to controllers or hosts. */
 export interface MemoryPort {
   putCharacter(character: CharacterInstance): Result<CharacterInstance>;
@@ -61,6 +84,8 @@ export interface MemoryPort {
     events: MemoryEvent[];
   }): Result<void>;
   recall(query: RecallQuery): Result<MemoryEvent[]>;
+  /** Trusted owner inspection only. Bounds retained events; exchange journals are excluded. */
+  scan?(query: MemoryScanQuery): Result<MemoryScanPage>;
   /** Trusted owner-only atomic retention. Exact source IDs must still exist in the
    * nominated character/environment/scope. Replacements validate before pruning.
    * Optional for older adapters; callers must reject unsupported retention. */

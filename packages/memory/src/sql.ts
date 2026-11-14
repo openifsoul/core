@@ -9,6 +9,7 @@ import type {
   ErrorCode,
   ExchangeRecord,
   MemoryPort,
+  MemoryScanPage,
   RecallQuery,
   Result,
 } from "./port.js";
@@ -46,6 +47,7 @@ export function validScope(scope: Scope): boolean {
 export function createSQLMemory(
   db: SQLDriver,
   closeOwner: () => void = () => {},
+  options: { indexedSearch?: boolean } = {},
 ): MemoryPort {
   let closed = false;
   const guarded = <T>(action: () => Result<T>): Result<T> => {
@@ -410,6 +412,142 @@ export function createSQLMemory(
           );
         }
         return success(selected.reverse());
+      }),
+    scan: (query) =>
+      guarded<MemoryScanPage>(() => {
+        const after = query.after ?? 0;
+        if (
+          !query.visibleParticipantIds.length ||
+          query.visibleParticipantIds.length > 32 ||
+          !Number.isSafeInteger(query.limit) ||
+          query.limit < 1 ||
+          query.limit > 128 ||
+          !Number.isSafeInteger(after) ||
+          after < 0 ||
+          (query.through !== undefined &&
+            (!Number.isSafeInteger(query.through) || query.through < after))
+        )
+          return failure("budget-exceeded", "Memory scan bounds are invalid.");
+        const queryText = query.text?.trim() ?? "";
+        if (queryText.length > 120 || queryText.includes("\0"))
+          return failure("invalid-document", "Invalid memory search text.");
+        if (queryText && !options.indexedSearch)
+          return failure(
+            "unsupported",
+            "This store does not support full-text memory search.",
+          );
+        const visibility = `(json_extract(document,'$.scope.audience')='public' OR (
+          json_extract(document,'$.scope.audience') IN ('private', 'participants')
+          AND json_array_length(document,'$.scope.participantIds') > 0
+          AND NOT EXISTS (
+            SELECT 1 FROM json_each(events.document,'$.scope.participantIds') AS recipient
+            WHERE recipient.value NOT IN (SELECT value FROM json_each(?))
+          )
+        ))`;
+        const audience = JSON.stringify(query.visibleParticipantIds);
+        const anchor =
+          query.through === undefined
+            ? db
+                .prepare(
+                  `SELECT sequence, id FROM events WHERE character_id=? AND ${visibility} ORDER BY sequence DESC LIMIT 1`,
+                )
+                .get(query.characterId, audience)
+            : db
+                .prepare(
+                  `SELECT sequence, id FROM events WHERE character_id=? AND sequence=? AND ${visibility}`,
+                )
+                .get(query.characterId, query.through, audience);
+        const through = Number(anchor?.sequence ?? 0);
+        const anchorId = String(anchor?.id ?? "");
+        if (
+          query.through !== undefined &&
+          (through !== query.through || anchorId !== query.anchor)
+        )
+          return failure(
+            "stale-context",
+            "Retained memory changed. Start the search again.",
+          );
+        const reset = query.reset;
+        const resetAt = reset
+          ? Number(
+              db
+                .prepare(
+                  `SELECT sequence FROM events
+              WHERE character_id=? AND environment_id=?
+                AND json_extract(document,'$.eventType')=? AND ${visibility}
+              ORDER BY sequence DESC LIMIT 1`,
+                )
+                .get(
+                  query.characterId,
+                  reset.environmentId,
+                  reset.eventType,
+                  audience,
+                )?.sequence ?? 0,
+            )
+          : 0;
+        const textFilter = queryText
+          ? "AND sequence IN (SELECT rowid FROM event_search_v1 WHERE event_search_v1 MATCH ?)"
+          : "";
+        const textArgs = queryText
+          ? [`"${queryText.replaceAll('"', '""')}"`]
+          : [];
+        const visibleRange = `character_id=? AND sequence<=?
+          AND (?=0 OR environment_id<>? OR sequence>?)
+          AND ${visibility} ${textFilter}`;
+        const rangeArgs = [
+          query.characterId,
+          through,
+          resetAt,
+          reset?.environmentId ?? "",
+          resetAt,
+          audience,
+          ...textArgs,
+        ];
+        const total =
+          query.includeTotal === false
+            ? undefined
+            : Number(
+                db
+                  .prepare(
+                    `SELECT count(*) AS total FROM events WHERE ${visibleRange}`,
+                  )
+                  .get(...rangeArgs)?.total ?? 0,
+              );
+        const rows = db
+          .prepare(
+            `WITH page AS (
+            SELECT sequence, length(CAST(document AS BLOB)) AS bytes
+            FROM events WHERE sequence>? AND ${visibleRange}
+            ORDER BY sequence LIMIT ?
+          ), sized AS (
+            SELECT sequence, sum(bytes) OVER (ORDER BY sequence) AS total,
+              row_number() OVER (ORDER BY sequence) AS position FROM page
+          )
+          SELECT sized.sequence, CASE WHEN position=1 OR total<=512000 AND position<=?
+            THEN events.document END AS document
+          FROM sized JOIN events ON events.sequence=sized.sequence ORDER BY sized.sequence`,
+          )
+          .all(after, ...rangeArgs, query.limit + 1, query.limit);
+        const entries = [];
+        let next: number | undefined;
+        for (const row of rows) {
+          const sequence = Number(row.sequence);
+          if (typeof row.document !== "string") {
+            next = entries.at(-1)?.sequence;
+            break;
+          }
+          entries.push({
+            sequence,
+            event: stored<MemoryEvent>(row.document, "memory-event"),
+          });
+        }
+        return success({
+          entries,
+          through,
+          anchor: anchorId,
+          total,
+          ...(next === undefined ? {} : { next }),
+        });
       }),
     close: () => {
       try {

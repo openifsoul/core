@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { DatabaseSync } from "node:sqlite";
+
 import {
   mkdtempSync,
   readFileSync,
@@ -986,5 +988,73 @@ test("conversation selection covers the broader recording audience and public sc
     );
   } finally {
     h.memory.close();
+  }
+});
+
+test("retained FTS uses the index, excludes inaccessible rows before counts, and follows compaction", () => {
+  const directory = mkdtempSync(join(tmpdir(), "ifsoul-fts-"));
+  const filename = join(directory, "memory.sqlite");
+  let memory = unwrap(openSQLiteMemory(filename));
+  try {
+    const owner = unwrap(memory.putCharacter(session().character));
+    const base = fixture<MemoryEvent>("memory-event-observed");
+    const event = (id: string, summary: string): MemoryEvent => ({
+      ...base,
+      memoryId: id,
+      characterId: owner.characterId,
+      summary,
+      scope: {
+        audience: "private",
+        participantIds: [owner.participantId],
+        export: "forbidden",
+      },
+    });
+    const visible = event("search-visible", "An elderberry branch");
+    const privateEvent = event("search-private", "An elderberry branch");
+    privateEvent.scope.participantIds = ["another-player"];
+    unwrap(memory.commit({ events: [visible, privateEvent], exchanges: [] }));
+    const query = {
+      characterId: owner.characterId,
+      visibleParticipantIds: [owner.participantId],
+      text: '"elderberry branch"',
+      limit: 10,
+    };
+    assert.equal(unwrap(memory.scan!(query)).total, 1);
+    assert.deepEqual(
+      unwrap(memory.scan!(query)).entries.map((row) => row.event),
+      [visible],
+    );
+    unwrap(
+      memory.compact!({
+        characterId: owner.characterId,
+        environmentId: visible.environmentId!,
+        scope: visible.scope,
+        eventIds: [visible.memoryId],
+        exchangeIds: [],
+        events: [event("search-replacement", "A yellow birch")],
+        exchanges: [],
+      }),
+    );
+    unwrap(memory.close());
+    memory = unwrap(openSQLiteMemory(filename));
+    assert.equal(unwrap(memory.scan!(query)).total, 0);
+    assert.equal(
+      unwrap(memory.scan!({ ...query, text: "yellow birch" })).total,
+      1,
+    );
+    const db = new DatabaseSync(filename, { readOnly: true });
+    try {
+      const plan = db
+        .prepare(
+          "EXPLAIN QUERY PLAN SELECT rowid FROM event_search_v1 WHERE event_search_v1 MATCH ?",
+        )
+        .all("elderberry");
+      assert.match(JSON.stringify(plan), /VIRTUAL TABLE INDEX/);
+    } finally {
+      db.close();
+    }
+  } finally {
+    memory.close();
+    rmSync(directory, { recursive: true, force: true });
   }
 });
