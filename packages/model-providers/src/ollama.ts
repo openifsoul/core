@@ -96,9 +96,10 @@ export function createOllamaProvider(
             {
               model: input.model,
               stream: false,
-              // Original Qwen3 supports an on/off thinking switch. Do not send
-              // unsupported controls to other installed model families.
-              ...(/^qwen3(?::|$)/.test(input.model) ? { think: false } : {}),
+              // Qwen3 and Qwen3.5 support an on/off thinking switch.
+              ...(/^qwen3(?:\.5)?(?::|$)/.test(input.model)
+                ? { think: false }
+                : {}),
               messages: [
                 { role: "system", content: input.system },
                 { role: "user", content: input.prompt },

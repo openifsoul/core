@@ -385,22 +385,27 @@ test("Ollama never pulls unavailable models or returns incomplete content", asyn
   assert.equal(chats, 1);
 });
 
-test("Ollama does not send Qwen thinking controls to Llama models", async () => {
-  const client = createOllamaProvider({
-    fetch: async (url, init) => {
-      if (String(url).endsWith("/api/tags"))
-        return Response.json({ models: [{ name: "llama3.2:latest" }] });
-      const body = JSON.parse(String(init?.body));
-      assert.equal(Object.hasOwn(body, "think"), false);
-      return Response.json({
-        done: true,
-        done_reason: "stop",
-        message: { content: '{"content":"A local Llama reply."}' },
-      });
-    },
+for (const [model, think] of [
+  ["llama3.2:latest", undefined],
+  ["qwen3.5:4b", false],
+] as const) {
+  test(`Ollama sends the expected thinking control to ${model}`, async () => {
+    const client = createOllamaProvider({
+      fetch: async (url, init) => {
+        if (String(url).endsWith("/api/tags"))
+          return Response.json({ models: [{ name: model }] });
+        const body = JSON.parse(String(init?.body));
+        assert.equal(Object.hasOwn(body, "think"), think !== undefined);
+        assert.equal(body.think, think);
+        return Response.json({
+          done: true,
+          done_reason: "stop",
+          message: { content: '{"content":"A local reply."}' },
+        });
+      },
+    });
+    assert.deepEqual(unwrap(await client.generate({ ...input(), model })), {
+      content: "A local reply.",
+    });
   });
-  assert.deepEqual(
-    unwrap(await client.generate({ ...input(), model: "llama3.2:latest" })),
-    { content: "A local Llama reply." },
-  );
-});
+}

@@ -62,15 +62,23 @@ for original evidence phrases and separate citations when reports disagree.
 
 ### Minecraft App connection
 
-The App provides a consent-based local companion flow for the Minecraft1.20.2 trusted offline-server connector: generated settings, independent game/service endpoints, owned character/memory/provider selection, restricted device grants and explicit connection controls. Provider renewal preserves the approved connection memory. Game mechanics remain host-owned; broader account modes and other adapters remain separate work.
+The App provides a consent-based local companion flow for the Minecraft1.20.2 trusted offline-server connector: generated settings, independent game/service endpoints, owned character/memory/provider selection, restricted device grants and explicit connection controls. Provider renewal preserves the approved connection memory. Game mechanics remain host-owned. The Mineflayer companion has explicit
+movement and optional hostile-mob defense grants, with structured choices,
+operator stop and host outcome reports. The local native exercise used
+synthetic decisions. Broader account modes remain separate work.
 
 The App also selects server-side bridge profiles for Paper and NeoForge.
 Desktop can import a matching, checksum-pinned local IfSoul bridge JAR.
 Server operators provision Minecraft and upstream mods and approve the target
 player and NPC before pairing. The server-side adapter checks the matching
 runtime declaration, identity and connection scope before dialogue. Citizens and
-Easy NPC passed local private dialogue checks. MineColonies and CustomNPCs
-Unofficial still await an in-game native client dialogue test. Russian
+Easy NPC passed local private dialogue checks. Citizens native movement and
+stop passed a local Paper exercise. Easy NPC movement passed a local NeoForge
+exercise through the App with an owned NPC, a native travel objective and idle
+ground navigation. CustomNPCs passed a local NeoForge client and App exercise
+with its unmodified bridge and a deterministic provider. MineColonies passed
+local NeoForge client and App verification with its unmodified bridge and a
+deterministic provider for assigned workplace recall and grant lifecycle. Russian
 source-faithful recall with the local Qwen model remains unverified.
 
 ## Desktop application
