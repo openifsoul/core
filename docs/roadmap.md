@@ -5,11 +5,12 @@ provider clients, a bounded host SDK and a self-hostable App. Games own mechanic
 action adoption and execution. See [architecture](architecture.md),
 [runtime API](runtime-api.md) and [resource budgets](resource-budgets.md).
 
-## Relationship interpretation and revision are model-dependent. Current validation
+## Relationship interpretation and revision
 
+Relationship interpretation and revision are model-dependent. Current validation
 and persistence checks do not establish reliable semantic reassessment.
 
-The unreleased 0.8.0 candidate carries approved participant identity and source
+IfSoul 0.8.0 carries approved participant identity and source
 attribution into linked App Conversation. It preserves conflicting reports
 as separate claims and stores relationship values from the NPC toward the
 player, with links to the supporting events. Withdrawing consent removes the
@@ -32,7 +33,7 @@ dialogue search remains under connection and session authorization.
 
 - Semantic retrieval and embeddings alongside bounded source-preserving recall.
 - Broader archive and distributed ownership/merge interfaces.
-- The unreleased App candidate extends the [participant/session foundation](sessions.md)
+- App 0.8.0 extends the [participant/session foundation](sessions.md)
   with player-consented [linked Conversation](https://github.com/openifsoul/app/blob/main/docs/memory.md#continue-as-a-mineflayer-player-in-conversation)
   for an individual local Mineflayer companion.
 - Clear inspection and management of evidence, interpretations and their sources.
@@ -56,9 +57,9 @@ The [participant/session foundation](sessions.md) provides explicit identities,
 addressed events, revisioned membership and authorized evidence projections.
 The [bounded group planner and autonomous cadence](group-scheduler.md) now provide
 shared-context proposals, explicit host outcomes, durable due/event/manual claims
-and revisioned controls, including sessions without players. The unreleased
-App candidate connects the planner to [Mineflayer groups](https://github.com/openifsoul/app/blob/main/docs/game-connections.md#run-a-mineflayer-group).
-The 0.8.0 candidate's packaged App and companion have been exercised with
+and revisioned controls, including sessions without players. App 0.8.0
+connects the planner to [Mineflayer groups](https://github.com/openifsoul/app/blob/main/docs/game-connections.md#run-a-mineflayer-group).
+The 0.8.0 App and companion were verified with
 three independently assigned characters, private per-character recall,
 individual revocation and bounded continuation after the player left. The
 group scheduler proposes assignments. Each client owns movement and reports the
@@ -85,26 +86,25 @@ The App also offers server-side profiles for Citizens, Easy NPC, CustomNPCs
 Unofficial and MineColonies. Operators provision a compatible server and
 approve the player and NPC before pairing. The bridge checks the runtime,
 identity and scope before processing dialogue. Independent local verification of
-the 0.8.0 candidate covered authorized native effects, stop or cancellation,
+0.8.0 covered authorized native effects, stop or cancellation,
 revocation, and Russian private recall of an observed host outcome across all
 five bridges. For setup and supported actions, see the
 [Minecraft connection guide](https://github.com/openifsoul/app/blob/main/docs/game-connections.md).
 
 ## Desktop application
 
-The 0.6.0 desktop roadmap starts with an Electron package for macOS and Windows.
-The App composition packages its workspace, local service runtime and Minecraft
+Desktop uses Electron to package the App workspace, local service runtime and Minecraft
 companion as a single installation. Service location, model provider and memory
 ownership are independent choices. Core and SDK remain usable by other hosts.
 
 Apple silicon Desktop uses an owner-signed update feed. The installers
 remain unsigned. A local 0.7.0 installation accepted and relaunched the
-0.8.0 macOS candidate while retaining its local data. The 0.8.0 supervisor
+0.8.0 macOS build while retaining its local data. The 0.8.0 supervisor
 also restored the previous installed bundle and relaunched it after a
 first-start exit or hang. See the
 [Desktop guide](https://github.com/openifsoul/app/blob/main/docs/desktop.md).
 
-The 0.8.0 candidate retains the 0.4.0 serialized and wire formats.
+IfSoul 0.8.0 retains the 0.4.0 serialized and wire formats.
 Windows verification follows separately.
 Windows and Linux updates, independent bridge updates, Linux packaging,
 and scoped local MCP are separate milestones. Authenticated remote MCP is
