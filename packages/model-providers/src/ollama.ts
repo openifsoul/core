@@ -42,8 +42,16 @@ export function createOllamaProvider(
     fetch?: FetchLike;
     limits?: Partial<ProviderLimits>;
     budgetPolicy?: ProviderBudgetPolicy;
+    /** Optional local sampling override within the supported product range [0, 1]. */
+    temperature?: number;
   } = {},
 ): OllamaClient {
+  const { temperature } = options;
+  if (
+    temperature !== undefined &&
+    (!Number.isFinite(temperature) || temperature < 0 || temperature > 1)
+  )
+    throw new ProviderFailure("configuration");
   const fetcher = options.fetch ?? fetch;
   const discover = async (
     signal: AbortSignal,
@@ -110,6 +118,7 @@ export function createOllamaProvider(
                 ...(contextBudget
                   ? { num_ctx: contextBudget.windowTokens }
                   : {}),
+                ...(temperature === undefined ? {} : { temperature }),
               },
             },
             limits,

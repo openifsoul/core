@@ -1,10 +1,13 @@
 import { SessionError } from "./participants.js";
 import type {
+  AuthorizeSessionEvidence,
+  SessionEvidenceQuery,
   ParticipantState,
   ParticipantStore,
   SessionAccess,
 } from "./participants.js";
 import type {
+  BehaviorChange,
   BehaviorConfiguration,
   BehaviorOperatorPolicy,
   BehaviorPermissions,
@@ -201,6 +204,12 @@ export function behaviorPermissions(
 }
 export const behaviorRevision = (s: ParticipantState) =>
   s.behavior?.config.revision ?? 0;
+interface EvidenceVisibilityOptions {
+  authorizeEvidence?: AuthorizeSessionEvidence;
+  purpose?: SessionEvidenceQuery["purpose"];
+  targetParticipantId?: string;
+  audienceParticipantIds?: string[];
+}
 /** Previously unobserved/unremembered evidence never becomes implicit model context. */
 export function behaviorEvidenceVisible(
   s: ParticipantState,
@@ -209,20 +218,19 @@ export function behaviorEvidenceVisible(
   sessionId: string,
   eventId: string,
   operator: BehaviorOperatorPolicy = DEFAULT_BEHAVIOR_OPERATOR,
+  options: EvidenceVisibilityOptions = {},
 ): boolean {
-  sessionFor(s, access, sessionId, npcId);
-  const event = s.events.find((e) => e.eventId === eventId);
-  if (
-    !event ||
-    !s.sessions.some(
-      (source) =>
-        source.sessionId === event.sessionId && source.hostId === access.hostId,
-    )
-  )
-    return false;
-  if (!s.behavior) return true;
+  const session = sessionFor(s, access, sessionId, npcId);
+  const event = s.events.find((item) => item.eventId === eventId);
+  const sourceSession =
+    event && s.sessions.find((item) => item.sessionId === event.sessionId);
+  if (!event || !sourceSession) return false;
+  const restricted =
+    sourceSession.hostId !== access.hostId ||
+    options.authorizeEvidence !== undefined;
+  if (!s.behavior) return !restricted;
   const observation = s.behavior.observations.find(
-    (x) => x.npcId === npcId && x.eventId === eventId,
+    (item) => item.npcId === npcId && item.eventId === eventId,
   );
   const current = behaviorPermissions(
     s,
@@ -232,13 +240,70 @@ export function behaviorEvidenceVisible(
     eventId,
     operator,
   );
-  return (
-    !!observation &&
-    observation.permissions.observe &&
-    observation.permissions.remember &&
-    current.observe &&
-    current.remember
+  if (
+    !observation?.permissions.observe ||
+    !observation.permissions.remember ||
+    !current.observe ||
+    !current.remember
+  )
+    return false;
+  if (!restricted) return true;
+
+  const audienceParticipantIds = [
+    ...new Set(options.audienceParticipantIds ?? []),
+  ];
+  const requiredAudience = [
+    ...new Set([
+      npcId,
+      ...audienceParticipantIds,
+      ...(options.targetParticipantId ? [options.targetParticipantId] : []),
+    ]),
+  ];
+  const recordedAudience = [
+    event.senderId,
+    ...event.recipientIds,
+    ...event.observerIds,
+  ];
+  if (
+    !options.authorizeEvidence ||
+    !session.recallWorldIds.includes(sourceSession.worldId) ||
+    !sourceSession.members.some(
+      (member) => member.participantId === npcId && member.role === "npc",
+    ) ||
+    !requiredAudience.every(
+      (id) =>
+        recordedAudience.includes(id) &&
+        sourceSession.members.some((member) => member.participantId === id),
+    )
+  )
+    return false;
+  const sourcePermissions = behaviorPermissions(
+    s,
+    { ...access, hostId: sourceSession.hostId },
+    npcId,
+    sourceSession.sessionId,
+    eventId,
+    operator,
   );
+  if (!sourcePermissions.observe || !sourcePermissions.remember) return false;
+  try {
+    return (
+      options.authorizeEvidence(
+        structuredClone({
+          purpose: options.purpose ?? "recall",
+          access,
+          session,
+          npcId,
+          targetParticipantId: options.targetParticipantId,
+          audienceParticipantIds,
+          sourceSession,
+          event,
+        }),
+      ) === true
+    );
+  } catch {
+    return false;
+  }
 }
 function validGoals(value: unknown): boolean {
   return (
@@ -322,8 +387,10 @@ export function createBehaviorRuntime(
     operator?: BehaviorOperatorPolicy;
     limits?: Partial<BehaviorLimits>;
     ceilings?: Partial<BehaviorLimits>;
+    authorizeEvidence?: AuthorizeSessionEvidence;
   } = {},
 ) {
+  const authorizeEvidence = options.authorizeEvidence;
   const operator = structuredClone(
     options.operator ?? DEFAULT_BEHAVIOR_OPERATOR,
   );
@@ -374,6 +441,40 @@ export function createBehaviorRuntime(
     const session = sessionFor(s, a, sessionId, npcId),
       b = s.behavior,
       config = base(s);
+    const belongs = (item: BehaviorParameterValue | BehaviorChange) =>
+      item.npcId === npcId &&
+      (!item.worldId || item.worldId === session.worldId);
+    const values = (b?.values ?? []).filter(belongs);
+    const history = (b?.history ?? []).filter(belongs);
+    const deniedKeys = new Set<string>();
+    const acceptedKeys = new Set<string>();
+    if (authorizeEvidence) {
+      for (const entry of history) {
+        const key = valueKey(entry);
+        if (deniedKeys.has(key) || entry.kind !== "evidence") continue;
+        const target = entry.targetParticipantId;
+        if (
+          !entry.evidenceEventIds.length ||
+          !entry.evidenceEventIds.every((eventId) =>
+            behaviorEvidenceVisible(s, a, npcId, sessionId, eventId, operator, {
+              authorizeEvidence,
+              purpose: "relationship-evidence",
+              targetParticipantId: target,
+              audienceParticipantIds: target ? [target] : [],
+            }),
+          )
+        ) {
+          deniedKeys.add(key);
+          continue;
+        }
+        acceptedKeys.add(key);
+      }
+    }
+    const visible = (item: BehaviorParameterValue | BehaviorChange) => {
+      if (!authorizeEvidence) return true;
+      const key = valueKey(item);
+      return acceptedKeys.has(key) && !deniedKeys.has(key);
+    };
     return {
       npcId,
       sessionId,
@@ -381,14 +482,8 @@ export function createBehaviorRuntime(
       stateRevision: b ? revision(b, npcId) : 0,
       effective: effectiveBehavior(s, a, npcId, sessionId, operator),
       parameters: config.parameters,
-      values: (b?.values ?? []).filter(
-        (v) =>
-          v.npcId === npcId && (!v.worldId || v.worldId === session.worldId),
-      ),
-      history: (b?.history ?? []).filter(
-        (v) =>
-          v.npcId === npcId && (!v.worldId || v.worldId === session.worldId),
-      ),
+      values: values.filter(visible),
+      history: history.filter(visible),
     };
   };
   return {
@@ -729,7 +824,6 @@ export function createBehaviorRuntime(
             if (
               !e ||
               !sourceSession ||
-              sourceSession.hostId !== a.hostId ||
               !session.recallWorldIds.includes(sourceSession.worldId) ||
               (d.scope === "world" &&
                 sourceSession.worldId !== session.worldId) ||
@@ -739,6 +833,37 @@ export function createBehaviorRuntime(
               )
             )
               return failure("unauthorized");
+            const external = sourceSession.hostId !== a.hostId;
+            if (external || authorizeEvidence) {
+              const target = change.targetParticipantId;
+              if (
+                (external && d.kind !== "relationship") ||
+                !behaviorEvidenceVisible(
+                  s,
+                  a,
+                  proposal.npcId,
+                  proposal.sessionId,
+                  eventId,
+                  operator,
+                  {
+                    authorizeEvidence,
+                    purpose: "relationship-evidence",
+                    targetParticipantId: target,
+                    audienceParticipantIds: target ? [target] : [],
+                  },
+                ) ||
+                (d.kind === "relationship" &&
+                  !behaviorPermissions(
+                    s,
+                    { ...a, hostId: sourceSession.hostId },
+                    proposal.npcId,
+                    sourceSession.sessionId,
+                    eventId,
+                    operator,
+                  ).updateRelationship)
+              )
+                return failure("unauthorized");
+            }
             const current = behaviorPermissions(
               s,
               a,
@@ -773,14 +898,15 @@ export function createBehaviorRuntime(
               ...(d.scope === "world" ? { worldId: session.worldId } : {}),
             },
             key = valueKey(keyData);
+          const priorEvidence = new Set(
+            b.history
+              .filter((entry) => valueKey(entry) === key)
+              .flatMap((entry) => entry.evidenceEventIds),
+          );
           if (
             changedKeys.has(key) ||
-            b.history.some(
-              (h) =>
-                valueKey(h) === key &&
-                h.evidenceEventIds.some((e) =>
-                  change.evidenceEventIds.includes(e),
-                ),
+            change.evidenceEventIds.every((eventId) =>
+              priorEvidence.has(eventId),
             )
           )
             return failure("conflict");

@@ -64,17 +64,24 @@ source-session participants and actual interlocutors; self-relations reject.
 Transient state changes have no participant target. Directed relationship values
 stay separate for each NPC and target identity, including NPC targets.
 
-Runtime rejects unknown fields, missing/private/cross-host evidence, unsupported
-parameters, changed revisions, repeated evidence for the same value, excess deltas
-and results outside min/max. Validation is atomic: no earlier change survives a
-later invalid change. Values are rounded to six decimal places, not silently
+Runtime rejects unknown fields, missing or unauthorized evidence, unsupported
+parameters, changed revisions, excess deltas and results outside min/max. Each
+revision must cite fresh evidence for the same directed value. It can also cite
+earlier evidence to explain how the new observation changes an interpretation.
+Validation is atomic: no earlier change survives a later invalid change. Values are rounded to six decimal places, not silently
 clamped. Confidence is independently bounded to `[0,1]`; it is not the value.
 Identical proposal redelivery is idempotent. Each accepted change records before,
 after, source IDs, configuration/state revisions, confidence and reason.
 
 Portable relationship values follow the same verified identities across world/chat
-bindings. Raw evidence is not implicitly transferred between hosts. World-scoped
-values and inspection history remain in their world. Explicit `decay` uses the
+bindings. A trusted composition can supply event-scoped external evidence
+authorization for a linked session. The runtime still checks the source
+session, explicit recall world, audience and recorded/current behavior
+permissions. Linked relationship revisions are checked synchronously for
+every cited source. With an event authorization callback, inspection omits a
+derived value and its history when a contributing source is unauthorized. Raw
+evidence stays with its original host and actor. World-scoped values and
+inspection history remain in their world. Explicit `decay` uses the
 injected wall timestamp, moves toward the configured target by at most maxDelta
 per call, records its own revision and never invents offline game actions.
 

@@ -409,3 +409,144 @@ for (const [model, think] of [
     });
   });
 }
+
+test("Ollama snapshots an explicit temperature without changing discovery or default chat bytes", async () => {
+  for (const model of ["llama3.2:latest", "qwen3.5:4b"]) {
+    const request = { ...input(), model };
+    const fetchFor =
+      (capture: { discovery: unknown[]; chat: string[] }): FetchLike =>
+      async (url, init) => {
+        if (String(url).endsWith("/api/tags")) {
+          capture.discovery.push({
+            method: init?.method,
+            body: init?.body,
+          });
+          return Response.json({ models: [{ name: model }] });
+        }
+        capture.chat.push(String(init?.body));
+        return Response.json({
+          done: true,
+          message: { content: '{"content":"A local reply."}' },
+        });
+      };
+    const defaultCapture = { discovery: [], chat: [] };
+    const defaultClient = createOllamaProvider({
+      fetch: fetchFor(defaultCapture),
+      limits: { maxOutputTokens: 64 },
+    });
+    assert.deepEqual(unwrap(await defaultClient.listModels()), [model]);
+    assert.deepEqual(unwrap(await defaultClient.generate(request)), {
+      content: "A local reply.",
+    });
+    const baseline = {
+      model,
+      stream: false,
+      ...(model === "qwen3.5:4b" && { think: false }),
+      messages: [
+        { role: "system", content: request.system },
+        { role: "user", content: request.prompt },
+      ],
+      format: request.schema,
+      options: { num_predict: 64 },
+    };
+    assert.deepEqual(defaultCapture.chat, [JSON.stringify(baseline)]);
+
+    for (const temperature of [0, 0.5, 1]) {
+      const overrideCapture = { discovery: [], chat: [] };
+      const options = {
+        fetch: fetchFor(overrideCapture),
+        limits: { maxOutputTokens: 64 },
+        temperature,
+      };
+      const client = createOllamaProvider(options);
+      options.temperature = 0.75;
+      assert.deepEqual(unwrap(await client.listModels()), [model]);
+      assert.deepEqual(unwrap(await client.generate(request)), {
+        content: "A local reply.",
+      });
+      assert.deepEqual(overrideCapture.discovery, defaultCapture.discovery);
+      assert.deepEqual(overrideCapture.chat, [
+        JSON.stringify({
+          ...baseline,
+          options: { ...baseline.options, temperature },
+        }),
+      ]);
+    }
+  }
+});
+
+test("Ollama rejects invalid trusted temperatures before transport", () => {
+  const fetch: FetchLike = async () => {
+    assert.fail("Invalid constructor temperature reached the transport");
+  };
+  for (const temperature of [-0.01, 1.01, Infinity, NaN, "0", null]) {
+    assert.throws(
+      () => createOllamaProvider({ fetch, temperature: temperature as number }),
+      { message: "configuration" },
+    );
+  }
+});
+
+test("OpenAI removes nested array generation uniqueness without mutating the authoritative schema", async () => {
+  const generation = input();
+  generation.schema = {
+    type: "object",
+    properties: {
+      uniqueItems: { type: "string" },
+      changes: {
+        type: "array",
+        maxItems: 8,
+        items: {
+          anyOf: [
+            {
+              type: "object",
+              properties: {
+                parameterId: { const: "trust" },
+                sessionId: {
+                  type: "string",
+                  const: "synthetic",
+                  enum: ["synthetic", "other"],
+                },
+                refs: {
+                  type: "array",
+                  items: { enum: ["r1", "r2"] },
+                  maxItems: 2,
+                  uniqueItems: true,
+                },
+              },
+              required: ["parameterId", "sessionId", "refs"],
+              additionalProperties: false,
+            },
+          ],
+        },
+      },
+    },
+    required: ["changes", "uniqueItems"],
+    additionalProperties: false,
+  };
+  const before = structuredClone(generation.schema);
+  const client = createOpenAIProvider({
+    apiKey: "synthetic-secret-key",
+    fetch: async (_, init) => {
+      const wire = JSON.parse(String(init?.body)).text.format.schema;
+      const refs = wire.properties.changes.items.anyOf[0].properties.refs;
+      assert.deepEqual(refs, {
+        type: "array",
+        items: { enum: ["r1", "r2"] },
+        maxItems: 2,
+      });
+      assert.deepEqual(wire.properties.uniqueItems, { type: "string" });
+      const nested = wire.properties.changes.items.anyOf[0].properties;
+      assert.deepEqual(nested.parameterId, { type: "string", enum: ["trust"] });
+      assert.deepEqual(nested.sessionId, {
+        type: "string",
+        enum: ["synthetic"],
+      });
+      return Response.json(
+        rawOpenAI({ uniqueItems: "synthetic", changes: [] }),
+      );
+    },
+  });
+  assert.equal((await client.generate(generation)).ok, true);
+  assert.deepEqual(generation.schema, before);
+});

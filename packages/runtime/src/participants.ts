@@ -42,6 +42,20 @@ export interface AddressedEvent {
   observerIds: string[];
   text: string;
 }
+/** Server-supplied authority over one existing event from a different host. */
+export interface SessionEvidenceQuery {
+  purpose: "recall" | "relationship-evidence";
+  access: SessionAccess;
+  session: ParticipantSession;
+  npcId: string;
+  targetParticipantId?: string;
+  audienceParticipantIds: string[];
+  sourceSession: ParticipantSession;
+  event: AddressedEvent;
+}
+export type AuthorizeSessionEvidence = (
+  query: Readonly<SessionEvidenceQuery>,
+) => boolean;
 export interface SessionTurn {
   turnId: string;
   sessionId: string;
@@ -106,8 +120,12 @@ const audience = (e: AddressedEvent) => [
 /** No account system, model, transport or host mechanics are constructed here. */
 export function createParticipantRuntime(
   store: ParticipantStore,
-  options: { behaviorOperator?: BehaviorOperatorPolicy } = {},
+  options: {
+    behaviorOperator?: BehaviorOperatorPolicy;
+    authorizeEvidence?: AuthorizeSessionEvidence;
+  } = {},
 ) {
+  const authorizeEvidence = options.authorizeEvidence;
   const behaviorOperator = options.behaviorOperator
     ? structuredClone(options.behaviorOperator)
     : undefined;
@@ -283,22 +301,63 @@ export function createParticipantRuntime(
     history(access: SessionAccess, sessionId: string, participantId: string) {
       return run(access, (s) => {
         const current = session(s, access, sessionId);
-        if (!current.members.some((m) => m.participantId === participantId))
-          fail("unauthorized");
-        return s.events.filter(
-          (e) =>
-            e.sessionId === sessionId &&
-            audience(e).includes(participantId) &&
-            (current.members.find((m) => m.participantId === participantId)
-              ?.role !== "npc" ||
+        const member = current.members.find(
+          (item) => item.participantId === participantId,
+        );
+        if (!member) return fail("unauthorized");
+        return s.events.filter((event) => {
+          const recordedAudience = audience(event);
+          if (
+            event.sessionId !== sessionId ||
+            !recordedAudience.includes(participantId)
+          )
+            return false;
+          if (!authorizeEvidence)
+            return (
+              member.role !== "npc" ||
               behaviorEvidenceVisible(
                 s,
                 access,
                 participantId,
                 sessionId,
-                e.eventId,
-              )),
-        );
+                event.eventId,
+              )
+            );
+          const npcs = current.members.filter(
+            (item) =>
+              item.role === "npc" &&
+              recordedAudience.includes(item.participantId) &&
+              (member.role === "player" ||
+                item.participantId === participantId),
+          );
+          const players = current.members.filter(
+            (item) =>
+              item.role === "player" &&
+              recordedAudience.includes(item.participantId),
+          );
+          return npcs.some((npc) =>
+            behaviorEvidenceVisible(
+              s,
+              access,
+              npc.participantId,
+              sessionId,
+              event.eventId,
+              behaviorOperator,
+              {
+                authorizeEvidence,
+                audienceParticipantIds: recordedAudience.filter(
+                  (id) => id !== npc.participantId,
+                ),
+                targetParticipantId:
+                  member.role === "player"
+                    ? participantId
+                    : players.length === 1
+                      ? players[0]?.participantId
+                      : undefined,
+              },
+            ),
+          );
+        });
       });
     },
     /** Source-grounded relationship evidence, keyed by verified persistent player ID. */
@@ -322,17 +381,32 @@ export function createParticipantRuntime(
         return {
           npcId,
           playerId,
-          events: s.events.filter(
-            (e) =>
-              audience(e).includes(npcId) &&
-              audience(e).includes(playerId) &&
-              s.sessions.some(
-                (source) =>
-                  source.sessionId === e.sessionId &&
-                  source.hostId === access.hostId &&
-                  current.recallWorldIds.includes(source.worldId),
-              ),
-          ),
+          events: s.events.filter((event) => {
+            if (![npcId, playerId].every((id) => audience(event).includes(id)))
+              return false;
+            const source = s.sessions.find(
+              (item) => item.sessionId === event.sessionId,
+            );
+            return (
+              !!source &&
+              current.recallWorldIds.includes(source.worldId) &&
+              ((source.hostId === access.hostId && !authorizeEvidence) ||
+                behaviorEvidenceVisible(
+                  s,
+                  access,
+                  npcId,
+                  sessionId,
+                  event.eventId,
+                  behaviorOperator,
+                  {
+                    authorizeEvidence,
+                    purpose: "relationship-evidence",
+                    targetParticipantId: playerId,
+                    audienceParticipantIds: [playerId],
+                  },
+                ))
+            );
+          }),
         };
       });
     },
@@ -418,28 +492,39 @@ export function createParticipantRuntime(
           behaviorRevision: behaviorRevision(s),
         });
         // Recall is NPC-private, with stable player identity across worlds. Sharing is checked at completion.
+        const participants = [...ticket.recipientIds, ...ticket.observerIds];
+        const playerIds = participants.filter((id) =>
+          current.members.some(
+            (member) => member.role === "player" && member.participantId === id,
+          ),
+        );
         const memories = s.events
-          .filter(
-            (e) =>
-              s.sessions.some(
-                (source) =>
-                  source.sessionId === e.sessionId &&
-                  source.hostId === access.hostId &&
-                  current.recallWorldIds.includes(source.worldId),
+          .filter((event) => {
+            const source = s.sessions.find(
+              (item) => item.sessionId === event.sessionId,
+            );
+            return (
+              !!source &&
+              current.recallWorldIds.includes(source.worldId) &&
+              [ticket.npcId, ...participants].every((id) =>
+                audience(event).includes(id),
               ) &&
               behaviorEvidenceVisible(
                 s,
                 access,
                 ticket.npcId,
                 ticket.sessionId,
-                e.eventId,
-              ) &&
-              [
-                ticket.npcId,
-                ...ticket.recipientIds,
-                ...ticket.observerIds,
-              ].every((p) => audience(e).includes(p)),
-          )
+                event.eventId,
+                source.hostId === access.hostId ? undefined : behaviorOperator,
+                {
+                  authorizeEvidence,
+                  targetParticipantId:
+                    playerIds.length === 1 ? playerIds[0] : undefined,
+                  audienceParticipantIds: participants,
+                },
+              )
+            );
+          })
           .slice(-64);
         if (
           new TextEncoder().encode(

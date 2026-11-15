@@ -15,7 +15,7 @@ compose these public artifacts. See [repository ownership](https://github.com/op
 Use Node.js 22.18–24 and an ESM project:
 
 ```sh
-npm install @ifsoul/core@0.7.0
+npm install @ifsoul/core@0.8.0
 ```
 
 The package includes compiled JavaScript and TypeScript declarations. Import the

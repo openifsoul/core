@@ -17,6 +17,52 @@ export const OPENAI_MODELS = [
   "gpt-4.1-mini-2025-04-14",
 ] as const;
 export const DEFAULT_OPENAI_MODEL = OPENAI_MODELS[0];
+/** Project generation constraints into the documented Structured Outputs subset. */
+function responsesSchema(schema: Record<string, unknown>) {
+  const copy = structuredClone(schema);
+  function visit(value: unknown) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return;
+    const node = value as Record<string, unknown>;
+    if (
+      typeof node.const === "string" &&
+      (node.type === undefined || node.type === "string") &&
+      (node.enum === undefined ||
+        (Array.isArray(node.enum) && node.enum.includes(node.const)))
+    ) {
+      node.type = "string";
+      node.enum = [node.const];
+      delete node.const;
+    }
+    if (node.type === "array" || node.items !== undefined)
+      delete node.uniqueItems;
+    for (const map of [
+      node.properties,
+      node.patternProperties,
+      node.$defs,
+      node.definitions,
+    ])
+      if (map && typeof map === "object" && !Array.isArray(map))
+        Object.values(map).forEach(visit);
+    for (const keyword of ["items", "prefixItems", "anyOf", "allOf", "oneOf"]) {
+      const child = node[keyword];
+      if (Array.isArray(child)) child.forEach(visit);
+      else visit(child);
+    }
+    for (const keyword of [
+      "additionalProperties",
+      "contains",
+      "if",
+      "then",
+      "else",
+      "not",
+      "propertyNames",
+    ])
+      visit(node[keyword]);
+  }
+  visit(copy);
+  return copy;
+}
+
 /** Credential is confined to this client's closure and Authorization header. */
 export function createOpenAIProvider(options: {
   apiKey: string;
@@ -59,7 +105,7 @@ export function createOpenAIProvider(options: {
                   type: "json_schema",
                   name: "ifsoul_content",
                   strict: true,
-                  schema: input.schema,
+                  schema: responsesSchema(input.schema),
                 },
               },
             },

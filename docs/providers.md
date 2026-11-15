@@ -88,9 +88,17 @@ requests `stream:false`, passes the content JSON Schema as `format`, and bounds
 `options.num_predict`. It never installs/pulls a model or exposes a remote URL
 choice to model output.
 
-For the original `qwen3` family only, requests include `think:false` to obtain
-the final answer within the bounded wait. Other model families receive no
-thinking override. Ollama documents Qwen3's boolean switch in its
+Trusted local callers can set `createOllamaProvider({ temperature: 0 })`
+to request a sampling temperature. The constructor accepts finite numbers
+from 0 through 1 as the IfSoul-supported product range. It rejects invalid
+values before a request and preserves the model's default when omitted.
+This setting applies to generation only. Model discovery and the serialized
+ModelProvider specification are unchanged.
+
+Requests for `qwen3` and `qwen3.5` model names, with or without a tag,
+include `think:false` to obtain the final answer within the bounded wait.
+Other model families receive no thinking override. Ollama documents the
+boolean switch in its
 [thinking announcement](https://ollama.com/blog/thinking) and the
 [current thinking API](https://docs.ollama.com/capabilities/thinking); named
 reasoning levels and general capability probing are not implemented here.

@@ -62,7 +62,7 @@ export {
 export type { BudgetReport } from "./resource-policy.js";
 
 /** Current train identifier; wire families require exact kind/version validation. */
-export const IFSOUL_VERSION = "0.7.0" as const;
+export const IFSOUL_VERSION = "0.8.0" as const;
 /** Structural current ModelProvider spec validation; not a provider wire transport. */
 export function validateModelProviderDocument(value: unknown): boolean {
   return validators.current_provider(value) === true;
