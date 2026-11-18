@@ -53,6 +53,24 @@ export interface Parameter {
   minimum?: number;
   maximum?: number;
 }
+export interface HostIntent {
+  intentId: string;
+  description: string;
+  parameters: Parameter[];
+  cancellable: boolean;
+}
+export interface HostCapability extends HostIntent {
+  category: string;
+  support: "supported" | "partial" | "unsupported";
+  readiness: "ready" | "unavailable";
+  reason?: string;
+}
+export interface CapabilityManifest {
+  revision: string;
+  worldId: string;
+  embodimentId: string;
+  capabilities: HostCapability[];
+}
 export interface EnvironmentProfile extends Envelope {
   kind: "environment-profile";
   binding: Binding;
@@ -76,12 +94,7 @@ export interface EnvironmentProfile extends Envelope {
     allowUnrequestedMessages: boolean;
     channelIds: string[];
   };
-  hostIntents: {
-    intentId: string;
-    description: string;
-    parameters: Parameter[];
-    cancellable: boolean;
-  }[];
+  hostIntents: HostIntent[];
   worldTime?: { timelineId: string; tick: number };
 }
 export interface ContextReport extends Envelope {

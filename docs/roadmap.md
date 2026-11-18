@@ -5,6 +5,47 @@ provider clients, a bounded host SDK and a self-hostable App. Games own mechanic
 action adoption and execution. See [architecture](architecture.md),
 [runtime API](runtime-api.md) and [resource budgets](resource-budgets.md).
 
+## Host capability discovery
+
+The 0.9.0 candidate adds native capability manifests and versioned owner grants.
+Core's host intent descriptors remain game-neutral. The SDK validates discovery,
+bounded input and operation reports. App projects a connected host's snapshot,
+fences each authorization checkpoint by provider and revisions, and retains
+observed steps for factual recall. Native host readiness and completed gameplay
+are verified independently for each connector.
+
+## Addressed group adventures
+
+The 0.9.0 target includes a player-led adventure with three independent
+characters. Group turns use verified participants and explicit audiences,
+with bounded NPC-to-NPC exchanges and attributed native evidence. The App
+target includes a durable owner transcript and an inspectable decision trace.
+Adventure recall distinguishes eligible host receipts, unconfirmed assignments
+and character dialogue. An action can fail in the native world while the
+conversation accurately retains and reports the outcome. Local Mineflayer
+verification has exercised addressed exchange, partial collection, failed
+return attempts and retained App history across restart. In a natural forest
+run, three actors each recalled their recorded outcome and the owner could
+read the same history and decision trace in App after restart. An independent
+local model check verified that a mixed return request without an available
+return capability yields unknown results and no assignment.
+
+## Conversation channel permissions
+
+The 0.9.0 target separates listening, reacting and speaking for each
+reported host channel. App owns versioned grants and the bridge reports
+which channels exist. The Mineflayer adventure uses private and scoped
+group replies. Public input can use a private reply route while the
+bound player is tracked in the same dimension. The vanilla bridge reports
+public speaking as unsupported because vanilla broadcast crosses dimensions.
+The four Java plugin and mod bridges use
+their host APIs for same-world public delivery.
+Local tests exercised OpenAI and Ollama dialogue through App and actual
+Minecraft Java clients. Local OpenAI and Ollama runs also exercised native
+Mineflayer forest action receipts and per-actor recall. Long Java dialogue
+turns renew the capability lease
+while the host still verifies the player and actor.
+
 ## Relationship interpretation and revision
 
 Relationship interpretation and revision are model-dependent. Current validation
